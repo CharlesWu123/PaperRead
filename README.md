@@ -19,8 +19,11 @@
 Markdown 渲染（表格、代码块、Mermaid 图、LaTeX 公式）和 PDF 内嵌预览。
 
 ```bash
-cd reader && node server.js     # 默认 http://127.0.0.1:8912，可用 PORT 环境变量覆盖
+cd reader && node server.js     # 默认 http://127.0.0.1:8912
 ```
+
+可用环境变量覆盖：`PORT`（端口）、`HOST`（监听地址）。服务**无鉴权**，因此默认只绑
+`127.0.0.1`；确实需要用手机或同网段设备访问时再设 `HOST=0.0.0.0`。
 
 > 需要 Node.js（`brew install node`）。
 > PDF 原文不在仓库内；按各篇的 arXiv 链接下载后放入 `01_视频编辑/论文原文/`（01）或
