@@ -11,6 +11,12 @@
 
 * { box-sizing: border-box; }
 
+/* 必须放在各组件规则之前：hidden 属性能否生效取决于这条。
+   .variant-row 自己设了 display:flex，若不在此显式声明，
+   作者样式的 display 会压过 UA 的 [hidden]{display:none}，
+   导致没有通俗版的文档也显示出切换条、点了却没反应。 */
+[hidden] { display: none !important; }
+
 body {
   margin: 0;
   background: var(--bg);

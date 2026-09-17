@@ -18,22 +18,23 @@
 **https://charleswu123.github.io/PaperRead/**
 
 GitHub Pages 静态站点，界面与本地阅读器一致（侧栏导航、全文检索、Mermaid / LaTeX 渲染）。
-站点内容由以下文件生成，均已入库：
+站点内容由以下文件构成，均已入库：
 
-- `index.html` —— 站点入口
-- `site/app.js`、`site/styles.css` —— 前端
-- `site/index.json` —— 合集 / 分组 / 文档结构
-- `site/search.json` —— 全文检索索引（约 1MB，**首次搜索时才加载**，不影响首屏）
+- `index.html` —— 站点入口（手写）
+- `site/app.js` —— 前端（手写，数据来源与动态版不同）
+- `site/index.json` —— 合集 / 分组 / 文档结构（**生成**）
+- `site/search.json` —— 全文检索索引，约 1MB，**首次搜索时才加载**（**生成**）
+- `site/styles.css` —— 由 `reader/public/styles.css` 复制（**生成**）
 - `.nojekyll` —— **必需**，否则 Pages 会跑 Jekyll 把 `.md` 转成 HTML，前端就取不到原始 Markdown
 
-改动解读内容后重新生成索引：
+改动解读内容或样式后重新生成：
 
 ```bash
 node tools/build-site.js
 ```
 
-该脚本复用 `reader/server.js` 的 `buildIndex()`，因此在线站点与本地服务的索引逻辑始终一致
-（仅去掉 PDF 字段，因为 PDF 不在仓库里）。
+该脚本复用 `reader/server.js` 的 `buildIndex()` 与 `reader/public/styles.css`，
+因此在线站点与本地服务的索引和样式始终一致（索引仅去掉 PDF 字段，因为 PDF 不在仓库里）。
 
 ## 本地阅读器
 

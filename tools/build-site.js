@@ -5,6 +5,7 @@
 // 产出：
 //   site/index.json   合集 / 分组 / 文档结构（等价于 /api/index）
 //   site/search.json  全部 Markdown 正文，供前端做客户端检索（等价于 /api/search）
+//   site/styles.css   从 reader/public/styles.css 复制，避免两份样式各自漂移
 //
 // 与本地服务的差异：PDF 不在仓库里，因此每个 doc 的 pdf 字段会被删掉，
 // 前端据此隐藏「本地 PDF」按钮，只保留 arXiv 链接。
@@ -50,9 +51,12 @@ const searchDocs = allDocs(index)
 fs.mkdirSync(SITE, { recursive: true });
 fs.writeFileSync(path.join(SITE, 'index.json'), JSON.stringify({ collections: index }, null, 1));
 fs.writeFileSync(path.join(SITE, 'search.json'), JSON.stringify(searchDocs));
+// 样式以 reader/public/styles.css 为唯一来源，避免两份拷贝漂移
+fs.copyFileSync(path.join(ROOT, 'reader/public/styles.css'), path.join(SITE, 'styles.css'));
 
 const total = index.reduce((n, c) => n + c.count, 0);
 const size = (f) => (fs.statSync(path.join(SITE, f)).size / 1024).toFixed(0) + ' KB';
 console.log('site/index.json   ' + index.length + ' 个合集 / ' + total + ' 篇文档   ' + size('index.json'));
 console.log('site/search.json  ' + searchDocs.length + ' 篇正文             ' + size('search.json'));
+console.log('site/styles.css   复制自 reader/public/styles.css   ' + size('styles.css'));
 index.forEach((c) => console.log('  [' + c.key + '] ' + c.title + ' — ' + c.count + ' 篇'));
