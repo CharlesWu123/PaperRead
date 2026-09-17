@@ -249,10 +249,46 @@
     });
   }
 
+  // 独立 HTML 报告（04 / 05 专题）：内嵌在正文区显示，不再弹新窗口。
+  // 这些页面是自带样式的完整文档（无 position:fixed / height:100%），
+  // 且与阅读器同源，因此可以直接量出内容高度把 iframe 撑满，避免出现双滚动条。
+  function openHtmlDoc(doc, opts) {
+    current = doc;
+    setActive(doc.id);
+    variantRow.hidden = true;
+    document.getElementById('meta-title').textContent = doc.fullTitle || doc.title;
+    document.getElementById('meta-sub').textContent = doc.subtitle || '';
+    document.getElementById('meta-links').innerHTML =
+      '<a class="btn" target="_blank" rel="noopener" href="' + esc(encPath(doc.path)) + '">新窗口打开</a>';
+    document.getElementById('meta-facts').innerHTML = '';
+    metaPanel.hidden = false;
+
+    contentEl.innerHTML = '';
+    var frame = document.createElement('iframe');
+    frame.className = 'html-embed';
+    frame.setAttribute('title', doc.title);
+    frame.src = encPath(doc.path);
+    frame.addEventListener('load', function () {
+      try {
+        var d = frame.contentDocument;
+        if (!d) return;
+        var h = Math.max(d.body.scrollHeight, d.documentElement.scrollHeight);
+        if (h > 0) frame.style.height = (h + 28) + 'px';
+      } catch (e) { /* 量不到就保留 CSS 里的兜底高度 */ }
+    });
+    contentEl.appendChild(frame);
+
+    if (!opts || !opts.keepScroll) {
+      document.querySelector('.reader').scrollTop = 0;
+      window.scrollTo(0, 0);
+    }
+    location.hash = doc.id;
+  }
+
   function openDoc(doc, opts) {
     if (!doc) return;
     if (doc.kind === 'html') {
-      window.open(encPath(doc.path), '_blank', 'noopener');
+      openHtmlDoc(doc, opts);
       return;
     }
     current = doc;
