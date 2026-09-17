@@ -235,7 +235,7 @@ function buildMisc() {
   const mdDocs = [];
   const looseDir = '01_视频编辑/补充阅读';
   ls(looseDir)
-    .filter((f) => f.endsWith('.md'))
+    .filter((f) => f.endsWith('.md') && f !== 'README.md')
     .forEach((f) => {
       const rel = looseDir + '/' + f;
       const pdf = looseDir + '/' + f.replace(/_report\.md$/, '.pdf');
