@@ -1,0 +1,1389 @@
+{
+ "collections": [
+  {
+   "key": "video-edit",
+   "title": "视频编辑论文阅读整理",
+   "desc": "30 篇视频编辑论文的入门整理，六个主题分组 + 总览路线",
+   "groups": [
+    {
+     "name": "总览与阅读路线",
+     "docs": [
+      {
+       "id": "01_视频编辑~00_整体总结",
+       "kind": "md",
+       "path": "01_视频编辑/00_整体总结.md",
+       "title": "视频编辑论文整体总结：先看懂这张技术地图",
+       "subtitle": "例如，把视频中的猫替换成狐狸，模型需要同时完成三件事：",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~00_方法选型",
+       "kind": "md",
+       "path": "01_视频编辑/00_方法选型.md",
+       "title": "视频编辑方法选型速查",
+       "subtitle": "quadrantChart",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~00_术语速查",
+       "kind": "md",
+       "path": "01_视频编辑/00_术语速查.md",
+       "title": "视频编辑术语速查",
+       "subtitle": "flowchart LR",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~00_论文清单",
+       "kind": "md",
+       "path": "01_视频编辑/00_论文清单.md",
+       "title": "论文清单与资料来源",
+       "subtitle": "共整理 30 篇论文，分为六组：",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~00_阅读路线",
+       "kind": "md",
+       "path": "01_视频编辑/00_阅读路线.md",
+       "title": "视频编辑论文入门阅读路线",
+       "subtitle": "这套资料覆盖 30 篇论文。不要按年份从头硬读，也不要一开始就钻公式。最有效的方式是先建立三个问题：",
+       "collection": "video-edit"
+      }
+     ]
+    },
+    {
+     "name": "01 · 基础范式",
+     "docs": [
+      {
+       "id": "01_视频编辑~01_基础范式~01_Tune-A-Video",
+       "kind": "md",
+       "path": "01_视频编辑/01_基础范式/01_Tune-A-Video.md",
+       "title": "01 Tune-A-Video：用一次微调把图像模型变成视频模型",
+       "subtitle": "它让一个已经很会画单张图片的 Stable Diffusion，只看一段视频就临时学会这段视频的运动，再按新文字生成视频。类比是：一个会画肖像的画师先看一小段舞蹈，临时学会画这个人连续跳舞。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~01_基础范式~02_Text2Video-Zero",
+       "kind": "md",
+       "path": "01_视频编辑/01_基础范式/02_Text2Video-Zero.md",
+       "title": "02 Text2Video-Zero：不训练也能把图像模型用于视频",
+       "subtitle": "它不训练视频模型，而是让不同帧的潜变量按运动规则变化，再让各帧参考彼此外观。类比是：只会画单张漫画的画师画连续漫画，每格改变位置，但都拿第一格作人物参照。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~01_基础范式~03_Video-P2P",
+       "kind": "md",
+       "path": "01_视频编辑/01_基础范式/03_Video-P2P.md",
+       "title": "03 Video-P2P：用 cross-attention 控制视频里改哪里",
+       "subtitle": "它让被替换的词主要改变对应区域，其他区域尽量不动。像把“孩子骑自行车”中的“孩子”改成“乐高孩子”，不重新画道路、自行车和姿势。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~01_基础范式~04_FateZero",
+       "kind": "md",
+       "path": "01_视频编辑/01_基础范式/04_FateZero.md",
+       "title": "04 FateZero：把原视频的注意力带进编辑过程",
+       "subtitle": "FateZero 在还原原视频、再生成编辑视频的过程中保存 attention，让模型改目标对象时持续参考原视频的结构和运动。像先记下“每个词关注哪里、画面怎么关联”，再按新文字重画。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~01_基础范式~05_Rerender-A-Video",
+       "kind": "md",
+       "path": "01_视频编辑/01_基础范式/05_Rerender-A-Video.md",
+       "title": "05 Rerender A Video：编辑关键帧，再传播到整段视频",
+       "subtitle": "它先把少数关键帧编辑好，再用光流和相邻关键帧传播到中间帧。类比动画制作：先画关键姿势，再根据运动轨迹补过渡帧。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~01_基础范式~06_TokenFlow",
+       "kind": "md",
+       "path": "01_视频编辑/01_基础范式/06_TokenFlow.md",
+       "title": "06 TokenFlow：沿扩散特征的跨帧对应传播编辑",
+       "subtitle": "它不直接复制像素，而是在扩散模型内部找到跨帧对应的 feature token，再让编辑结果沿对应关系传播。像先认出每帧里同一只狼的眼睛、鼻子和身体，再让这些对应部位一起变成机器人。",
+       "collection": "video-edit"
+      }
+     ]
+    },
+    {
+     "name": "02 · 一致性机制",
+     "docs": [
+      {
+       "id": "01_视频编辑~02_一致性机制~01_FLATTEN",
+       "kind": "md",
+       "path": "01_视频编辑/02_一致性机制/01_FLATTEN.md",
+       "title": "01 FLATTEN：用光流约束扩散注意力",
+       "subtitle": "普通方法让每一帧独立“化妆”，FLATTEN 先用光流确认“这是同一只眼睛、同一件衣服”，再让对应区域共享编辑信息。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~02_一致性机制~02_RAVE",
+       "kind": "md",
+       "path": "01_视频编辑/02_一致性机制/02_RAVE.md",
+       "title": "02 RAVE：通过随机噪声洗牌实现快速一致的视频编辑",
+       "subtitle": "如果逐帧编辑像 90 个人各画一幅画，RAVE 就把多帧随机拼成大网格，让同一个扩散网络一次看到它们，从而共享风格、颜色和纹理。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~02_一致性机制~03_VidToMe",
+       "kind": "md",
+       "path": "01_视频编辑/02_一致性机制/03_VidToMe.md",
+       "title": "03 VidToMe：用跨帧 token 合并保持短期和长期一致",
+       "subtitle": "连续帧有大量重复信息，VidToMe 像把“同一个人的衣服和背景”的多份复印件暂时合成一份统一参考，处理完再还原到各帧。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~02_一致性机制~04_CoDeF",
+       "kind": "md",
+       "path": "01_视频编辑/02_一致性机制/04_CoDeF.md",
+       "title": "04 CoDeF：用内容场和形变场构建连续视频表示",
+       "subtitle": "CoDeF 先整理出一张“整个视频的标准内容底图”，再为每一帧记录底图内容如何移动；在底图上改一次，就能传播到全视频。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~02_一致性机制~05_AnyV2V",
+       "kind": "md",
+       "path": "01_视频编辑/02_一致性机制/05_AnyV2V.md",
+       "title": "05 AnyV2V：先编辑首帧，再用 I2V 传播到整段视频",
+       "subtitle": "AnyV2V 像先把视频的第一张海报改好，再请一个懂“如何让海报动起来”的动画师，结合原视频动作把改动延续到整段视频。",
+       "collection": "video-edit"
+      }
+     ]
+    },
+    {
+     "name": "03 · 反演与传播",
+     "docs": [
+      {
+       "id": "01_视频编辑~03_反演与传播~01_Videoshop",
+       "kind": "md",
+       "path": "01_视频编辑/03_反演与传播/01_Videoshop.md",
+       "title": "01 Videoshop：Localized Semantic Video Editing with Noise-Extrapolated Diffusion Inversion",
+       "subtitle": "Videoshop 像是“先在 Photoshop 里改好视频第一帧，再让图生视频模型把这张改好的图拍成连续镜头”。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~03_反演与传播~02_DNI",
+       "kind": "md",
+       "path": "01_视频编辑/03_反演与传播/02_DNI.md",
+       "title": "02 DNI：Dilutional Noise Initialization for Diffusion Video Editing",
+       "subtitle": "DNI 像是在“需要改动作的地方把原视频的记忆调低音量，再混入更多随机性”，让模型不再被原姿势锁住。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~03_反演与传播~03_DreamMotion",
+       "kind": "md",
+       "path": "01_视频编辑/03_反演与传播/03_DreamMotion.md",
+       "title": "03 DreamMotion：Space-Time Self-Similar Score Distillation for Zero-Shot Video Editing",
+       "subtitle": "DreamMotion 像是在已拍好的原视频上“逐渐刷入新的外观”，同时用空间关系和时间关系做护栏，避免人物和动作变形。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~03_反演与传播~04_FastVideoEdit",
+       "kind": "md",
+       "path": "01_视频编辑/03_反演与传播/04_FastVideoEdit.md",
+       "title": "04 FastVideoEdit：Leveraging Consistency Models for Efficient Text-to-Video Editing",
+       "subtitle": "FastVideoEdit 把“先把视频倒放到噪声、再从噪声重建”的长流程换成一个快速导航器，直接把源视频推向目标视频。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~03_反演与传播~05_GenProp",
+       "kind": "md",
+       "path": "01_视频编辑/03_反演与传播/05_GenProp.md",
+       "title": "05 GenProp：Generative Video Propagation",
+       "subtitle": "GenProp 像是训练了一个“视频接力员”：先记住原视频中不该改变的内容，再让 I2V 把第一帧中的新增、删除或替换内容接力到后续帧。",
+       "collection": "video-edit"
+      }
+     ]
+    },
+    {
+     "name": "04 · 主体运动视角",
+     "docs": [
+      {
+       "id": "01_视频编辑~04_主体运动视角~01_MotionDirector",
+       "kind": "md",
+       "path": "01_视频编辑/04_主体运动视角/01_MotionDirector.md",
+       "title": "01 MotionDirector：动作定制",
+       "subtitle": "把“演员长什么样”和“演员怎么运动”录进两个可插拔滤镜：换演员时只换外观，仍可复用原来的动作。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~04_主体运动视角~02_DragAnything",
+       "kind": "md",
+       "path": "01_视频编辑/04_主体运动视角/02_DragAnything.md",
+       "title": "02 DragAnything：拖拽轨迹",
+       "subtitle": "普通拖拽像拽动一根头发，结果整张照片变形；DragAnything先认出“这是整只鸟”，再拖动鸟这个实体。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~04_主体运动视角~03_DIVE",
+       "kind": "md",
+       "path": "01_视频编辑/04_主体运动视角/03_DIVE.md",
+       "title": "03 DIVE：DINO对应",
+       "subtitle": "它给源视频中的猫安装一套只认轮廓和部位、不太在意毛色纹理的追踪器，再让目标主体沿同一条动作轨迹运动。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~04_主体运动视角~04_VideoMage",
+       "kind": "md",
+       "path": "01_视频编辑/04_主体运动视角/04_VideoMage.md",
+       "title": "04 VideoMage：双LoRA",
+       "subtitle": "它像导演拥有多张演员身份滤镜、一条动作排练录像，再用空间和时间两种对讲机让演员正确互动。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~04_主体运动视角~05_Reangle-A-Video",
+       "kind": "md",
+       "path": "01_视频编辑/04_主体运动视角/05_Reangle-A-Video.md",
+       "title": "05 Reangle-A-Video：多视角重设",
+       "subtitle": "先把一段电影的“演员动作排练”从不同摄影机位置重新做成训练素材，再把第一帧布置到新视角，让同一套动作在新摄影机下发生。",
+       "collection": "video-edit"
+      }
+     ]
+    },
+    {
+     "name": "05 · 统一编辑框架",
+     "docs": [
+      {
+       "id": "01_视频编辑~05_统一编辑框架~01_Align-A-Video",
+       "kind": "md",
+       "path": "01_视频编辑/05_统一编辑框架/01_Align-A-Video.md",
+       "title": "Align-A-Video：确定性奖励微调的视频编辑",
+       "subtitle": "像先把视频中的一张代表性画面修到“既符合文字又好看”，再把这张图的新外观传给整段视频。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~05_统一编辑框架~02_VACE",
+       "kind": "md",
+       "path": "01_视频编辑/05_统一编辑框架/02_VACE.md",
+       "title": "VACE：统一视频生成与编辑的条件接口",
+       "subtitle": "VACE像给所有视频任务设计统一插头：参考图、源视频、控制图和掩码先转换为同一种输入，再由一个模型生成或编辑。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~05_统一编辑框架~03_VideoDirector",
+       "kind": "md",
+       "path": "01_视频编辑/05_统一编辑框架/03_VideoDirector.md",
+       "title": "VideoDirector：直接利用 T2V 模型进行精确编辑",
+       "subtitle": "像先把原视频复刻成可重复播放的扩散轨道，再沿同一轨道只替换指定对象，保护背景和运动。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~05_统一编辑框架~04_SketchVideo",
+       "kind": "md",
+       "path": "01_视频编辑/05_统一编辑框架/04_SketchVideo.md",
+       "title": "SketchVideo：稀疏关键帧草图控制视频",
+       "subtitle": "只画一两张关键动作草图，模型便根据帧间关系补出中间动作，并将几何修改传播到整段视频。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~05_统一编辑框架~05_Visual-Prompting-OCVE",
+       "kind": "md",
+       "path": "01_视频编辑/05_统一编辑框架/05_Visual-Prompting-OCVE.md",
+       "title": "Visual Prompting OCVE：无需反演的一次示例编辑",
+       "subtitle": "给模型看“第一帧修改前—修改后”的示范，再把每个后续源帧当作问题，让它照着示范学习编辑规则。",
+       "collection": "video-edit"
+      }
+     ]
+    },
+    {
+     "name": "06 · 数据底座规划",
+     "docs": [
+      {
+       "id": "01_视频编辑~06_数据底座规划~01_Wan",
+       "kind": "md",
+       "path": "01_视频编辑/06_数据底座规划/01_Wan.md",
+       "title": "Wan：开放视频基础模型与统一编辑底座",
+       "subtitle": "Wan 像一个功能齐全的视频操作系统：先提供强大的视频生成能力，再通过统一的条件接口接入参考视频、遮罩、深度、姿态、布局等编辑信号。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~06_数据底座规划~02_OpenVE-3M",
+       "kind": "md",
+       "path": "01_视频编辑/06_数据底座规划/02_OpenVE-3M.md",
+       "title": "OpenVE-3M：把视频编辑变成可训练、可评测的数据问题",
+       "subtitle": "OpenVE-3M 像给视频编辑建立了一套驾校教材、题库和评分标准：不仅提供更多训练样本，还规定编辑任务怎么分类、指令是否执行、哪些内容必须保持。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~06_数据底座规划~03_Bernini",
+       "kind": "md",
+       "path": "01_视频编辑/06_数据底座规划/03_Bernini.md",
+       "title": "Bernini：让 MLLM 先规划，再让 DiT 渲染",
+       "subtitle": "Bernini 像“导演加摄影棚”：MLLM 导演先读懂剧本、源视频和参考素材，规划目标语义；DiT 摄影棚再把规划渲染成连续、逼真的视频。",
+       "collection": "video-edit"
+      },
+      {
+       "id": "01_视频编辑~06_数据底座规划~04_Video-As-Prompt",
+       "kind": "md",
+       "path": "01_视频编辑/06_数据底座规划/04_Video-As-Prompt.md",
+       "title": "Video-As-Prompt：把参考视频变成动态语义提示词",
+       "subtitle": "VAP 像视频版的示范教学：与其让用户描述“请按这种方式变身、运动和运镜”，不如直接给模型一段示例视频，让它把其中的动态语义迁移到新的主体上。",
+       "collection": "video-edit"
+      }
+     ]
+    }
+   ],
+   "count": 35
+  },
+  {
+   "key": "agent-skill",
+   "title": "Agent Skill 自进化",
+   "desc": "25 篇 Agent skill / harness 自进化论文解读",
+   "groups": [
+    {
+     "name": "总览",
+     "docs": [
+      {
+       "id": "02_Agent自进化~reading_report",
+       "kind": "md",
+       "path": "02_Agent自进化/reading_report.md",
+       "title": "Agent Skill 自进化论文阅读报告",
+       "subtitle": "生成日期：2026-07-16",
+       "collection": "agent-skill"
+      }
+     ]
+    },
+    {
+     "name": "论文解读（按阅读优先级）",
+     "docs": [
+      {
+       "id": "02_Agent自进化~reports~survey-self-evolving-agents",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/survey-self-evolving-agents.md",
+       "title": "Self-Evolving Agents Survey",
+       "subtitle": "A Survey of Self-Evolving Agents: What, When, How, and Where to Evolve on the Path to Artificial Super Intelligence",
+       "tag": "综述 / 路线图",
+       "arxivId": "2507.21046",
+       "year": 2025,
+       "citations": 83,
+       "tags": [
+        "survey",
+        "self-evolving agents",
+        "taxonomy",
+        "memory",
+        "tools",
+        "architecture",
+        "model evolution"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~sok-agentic-skills",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/sok-agentic-skills.md",
+       "title": "SoK: Agentic Skills",
+       "subtitle": "SoK: Agentic Skills -- Beyond Tool Use in LLM Agents",
+       "tag": "定义 / 治理",
+       "arxivId": "2602.20867",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "agentic skills",
+        "taxonomy",
+        "security",
+        "governance",
+        "skill lifecycle"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~agent-skills-architecture",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/agent-skills-architecture.md",
+       "title": "Agent Skills for LLMs",
+       "subtitle": "Agent Skills for Large Language Models: Architecture, Acquisition, Security, and the Path Forward",
+       "tag": "架构 / 标准",
+       "arxivId": "2602.12430",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "agent skills",
+        "architecture",
+        "acquisition",
+        "security",
+        "MCP",
+        "SKILL.md"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~skillsbench",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/skillsbench.md",
+       "title": "SkillsBench",
+       "subtitle": "SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks",
+       "tag": "评测基准",
+       "arxivId": "2602.12670",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "SkillsBench",
+        "benchmark",
+        "evaluation",
+        "curated skills",
+        "deterministic verifier"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~trace2skill",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/trace2skill.md",
+       "title": "Trace2Skill",
+       "subtitle": "Trace2Skill: Distill Trajectory-Local Lessons into Transferable Agent Skills",
+       "tag": "轨迹蒸馏为 Skill",
+       "arxivId": "2603.25158",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "Trace2Skill",
+        "trajectory distillation",
+        "transferable skills",
+        "SoP",
+        "parallel consolidation"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~skillx",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/skillx.md",
+       "title": "SkillX",
+       "subtitle": "SkillX: Automatically Constructing Skill Knowledge Bases for Agents",
+       "tag": "层次 SkillKB",
+       "arxivId": "2604.04804",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "SkillX",
+        "skill knowledge base",
+        "hierarchical skills",
+        "exploratory expansion"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~xskill",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/xskill.md",
+       "title": "XSkill",
+       "subtitle": "XSkill: Continual Learning from Experience and Skills in Multimodal Agents",
+       "tag": "多模态经验 + Skill",
+       "arxivId": "2603.12056",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "XSkill",
+        "multimodal agents",
+        "experience",
+        "skills",
+        "continual learning"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~skillclaw",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/skillclaw.md",
+       "title": "SkillClaw",
+       "subtitle": "SkillClaw: Let Skills Evolve Collectively with Agentic Evolver",
+       "tag": "集体 Skill 演化",
+       "arxivId": "2604.08377",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "SkillClaw",
+        "collective evolution",
+        "multi-user agents",
+        "agentic evolver",
+        "shared repository"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~coevo-skills",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/coevo-skills.md",
+       "title": "CoEvoSkills",
+       "subtitle": "CoEvoSkills: Self-Evolving Agent Skills via Co-Evolutionary Verification",
+       "tag": "Skill package 自演化",
+       "arxivId": "2604.01687",
+       "year": 2026,
+       "citations": 55,
+       "tags": [
+        "agent skills",
+        "skill package",
+        "co-evolution",
+        "verification",
+        "SkillsBench"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~skillopt",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/skillopt.md",
+       "title": "SkillOpt",
+       "subtitle": "SkillOpt: Executive Strategy for Self-Evolving Agent Skills",
+       "tag": "文本空间 Skill 优化",
+       "arxivId": "2605.23904",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "SkillOpt",
+        "text-space optimizer",
+        "held-out gate",
+        "self-evolving skills",
+        "Claude Code",
+        "Codex"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~skillos",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/skillos.md",
+       "title": "SkillOS",
+       "subtitle": "SkillOS: Learning Skill Curation for Self-Evolving Agents",
+       "tag": "SkillRepo 管理 / Curation",
+       "arxivId": "2605.06614",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "SkillOS",
+        "skill curation",
+        "SkillRepo",
+        "RL",
+        "frozen executor",
+        "trainable curator"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~skill1",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/skill1.md",
+       "title": "Skill1",
+       "subtitle": "Skill1: Unified Evolution of Skill-Augmented Agents via Reinforcement Learning",
+       "tag": "选择-使用-蒸馏统一 RL",
+       "arxivId": "2605.06130",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "Skill1",
+        "unified evolution",
+        "selection",
+        "utilization",
+        "distillation",
+        "RL"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~skillrl",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/skillrl.md",
+       "title": "SkillRL",
+       "subtitle": "SkillRL: Evolving Agents via Recursive Skill-Augmented Reinforcement Learning",
+       "tag": "递归 Skill-Augmented RL",
+       "arxivId": "2602.08234",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "SkillRL",
+        "recursive evolution",
+        "SkillBank",
+        "GRPO",
+        "reinforcement learning"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~sage-skill-library-rl",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/sage-skill-library-rl.md",
+       "title": "SAGE / Skill Library RL",
+       "subtitle": "Reinforcement Learning for Self-Improving Agent with Skill Library",
+       "tag": "RL + Skill library",
+       "arxivId": "2512.17102",
+       "year": 2025,
+       "citations": 52,
+       "tags": [
+        "reinforcement learning",
+        "skill library",
+        "GRPO",
+        "AppWorld",
+        "agent training"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~skill-pro",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/skill-pro.md",
+       "title": "Skill-Pro / ProcMEM",
+       "subtitle": "Skill-Pro: Learning Reusable Skills from Experience via Non-Parametric PPO for LLM Agents",
+       "tag": "程序性记忆 / Non-Parametric PPO",
+       "arxivId": "2602.01869",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "Skill-Pro",
+        "ProcMEM",
+        "procedural memory",
+        "Non-Parametric PPO",
+        "Skill-MDP"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~autorefine",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/autorefine.md",
+       "title": "AutoRefine",
+       "subtitle": "AutoRefine: From Trajectories to Reusable Expertise for Continual LLM Agent Refinement",
+       "tag": "轨迹到可复用专家经验",
+       "arxivId": "2601.22758",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "AutoRefine",
+        "trajectory refinement",
+        "experience patterns",
+        "maintenance",
+        "subagents"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~autoskill",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/autoskill.md",
+       "title": "AutoSkill",
+       "subtitle": "AutoSkill: Experience-Driven Lifelong Learning via Skill Self-Evolution",
+       "tag": "经验沉淀为 skill",
+       "arxivId": "2603.01145",
+       "year": 2026,
+       "citations": 59,
+       "tags": [
+        "lifelong learning",
+        "skill self-evolution",
+        "personalization",
+        "experience consolidation",
+        "plugin layer"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~harness-updating-benefit",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/harness-updating-benefit.md",
+       "title": "Harness Updating vs Benefit",
+       "subtitle": "Harness Updating Is Not Harness Benefit: Disentangling Evolution Capabilities in Self-Evolving LLM Agents",
+       "tag": "评估 / Harness 自进化",
+       "arxivId": "2605.30621",
+       "year": 2026,
+       "citations": 2,
+       "tags": [
+        "harness",
+        "skills",
+        "memory",
+        "tools",
+        "evaluation",
+        "model capability"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~webevolver",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/webevolver.md",
+       "title": "WebEvolver",
+       "subtitle": "WebEvolver: Enhancing Web Agent Self-Improvement with Coevolving World Model",
+       "tag": "Web Agent 自进化",
+       "arxivId": "2504.21024",
+       "year": 2025,
+       "citations": 40,
+       "tags": [
+        "web agent",
+        "self-improvement",
+        "world model",
+        "co-evolution",
+        "training data synthesis"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~agents-of-change",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/agents-of-change.md",
+       "title": "Agents of Change",
+       "subtitle": "Agents of Change: Self-Evolving LLM Agents for Strategic Planning",
+       "tag": "长程策略自进化",
+       "arxivId": "2506.04651",
+       "year": 2025,
+       "citations": 16,
+       "tags": [
+        "strategic planning",
+        "artifact-centric learning",
+        "code refinement",
+        "simulation",
+        "long-horizon agents"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~gepa",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/gepa.md",
+       "title": "GEPA",
+       "subtitle": "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning",
+       "tag": "反思式 Prompt/Skill 演化",
+       "arxivId": "2507.19457",
+       "year": 2025,
+       "citations": null,
+       "tags": [
+        "GEPA",
+        "reflective prompt evolution",
+        "Genetic-Pareto",
+        "Hermes",
+        "prompt optimizer"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~voyager",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/voyager.md",
+       "title": "Voyager",
+       "subtitle": "Voyager: An Open-Ended Embodied Agent with Large Language Models",
+       "tag": "Skill library 基础",
+       "arxivId": "2305.16291",
+       "year": 2023,
+       "citations": 1974,
+       "tags": [
+        "lifelong learning",
+        "skill library",
+        "automatic curriculum",
+        "Minecraft",
+        "code skills"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~reflexion",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/reflexion.md",
+       "title": "Reflexion",
+       "subtitle": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+       "tag": "语言反思记忆",
+       "arxivId": "2303.11366",
+       "year": 2023,
+       "citations": 4322,
+       "tags": [
+        "verbal reinforcement learning",
+        "reflection",
+        "episodic memory",
+        "agent self-improvement"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~promptbreeder",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/promptbreeder.md",
+       "title": "Promptbreeder",
+       "subtitle": "Promptbreeder: Self-Referential Self-Improvement Via Prompt Evolution",
+       "tag": "Prompt 自指演化",
+       "arxivId": "2309.16797",
+       "year": 2023,
+       "citations": 516,
+       "tags": [
+        "prompt evolution",
+        "self-referential improvement",
+        "mutation prompts",
+        "evolutionary search"
+       ],
+       "collection": "agent-skill"
+      },
+      {
+       "id": "02_Agent自进化~reports~wikiskill",
+       "kind": "md",
+       "path": "02_Agent自进化/reports/wikiskill.md",
+       "title": "WikiSkill",
+       "subtitle": "WikiSkill: Compiling Agent Experience into Persistent Knowledge for Skill Evolution",
+       "tag": "持久知识库 + Skill 协同演化",
+       "arxivId": "2608.27454",
+       "year": 2026,
+       "citations": null,
+       "tags": [
+        "skill evolution",
+        "persistent knowledge base",
+        "validation gating",
+        "cross-model skill transfer",
+        "experience consolidation"
+       ],
+       "collection": "agent-skill"
+      }
+     ]
+    }
+   ],
+   "count": 26
+  },
+  {
+   "key": "rsi",
+   "title": "递归自进化 (RSI)",
+   "desc": "13 篇递归自进化论文，含通俗版 / 深度版双版本",
+   "groups": [
+    {
+     "name": "总览",
+     "docs": [
+      {
+       "id": "03_递归自进化~时间线综述",
+       "kind": "md",
+       "path": "03_递归自进化/时间线综述.md",
+       "title": "递归自进化（Recursive Self-Improvement, RSI）论文时间线综述",
+       "subtitle": "整理时间：2026-08-18（2026-09-15 增补：self-developing-agents 三部曲，见阶段 4 末尾）",
+       "collection": "rsi"
+      }
+     ]
+    },
+    {
+     "name": "冻结参数 · 演化 skill",
+     "docs": [
+      {
+       "id": "03_递归自进化~reports~dive",
+       "kind": "md",
+       "path": "03_递归自进化/reports/dive.md",
+       "title": "DIVE",
+       "subtitle": "冻结 LLM 靠演化持久自然语言 skill 获得部署后改进，用多种群并行对抗单轨迹演化的方差。",
+       "fullTitle": "DIVE: Unlocking Self-Improvement in Frozen Language Models Through Diversity-Driven Skill Evolution",
+       "tag": "Tier A",
+       "arxivId": "2608.12486",
+       "date": "2026-08-12",
+       "plainPath": "03_递归自进化/reports/plain/dive.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（显式 frozen LLM）"
+        ],
+        [
+         "演化对象",
+         "自然语言 skill（多种群）"
+        ],
+        [
+         "验证信号",
+         "verifier 反馈"
+        ]
+       ],
+       "collection": "rsi"
+      },
+      {
+       "id": "03_递归自进化~reports~metaskill-evolve",
+       "kind": "md",
+       "path": "03_递归自进化/reports/metaskill-evolve.md",
+       "title": "MetaSkill-Evolve",
+       "subtitle": "唯一把递归做到 skill 层：改进流程本身也被同一条流水线改进。",
+       "fullTitle": "MetaSkill-Evolve: Recursive Self-Improvement of LLM Agents via Two-Timescale Meta-Skill Evolution",
+       "tag": "Tier A",
+       "arxivId": "2607.05297",
+       "date": "2026-07-06",
+       "plainPath": "03_递归自进化/reports/plain/metaskill-evolve.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（仅重写 skill 文件）"
+        ],
+        [
+         "演化对象",
+         "task skill（快循环）+ meta-skill（慢循环）"
+        ],
+        [
+         "验证信号",
+         "benchmark 执行反馈"
+        ]
+       ],
+       "collection": "rsi"
+      },
+      {
+       "id": "03_递归自进化~reports~knowact-guiclaw",
+       "kind": "md",
+       "path": "03_递归自进化/reports/knowact-guiclaw.md",
+       "title": "KnowAct-GUIClaw",
+       "subtitle": "GUI agent 场景的记忆与 skill 自演化，工程集成价值高于新机制。",
+       "fullTitle": "KnowAct-GUIClaw: Know Deeply, Act Perfectly, Personal GUI Assistant with Self-Evolving Memory and Skill",
+       "tag": "Tier A",
+       "arxivId": "2607.12625",
+       "date": "2026-07-14",
+       "plainPath": "03_递归自进化/reports/plain/knowact-guiclaw.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（详见报告第 7 节的坦率评估）"
+        ],
+        [
+         "演化对象",
+         "memory + skill"
+        ],
+        [
+         "验证信号",
+         "任务执行结果"
+        ]
+       ],
+       "collection": "rsi"
+      }
+     ]
+    },
+    {
+     "name": "冻结参数 · 演化 harness",
+     "docs": [
+      {
+       "id": "03_递归自进化~reports~darwinx",
+       "kind": "md",
+       "path": "03_递归自进化/reports/darwinx.md",
+       "title": "DarwinX",
+       "subtitle": "把自演化做成 harness 种群选择，preserve-and-extend 契约拒绝任何回归变体。",
+       "fullTitle": "DarwinX: Evolving Agent Harnesses Through Natural Selection",
+       "tag": "Tier B",
+       "arxivId": "2608.07545",
+       "date": "2026-07-31",
+       "plainPath": "03_递归自进化/reports/plain/darwinx.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（显式 model frozen）"
+        ],
+        [
+         "演化对象",
+         "harness 种群（prompt/工具/skill/控制流）"
+        ],
+        [
+         "验证信号",
+         "benchmark 自带 verifier，无 gold solution"
+        ]
+       ],
+       "collection": "rsi"
+      },
+      {
+       "id": "03_递归自进化~reports~hsi",
+       "kind": "md",
+       "path": "03_递归自进化/reports/hsi.md",
+       "title": "HSI",
+       "subtitle": "单个冻结 LLM 的三层自改进，第三层贡献约 37% 增益但存在预算混淆。",
+       "fullTitle": "Hierarchical Self-Improvement: A Framework for Task-Specific Evolvable Agent Harnesses",
+       "tag": "Tier B",
+       "arxivId": "2608.08466",
+       "date": "2026-08-09",
+       "plainPath": "03_递归自进化/reports/plain/hsi.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（单个冻结 LLM 跑三层）"
+        ],
+        [
+         "演化对象",
+         "harness / evolver / meta-evolver 三层"
+        ],
+        [
+         "验证信号",
+         "环境反馈"
+        ]
+       ],
+       "collection": "rsi"
+      },
+      {
+       "id": "03_递归自进化~reports~autodesign",
+       "kind": "md",
+       "path": "03_递归自进化/reports/autodesign.md",
+       "title": "AutoDesign",
+       "subtitle": "meta-harness 优化落地论文转海报，主表已显露 Goodhart 痕迹。",
+       "fullTitle": "AutoDesign: Meta-Harness Optimization for Long-Horizon Agentic Design",
+       "tag": "Tier B",
+       "arxivId": "2608.13560",
+       "date": "2026-08-13",
+       "plainPath": "03_递归自进化/reports/plain/autodesign.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（详见报告速览）"
+        ],
+        [
+         "演化对象",
+         "harness（由 meta-harness optimizer 引导）"
+        ],
+        [
+         "验证信号",
+         "规则 + VLM 混合评分，三级隔离"
+        ]
+       ],
+       "collection": "rsi"
+      }
+     ]
+    },
+    {
+     "name": "冻结参数 · 演化 agent 代码",
+     "docs": [
+      {
+       "id": "03_递归自进化~reports~mgm",
+       "kind": "md",
+       "path": "03_递归自进化/reports/mgm.md",
+       "title": "Mendel Gödel Machine",
+       "subtitle": "用档案里的跨任务、跨血统比较信号替代单轨迹自修改，跨基准迁移由负转正。",
+       "fullTitle": "Mendel Gödel Machine: Recursive Self-Improving Coding Agents via Comparative Evolution",
+       "tag": "Tier B",
+       "arxivId": "2608.07645",
+       "date": "2026-08-07",
+       "plainPath": "03_递归自进化/reports/plain/mgm.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（自改 agent 源码）"
+        ],
+        [
+         "演化对象",
+         "agent scaffold 源码"
+        ],
+        [
+         "验证信号",
+         "SWE-bench / Polyglot 测试"
+        ]
+       ],
+       "collection": "rsi"
+      }
+     ]
+    },
+    {
+     "name": "安全与验证",
+     "docs": [
+      {
+       "id": "03_递归自进化~reports~skill-misevolution",
+       "kind": "md",
+       "path": "03_递归自进化/reports/skill-misevolution.md",
+       "title": "Skill Misevolution",
+       "subtitle": "21/21 演化配置全部写出不安全产物；终端 ASR 为 0 是假安全信号。",
+       "fullTitle": "Practice Makes Unsafe: Skill Misevolution in Self-Improving LLM Agents",
+       "tag": "Tier C",
+       "arxivId": "2608.12851",
+       "date": "2026-08-13",
+       "plainPath": "03_递归自进化/reports/plain/skill-misevolution.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（被测方法均为 skill 演化）"
+        ],
+        [
+         "演化对象",
+         "研究对象：25 个 agent-method 配置"
+        ],
+        [
+         "验证信号",
+         "生命周期九指标"
+        ]
+       ],
+       "collection": "rsi"
+      }
+     ]
+    },
+    {
+     "name": "对照组 · 质疑者",
+     "docs": [
+      {
+       "id": "03_递归自进化~reports~knowledge-centric",
+       "kind": "md",
+       "path": "03_递归自进化/reports/knowledge-centric.md",
+       "title": "Knowledge-Centric",
+       "subtitle": "主张持久物应是知识库而非 agent，但对 agent-centric 的核心指控一条都没被测量。",
+       "fullTitle": "Knowledge-Centric Self-Improvement",
+       "tag": "Tier D",
+       "arxivId": "2607.19592",
+       "date": "2026-07-21",
+       "plainPath": "03_递归自进化/reports/plain/knowledge-centric.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（agent 通用且一次性）"
+        ],
+        [
+         "演化对象",
+         "共享知识库（而非 agent）"
+        ],
+        [
+         "验证信号",
+         "任务 solve rate"
+        ]
+       ],
+       "collection": "rsi"
+      }
+     ]
+    },
+    {
+     "name": "综述 · 术语澄清",
+     "docs": [
+      {
+       "id": "03_递归自进化~reports~weights-or-skills",
+       "kind": "md",
+       "path": "03_递归自进化/reports/weights-or-skills.md",
+       "title": "Weights or Skills?",
+       "subtitle": "围绕冻结权重与自写 skill 这根轴组织的综述，指出 skill 一词至少五种含义。",
+       "fullTitle": "Weights or Skills? A Survey of Robot-Learning Techniques",
+       "tag": "Tier D",
+       "arxivId": "2608.01851",
+       "date": "2026-08-03",
+       "plainPath": "03_递归自进化/reports/plain/weights-or-skills.md",
+       "facts": [
+        [
+         "冻结参数",
+         "综述（两极对比）"
+        ],
+        [
+         "演化对象",
+         "综述：冻结权重 vs 自写 skill"
+        ],
+        [
+         "验证信号",
+         "不适用"
+        ]
+       ],
+       "collection": "rsi"
+      }
+     ]
+    },
+    {
+     "name": "基准 · 模糊目标自进化（三部曲 TARGET）",
+     "docs": [
+      {
+       "id": "03_递归自进化~reports~aspire",
+       "kind": "md",
+       "path": "03_递归自进化/reports/aspire.md",
+       "title": "Aspire",
+       "subtitle": "训练循环闭合≠能力循环闭合：54 场自主后训练只有 1 场保留增益超过底座，最强自生成 harness 仍低于手写参考。",
+       "fullTitle": "Aspire: Can Models Self-Evolve from Vague Goals?",
+       "tag": "Tier B",
+       "arxivId": "2608.31111",
+       "date": "2026-08-31",
+       "plainPath": "03_递归自进化/reports/plain/aspire.md",
+       "facts": [
+        [
+         "冻结参数",
+         "两面：RQ1/RQ2 权重更新（不冻结），RQ3 冻结权重只演化 harness"
+        ],
+        [
+         "演化对象",
+         "权重（数据/方法/超参/分支）与 harness（一步生成后冻结）"
+        ],
+        [
+         "验证信号",
+         "520 条专家撰写的隐藏评测 items，agent 永不可见；final-only / adaptive-feedback 两种信息边界"
+        ]
+       ],
+       "collection": "rsi"
+      }
+     ]
+    },
+    {
+     "name": "基准 · 经验回路诊断（三部曲 EXPERIENCE）",
+     "docs": [
+      {
+       "id": "03_递归自进化~reports~s3gym",
+       "kind": "md",
+       "path": "03_递归自进化/reports/s3gym.md",
+       "title": "S3Gym",
+       "subtitle": "把经验自改进拆成 Self-Testing/Judging/Improvement 三环节分别测量；自评准确度与后续改进相关性≈0（ρ=-0.010）。",
+       "fullTitle": "S3Gym: Can LLMs Turn Self-Testing and Self-Judging into Self-Improvement?",
+       "tag": "Tier B",
+       "arxivId": "2608.31100",
+       "date": "2026-08-31",
+       "plainPath": "03_递归自进化/reports/plain/s3gym.md",
+       "facts": [
+        [
+         "冻结参数",
+         "分轨：主实验冻结（上下文注入），Qwen3-8B 副实验做 SFT"
+        ],
+        [
+         "演化对象",
+         "经验表示（raw-history ICL / 摘要记忆 / 参数训练）"
+        ],
+        [
+         "验证信号",
+         "七个游戏自带可执行 verifier，探索期对 agent 保密"
+        ]
+       ],
+       "collection": "rsi"
+      }
+     ]
+    },
+    {
+     "name": "基准 · harness 创建与演化（三部曲 SYSTEM）",
+     "docs": [
+      {
+       "id": "03_递归自进化~reports~harnessdev",
+       "kind": "md",
+       "path": "03_递归自进化/reports/harnessdev.md",
+       "title": "HarnessDev",
+       "subtitle": "可见反馈只够局部搜索：64 次版本切换只有 34 次方向与 held-out 一致，9 个交付版只有 2 个 held-out 最优。",
+       "fullTitle": "HarnessDev: Can LLMs Create and Evolve Their Own Agent Harness?",
+       "tag": "Tier B",
+       "arxivId": "2609.01437",
+       "date": "2026-09-01",
+       "plainPath": "03_递归自进化/reports/plain/harnessdev.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（creator 与 executor 权重全冻结，只演化 harness 源码）"
+        ],
+        [
+         "演化对象",
+         "可执行 harness 源码（执行循环/工具/上下文/状态/生命周期/验证六模块）"
+        ],
+        [
+         "验证信号",
+         "下游基准原生判分；可见反馈与 held-out SWE-Pro-630 严格分离"
+        ]
+       ],
+       "collection": "rsi"
+      }
+     ]
+    }
+   ],
+   "count": 14
+  },
+  {
+   "key": "harness",
+   "title": "Agent Harness 与验证",
+   "desc": "Harness 工程综述，以及 LLM-as-a-Verifier、RewardHarness 的三档解读",
+   "groups": [
+    {
+     "name": "解读",
+     "docs": [
+      {
+       "id": "04_Agent_Harness与验证~agent_harness_analysis.html",
+       "kind": "html",
+       "path": "04_Agent_Harness与验证/agent_harness_analysis.html",
+       "title": "Agent Harness Engineering: A Survey",
+       "subtitle": "深度解读",
+       "collection": "harness"
+      },
+      {
+       "id": "04_Agent_Harness与验证~LLMasaVerifier_academic.html",
+       "kind": "html",
+       "path": "04_Agent_Harness与验证/LLMasaVerifier_academic.html",
+       "title": "LLM-as-a-Verifier · 学术深度解读",
+       "subtitle": "arXiv:2607.05391",
+       "collection": "harness"
+      },
+      {
+       "id": "04_Agent_Harness与验证~LLMasaVerifier_concise.html",
+       "kind": "html",
+       "path": "04_Agent_Harness与验证/LLMasaVerifier_concise.html",
+       "title": "LLM-as-a-Verifier · 精炼解读",
+       "subtitle": "arXiv:2607.05391",
+       "collection": "harness"
+      },
+      {
+       "id": "04_Agent_Harness与验证~LLMasaVerifier_storytelling.html",
+       "kind": "html",
+       "path": "04_Agent_Harness与验证/LLMasaVerifier_storytelling.html",
+       "title": "LLM-as-a-Verifier · 故事解读",
+       "subtitle": "arXiv:2607.05391",
+       "collection": "harness"
+      },
+      {
+       "id": "04_Agent_Harness与验证~RewardHarness_academic.html",
+       "kind": "html",
+       "path": "04_Agent_Harness与验证/RewardHarness_academic.html",
+       "title": "RewardHarness · 学术深度解读",
+       "subtitle": "arXiv:2605.08703",
+       "collection": "harness"
+      },
+      {
+       "id": "04_Agent_Harness与验证~RewardHarness_concise.html",
+       "kind": "html",
+       "path": "04_Agent_Harness与验证/RewardHarness_concise.html",
+       "title": "RewardHarness · 精炼解读",
+       "subtitle": "arXiv:2605.08703",
+       "collection": "harness"
+      },
+      {
+       "id": "04_Agent_Harness与验证~RewardHarness_storytelling.html",
+       "kind": "html",
+       "path": "04_Agent_Harness与验证/RewardHarness_storytelling.html",
+       "title": "RewardHarness · 故事解读",
+       "subtitle": "arXiv:2605.08703",
+       "collection": "harness"
+      }
+     ]
+    }
+   ],
+   "count": 7
+  },
+  {
+   "key": "macro",
+   "title": "MACRO（多参考图生成）",
+   "desc": "MACRO 论文的两份独立解读，内容互不重叠",
+   "groups": [
+    {
+     "name": "解读",
+     "docs": [
+      {
+       "id": "05_图像生成_MACRO~2603.25319v1_reading_report.html",
+       "kind": "html",
+       "path": "05_图像生成_MACRO/2603.25319v1_reading_report.html",
+       "title": "MACRO · 完整阅读报告",
+       "subtitle": "含源码对应关系与结论",
+       "collection": "macro"
+      },
+      {
+       "id": "05_图像生成_MACRO~macro_analysis.html",
+       "kind": "html",
+       "path": "05_图像生成_MACRO/macro_analysis.html",
+       "title": "MACRO · 方法分析",
+       "subtitle": "arXiv:2603.25319",
+       "collection": "macro"
+      }
+     ]
+    }
+   ],
+   "count": 2
+  },
+  {
+   "key": "misc",
+   "title": "视频编辑 · 其他材料",
+   "desc": "01_视频编辑 下的历史单篇报告与可视化入口",
+   "groups": [
+    {
+     "name": "单篇阅读报告",
+     "docs": [
+      {
+       "id": "01_视频编辑~补充阅读~2510.20888v1_report",
+       "kind": "md",
+       "path": "01_视频编辑/补充阅读/2510.20888v1_report.md",
+       "title": "《Video-As-Prompt: Unified Semantic Control for Video Generation》阅读报告",
+       "subtitle": "标题：Video-As-Prompt: Unified Semantic Control for Video Generation",
+       "collection": "misc"
+      }
+     ]
+    },
+    {
+     "name": "HTML 页面（新窗口打开）",
+     "docs": [
+      {
+       "id": "01_视频编辑~00_开始阅读.html",
+       "kind": "html",
+       "path": "01_视频编辑/00_开始阅读.html",
+       "title": "视频编辑 · 开始阅读（可视化路线）",
+       "subtitle": "01_视频编辑/",
+       "collection": "misc"
+      },
+      {
+       "id": "01_视频编辑~补充阅读~video_editing_papers_report.html",
+       "kind": "html",
+       "path": "01_视频编辑/补充阅读/video_editing_papers_report.html",
+       "title": "视频编辑论文综合报告（历史版）",
+       "subtitle": "01_视频编辑/补充阅读/",
+       "collection": "misc"
+      }
+     ]
+    }
+   ],
+   "count": 3
+  }
+ ]
+}

@@ -13,6 +13,28 @@
 | 04 Agent Harness 与验证 | Harness 工程综述、LLM-as-a-Verifier、RewardHarness | 7 份解读 | [`04_Agent_Harness与验证/`](./04_Agent_Harness与验证/) |
 | 05 图像生成（MACRO） | 多参考图生成，两份独立解读 | 2 份解读 | [`05_图像生成_MACRO/`](./05_图像生成_MACRO/) |
 
+## 在线浏览
+
+**https://charleswu123.github.io/PaperRead/**
+
+GitHub Pages 静态站点，界面与本地阅读器一致（侧栏导航、全文检索、Mermaid / LaTeX 渲染）。
+站点内容由以下文件生成，均已入库：
+
+- `index.html` —— 站点入口
+- `site/app.js`、`site/styles.css` —— 前端
+- `site/index.json` —— 合集 / 分组 / 文档结构
+- `site/search.json` —— 全文检索索引（约 1MB，**首次搜索时才加载**，不影响首屏）
+- `.nojekyll` —— **必需**，否则 Pages 会跑 Jekyll 把 `.md` 转成 HTML，前端就取不到原始 Markdown
+
+改动解读内容后重新生成索引：
+
+```bash
+node tools/build-site.js
+```
+
+该脚本复用 `reader/server.js` 的 `buildIndex()`，因此在线站点与本地服务的索引逻辑始终一致
+（仅去掉 PDF 字段，因为 PDF 不在仓库里）。
+
 ## 本地阅读器
 
 全库只有**一个**统一阅读器（`reader/`），覆盖全部 5 个专题，提供全文检索、侧边导航，以及

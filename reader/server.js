@@ -437,9 +437,16 @@ const server = http.createServer((req, res) => {
 
 // 默认只绑本机：该服务无鉴权，绑 0.0.0.0 会让同网段任何人都能读到全部资料。
 // 需要手机 / 同网段另一台设备访问时，显式设置 HOST=0.0.0.0。
-const host = process.env.HOST || '127.0.0.1';
-const port = Number(process.env.PORT || 8912);
-server.listen(port, host, () => {
-  console.log('论文解读统一阅读器: http://' + (host === '0.0.0.0' ? '127.0.0.1' : host) + ':' + port);
-  if (host === '0.0.0.0') console.log('注意：已绑定 0.0.0.0，同网段设备均可无鉴权访问。');
-});
+function start() {
+  const host = process.env.HOST || '127.0.0.1';
+  const port = Number(process.env.PORT || 8912);
+  server.listen(port, host, () => {
+    console.log('论文解读统一阅读器: http://' + (host === '0.0.0.0' ? '127.0.0.1' : host) + ':' + port);
+    if (host === '0.0.0.0') console.log('注意：已绑定 0.0.0.0，同网段设备均可无鉴权访问。');
+  });
+}
+
+// 被 tools/build-site.js 引用时只取索引，不监听端口。
+if (require.main === module) start();
+
+module.exports = { buildIndex, allDocs };
