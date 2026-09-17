@@ -1,0 +1,202 @@
+[
+  {
+    "id": "survey-self-evolving-agents",
+    "reportFile": "survey-self-evolving-agents.md",
+    "arxivId": "2507.21046",
+    "shortTitle": "Self-Evolving Agents Survey",
+    "category": "综述 / 路线图",
+    "priority": 1
+  },
+  {
+    "id": "sok-agentic-skills",
+    "reportFile": "sok-agentic-skills.md",
+    "arxivId": "2602.20867",
+    "shortTitle": "SoK: Agentic Skills",
+    "category": "定义 / 治理",
+    "priority": 2
+  },
+  {
+    "id": "agent-skills-architecture",
+    "reportFile": "agent-skills-architecture.md",
+    "arxivId": "2602.12430",
+    "shortTitle": "Agent Skills for LLMs",
+    "category": "架构 / 标准",
+    "priority": 3
+  },
+  {
+    "id": "skillsbench",
+    "reportFile": "skillsbench.md",
+    "arxivId": "2602.12670",
+    "shortTitle": "SkillsBench",
+    "category": "评测基准",
+    "priority": 4
+  },
+  {
+    "id": "trace2skill",
+    "reportFile": "trace2skill.md",
+    "arxivId": "2603.25158",
+    "shortTitle": "Trace2Skill",
+    "category": "轨迹蒸馏为 Skill",
+    "priority": 5
+  },
+  {
+    "id": "skillx",
+    "reportFile": "skillx.md",
+    "arxivId": "2604.04804",
+    "shortTitle": "SkillX",
+    "category": "层次 SkillKB",
+    "priority": 6
+  },
+  {
+    "id": "xskill",
+    "reportFile": "xskill.md",
+    "arxivId": "2603.12056",
+    "shortTitle": "XSkill",
+    "category": "多模态经验 + Skill",
+    "priority": 7
+  },
+  {
+    "id": "skillclaw",
+    "reportFile": "skillclaw.md",
+    "arxivId": "2604.08377",
+    "shortTitle": "SkillClaw",
+    "category": "集体 Skill 演化",
+    "priority": 8
+  },
+  {
+    "id": "coevo-skills",
+    "reportFile": "coevo-skills.md",
+    "arxivId": "2604.01687",
+    "shortTitle": "CoEvoSkills",
+    "category": "Skill package 自演化",
+    "priority": 9
+  },
+  {
+    "id": "skillopt",
+    "reportFile": "skillopt.md",
+    "arxivId": "2605.23904",
+    "shortTitle": "SkillOpt",
+    "category": "文本空间 Skill 优化",
+    "priority": 10
+  },
+  {
+    "id": "skillos",
+    "reportFile": "skillos.md",
+    "arxivId": "2605.06614",
+    "shortTitle": "SkillOS",
+    "category": "SkillRepo 管理 / Curation",
+    "priority": 11
+  },
+  {
+    "id": "skill1",
+    "reportFile": "skill1.md",
+    "arxivId": "2605.06130",
+    "shortTitle": "Skill1",
+    "category": "选择-使用-蒸馏统一 RL",
+    "priority": 12
+  },
+  {
+    "id": "skillrl",
+    "reportFile": "skillrl.md",
+    "arxivId": "2602.08234",
+    "shortTitle": "SkillRL",
+    "category": "递归 Skill-Augmented RL",
+    "priority": 13
+  },
+  {
+    "id": "sage-skill-library-rl",
+    "reportFile": "sage-skill-library-rl.md",
+    "arxivId": "2512.17102",
+    "shortTitle": "SAGE / Skill Library RL",
+    "category": "RL + Skill library",
+    "priority": 14
+  },
+  {
+    "id": "skill-pro",
+    "reportFile": "skill-pro.md",
+    "arxivId": "2602.01869",
+    "shortTitle": "Skill-Pro / ProcMEM",
+    "category": "程序性记忆 / Non-Parametric PPO",
+    "priority": 15
+  },
+  {
+    "id": "autorefine",
+    "reportFile": "autorefine.md",
+    "arxivId": "2601.22758",
+    "shortTitle": "AutoRefine",
+    "category": "轨迹到可复用专家经验",
+    "priority": 16
+  },
+  {
+    "id": "autoskill",
+    "reportFile": "autoskill.md",
+    "arxivId": "2603.01145",
+    "shortTitle": "AutoSkill",
+    "category": "经验沉淀为 skill",
+    "priority": 17
+  },
+  {
+    "id": "harness-updating-benefit",
+    "reportFile": "harness-updating-benefit.md",
+    "arxivId": "2605.30621",
+    "shortTitle": "Harness Updating vs Benefit",
+    "category": "评估 / Harness 自进化",
+    "priority": 18
+  },
+  {
+    "id": "webevolver",
+    "reportFile": "webevolver.md",
+    "arxivId": "2504.21024",
+    "shortTitle": "WebEvolver",
+    "category": "Web Agent 自进化",
+    "priority": 19
+  },
+  {
+    "id": "agents-of-change",
+    "reportFile": "agents-of-change.md",
+    "arxivId": "2506.04651",
+    "shortTitle": "Agents of Change",
+    "category": "长程策略自进化",
+    "priority": 20
+  },
+  {
+    "id": "gepa",
+    "reportFile": "gepa.md",
+    "arxivId": "2507.19457",
+    "shortTitle": "GEPA",
+    "category": "反思式 Prompt/Skill 演化",
+    "priority": 21
+  },
+  {
+    "id": "voyager",
+    "reportFile": "voyager.md",
+    "arxivId": "2305.16291",
+    "shortTitle": "Voyager",
+    "category": "Skill library 基础",
+    "priority": 22
+  },
+  {
+    "id": "reflexion",
+    "reportFile": "reflexion.md",
+    "arxivId": "2303.11366",
+    "shortTitle": "Reflexion",
+    "category": "语言反思记忆",
+    "priority": 23
+  },
+  {
+    "id": "promptbreeder",
+    "reportFile": "promptbreeder.md",
+    "arxivId": "2309.16797",
+    "shortTitle": "Promptbreeder",
+    "category": "Prompt 自指演化",
+    "priority": 24
+  },
+  {
+    "id": "wikiskill",
+    "reportFile": "wikiskill.md",
+    "arxivId": "2608.27454",
+    "shortTitle": "WikiSkill",
+    "category": "持久知识库 + Skill 协同演化",
+    "priority": 25
+  }
+]

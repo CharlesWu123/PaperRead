@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>论文解读统一阅读器</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.9.1/dist/mermaid.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#reader">跳到正文</a>
+<div class="layout">
+  <aside class="sidebar" aria-label="文档导航">
+    <header class="brand">
+      <h1>论文解读阅读器</h1>
+      <p class="sub" id="brand-sub">正在加载索引……</p>
+    </header>
+    <div class="tabs" id="collection-tabs" role="tablist"></div>
+    <div class="search-box">
+      <input id="search-input" type="search" placeholder="全文搜索（≥2 字）" aria-label="全文搜索">
+    </div>
+    <div id="doc-list" class="doc-list"></div>
+    <footer class="side-foot">
+      <p>无鉴权服务，默认监听 0.0.0.0，同网段可访问。</p>
+    </footer>
+  </aside>
+
+  <main id="reader" class="reader" tabindex="-1">
+    <div id="meta-panel" class="meta-panel" hidden>
+      <div class="meta-head">
+        <h2 id="meta-title"></h2>
+        <div class="meta-links" id="meta-links"></div>
+      </div>
+      <p id="meta-sub" class="meta-sub"></p>
+      <div class="variant-row" id="variant-row" hidden>
+        <div id="variant-switch" class="variant-switch" role="group" aria-label="解读版本">
+          <button type="button" class="variant-btn" data-variant="plain">通俗版</button>
+          <button type="button" class="variant-btn" data-variant="deep">深度版</button>
+        </div>
+        <span class="variant-hint" id="variant-hint"></span>
+      </div>
+      <dl class="meta-grid" id="meta-facts"></dl>
+    </div>
+    <article id="content" class="markdown-body">
+      <p class="loading">正在加载……</p>
+    </article>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

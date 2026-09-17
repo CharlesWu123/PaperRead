@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM-as-a-Verifier — 学术深度解读</title>
+<style>
+:root{--text:#1a1a1a;--bg:#fafaf8;--accent:#2563eb;--muted:#6b7280;--border:#e5e7eb;--code-bg:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Noto Serif SC",serif;color:var(--text);background:var(--bg);line-height:1.85;padding:2.5rem 1.5rem;max-width:720px;margin:0 auto;font-size:17px}
+h1{font-size:2rem;margin:0 0 .3rem;line-height:1.3}
+h2{font-size:1.35rem;margin:2.8rem 0 .8rem;color:var(--accent);padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.1rem;margin:1.5rem 0 .5rem;color:#333}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:2.5rem;line-height:1.8}
+.meta a{color:var(--accent);text-decoration:none}
+blockquote{border-left:3px solid var(--accent);padding:.6rem 1.2rem;margin:1.5rem 0;background:#f0f4ff;border-radius:0 8px 8px 0}
+pre{background:var(--code-bg);padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.5;margin:1.5rem 0;border:1px solid var(--border)}
+pre.mermaid{background:transparent;border:none;text-align:center}
+code{font-family:"SF Mono","Fira Code",monospace;font-size:.9em}
+p{margin:1rem 0}
+strong{color:#111}
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.93rem}
+td,th{border:1px solid var(--border);padding:.6rem .9rem;text-align:left}
+th{background:#f9fafb;font-weight:600}
+ol,ul{margin:1rem 0 1rem 1.4rem}
+li{margin:.5rem 0}
+.summary-box{background:linear-gradient(135deg,#f0f4ff,#faf5ff);padding:1.5rem;border-radius:12px;margin:1.5rem 0}
+.summary-box h3{margin:0 0 .5rem;color:var(--accent)}
+.golden{font-size:1.25rem;font-weight:600;color:var(--accent);text-align:center;padding:2rem 1rem;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);margin:2.5rem 0;line-height:1.5}
+@media(max-width:600px){body{font-size:16px;padding:1.2rem 1rem}h1{font-size:1.5rem}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'});</script>
+</head>
+<body>
+<h1>LLM-as-a-Verifier：验证作为第四条 Scaling 轴</h1>
+<div class="meta">
+<strong>标题</strong>：LLM-as-a-Verifier: A General-Purpose Verification Framework（arXiv:2607.05391v2, cs.AI）<br>
+<strong>作者单位</strong>：UC Berkeley Sky Computing Lab · Stanford Scaling Intelligence Lab · Stanford IRIS Lab · Stanford Autonomous Systems Lab<br>
+<strong>链接</strong>：<a href="https://arxiv.org/abs/2607.05391">arXiv 摘要页</a> ·
+<a href="https://llm-as-a-verifier.com">项目主页</a><br>
+<strong>代码状态</strong>：已开源，<a href="https://github.com/llm-as-a-verifier/llm-as-a-verifier">github.com/llm-as-a-verifier/llm-as-a-verifier</a>，含框架本体 <code>llm_verifier/</code>、复现脚本 <code>scripts/</code>、各 benchmark 的 criteria markdown 与轨迹数据 <code>data/</code>
+</div>
+
+<h2>一句话总结</h2>
+<div class="summary-box">
+<p style="margin:0">把 LM Judge 打分时被 argmax 丢掉的整个 logprob 分布用<strong>期望</strong>取回来，得到连续奖励，并沿粒度 $G$、重复次数 $K$、评价维度数 $C$ 三条推理期轴放大，配合 $\mathcal{O}(Nk)$ 的成对锦标赛做 best-of-N 选择——零训练、跨领域，在 coding / robotics / medical 四个 benchmark 上全部达到 SOTA。</p>
+</div>
+
+<h2>1. 研究背景与动机</h2>
+
+<p>过去几年大模型能力提升的主线是三条 scaling 范式：预训练、后训练、测试时计算。这三条轴有一个共同点，作者认为它们都只在放大<strong>生成</strong>。而与生成对偶的另一半能力——<strong>验证</strong>，即判断一个解是否正确——从未被系统地 scale 过。论文原文的表述是：</p>
+
+<blockquote>while generation has benefited significantly from these scaling paradigms, verification—the ability to determine the quality or correctness of a solution—has not seen the same degree of scaling. In this work, we argue that verification itself constitutes a distinct and underexplored scaling axis.</blockquote>
+
+<p>这个论断在 Agent 时代有很强的现实基础。当一个 Coding Agent 跑几十步、调若干工具、最后自称完成时，判断它到底做对没有，本身就是一个和「做出来」难度相当的问题。而 best-of-N、self-consistency、reflexion 这类测试时策略的收益上限，全部取决于验证器的分辨能力。</p>
+
+<p>现有的验证手段有两条路，各有硬伤。第一条是 <strong>LM Judge</strong>：提示模型输出一个离散分数 token，取概率最高的那个。问题在最后这一步——它把一整片打分分布塌缩成了一个整数。论文的诊断很干脆：</p>
+
+<blockquote>they prompt the model to output a discrete score token and select the highest-probability token as the final score, collapsing the full scoring distribution into a single value. This leads to inherently coarse evaluations. When comparing complex solutions, standard LM judges often assign the same score, resulting in ties and failing to discriminate between them.</blockquote>
+
+<p>代价被量化了：在 Terminal-Bench 上，粗粒度打分导致 <strong>27% 的打平率</strong>（Fig. 7），即超过四分之一的轨迹对根本拿不到可用于排序的信号。这不是判断错误，是判断缺失——一种更隐蔽的失效，因为在准确率指标上它甚至不体现为错误。</p>
+
+<p>第二条路是<strong>训练专用奖励模型</strong>（ORM / PRM / 领域 reward model）。这条路能给出连续分值，但被训练数据的分布锁死：换一个领域、换一种 Agent harness、换一套工具集，泛化往往就失效了。论文引用的两个机器人奖励模型分别用了约 100 万条比较数据（Robometer-4B）和约 45k episodes（RoboReward-8B），代价高昂且不可迁移。</p>
+
+<p>本文要的是第三条路：<strong>免训练、连续、跨领域通用</strong>。而它找到的切口不在模型能力，而在解码方式。</p>
+
+<h2>2. 预备知识</h2>
+
+<p><strong>轨迹奖励模型（TRM）。</strong>与 ORM（只看最终结果）和 PRM（只看中间步骤）不同，本文把整条交互轨迹 $\tau$ 作为评分对象。论文指出这是细粒度信号带来的新可能：<em>the fine-grained signals produced by LLM-as-a-Verifier enable the evaluation of entire interaction trajectories rather than only intermediate steps or final outcomes as in PRMs and ORMs for agentic tasks</em>。对 Agent 任务而言这是必要的——一条轨迹的好坏往往体现在「做对了但方式脆弱」这类整体属性上。</p>
+
+<p><strong>Top-logprobs 访问权。</strong>方法依赖从打分 token 位置拿到候选 token 的对数概率。论文主实验使用 Gemini 2.5 Flash，可提取每个打分位置最多 20 个 top logprobs——这个数字直接决定了粒度上限 $G{=}20$。</p>
+
+<p><strong>Bradley–Terry 偏好模型。</strong>把两个候选的标量奖励差通过 sigmoid 转成偏好概率，用于成对比较的软聚合。</p>
+
+<h2>3. 方法详解</h2>
+
+<h3>3.1 核心：从 argmax 到期望</h3>
+
+<p><strong>问题。</strong>模型在打分位置的内部信念是连续的，但输出被限制在整数格点上。两个相近但不相同的信念（比如 4.04 和 3.80）被四舍五入到同一个整数「4」，排序信息就此丢失。</p>
+
+<p><strong>做法。</strong>不取 argmax，对整个打分 token 分布求期望，同时把维度数 $C$ 与重复次数 $K$ 一并纳入平均（Eq. 3.1）：</p>
+
+$$R(x,\tau)=\frac{1}{CK}\sum_{c=1}^{C}\sum_{k=1}^{K}\sum_{g=1}^{G} p_\theta(v_g \mid x,c,\tau)\,\phi(v_g)$$
+
+<p>人话解释：给定任务 $x$、评价维度 $c$、轨迹 $\tau$，模型在打分位置对 $G$ 个有序分数 token 各给一个概率 $p_\theta(v_g)$；$\phi(v_g)$ 把第 $g$ 个 token 映射成一个标量分值；把「概率 × 分值」加起来就是这一次打分的期望值；再对 $C$ 个维度和 $K$ 次重复求平均。整个式子里没有任何需要训练的参数。</p>
+
+<p>随后把 $R(x,\tau)$ 通过下面的线性映射归一化到 $[0,1]$：</p>
+
+$$R \mapsto \frac{R-\phi_{\min}}{\phi_{\max}-\phi_{\min}}$$
+
+<p>其中 $\phi_{\min}$、$\phi_{\max}$ 是分数尺度的两端。归一化之后把 $R(x,\tau)$ 当作轨迹 $\tau$ 的潜在强度（latent strength），用 Bradley–Terry 转成成对偏好（Eq. 3.2）：</p>
+
+$$p(\tau_a \succ \tau_b)=\sigma\big(R(x,\tau_a)-R(x,\tau_b)\big)=\frac{1}{1+e^{-(R_a-R_b)}}$$
+
+<p>人话解释：两条轨迹分差越大，前者胜出的概率越接近 1；分差为 0 时是 0.5。这一步的作用是把连续分值转成可累加的「软胜场」，让后面的锦标赛聚合有统一量纲。</p>
+
+<p><strong>为什么有效。</strong>论文在 Table 2（100 对轨迹）给出了对照，这张表是全文最关键的证据：</p>
+
+<table>
+<tr><th>方法</th><th>奖励 $R(x,\tau)$</th><th>$\#(s_c{>}s_i)$ 判对</th><th>$\#(s_c{=}s_i)$ 打平</th><th>$\#(s_c{<}s_i)$ 判错</th></tr>
+<tr><td>Judge（离散，$G{=}5$）</td><td>$\phi\!\left(\arg\max_g p_\theta(v_g)\right)$</td><td>12/100</td><td><strong>88/100</strong></td><td>0/100</td></tr>
+<tr><td>Verifier（连续，$G{=}5$）</td><td>$\sum_{g=1}^{5}p_\theta(v_g)\phi(v_g)$</td><td>69/100</td><td>0/100</td><td>31/100</td></tr>
+<tr><td>Verifier（连续，$G{=}20$）</td><td>$\sum_{g=1}^{20}p_\theta(v_g)\phi(v_g)$</td><td><strong>77/100</strong></td><td><strong>0/100</strong></td><td>23/100</td></tr>
+</table>
+
+<p><strong>解读。</strong>第一行的「判错 0/100」极具误导性——它不是因为判断准，而是因为 88% 的样本压根没有产生判断。真正可比的量是「产生了有效判断且判对」的比例：离散 Judge 是 12%，连续版本在同样的 $G{=}5$ 下是 69%，$G{=}20$ 下是 77%。同一个模型、同一批数据、同一套提示词，唯一变化是读数方式。这说明那 65 个百分点的差距并非新增能力，而是<strong>原本存在于分布中但被解码步骤丢弃</strong>的信息。</p>
+
+<p><strong>与已有方法的差异。</strong>与 LM Judge 的差异是取期望而非 argmax；与训练式奖励模型的差异是完全不改参数，因此不受训练分布约束——这解释了它为何能零样本迁移到机器人和医疗领域。</p>
+
+<h3>3.2 三条正交的验证 Scaling 轴</h3>
+
+<p>Eq. 3.1 的结构本身就暴露了三个可调旋钮，论文对它们的定位说得很清楚：</p>
+
+<blockquote>Equation 3.1 illustrates three independent axes along which verification can be scaled: the granularity of score tokens $G$, the number of repeated evaluations $K$, and the number of evaluation criteria $C$. Each axis targets a different source of error in the reward estimate... increasing granularity improves score separation between candidate solutions, repeated evaluation averages out biases from individual verification passes, and criteria decomposition captures complementary aspects of trajectory quality.</blockquote>
+
+<p>三条轴针对三种不同的误差来源，因此是互补而非冗余的。Fig. 4 给出了 Terminal-Bench 2.0 上分别拉动每条轴的曲线，三条都单调上升：$G$ 从 1 到 20 是 73.1%→77.5%；$K$ 从 1 到 16 是 74.7%→77.4%；单一维度 75.2%–76.4%，三维度集成到 78.3%。测量基于 200 条随机采样轨迹，跨多个 agent harness。</p>
+
+<p>工程价值在于：这三个旋钮都在推理期，可以按延迟预算独立调节，不牵动训练。作者的原话是 <em>each axis is a knob that the practitioner can tune depending on the latency budget of the downstream application</em>。主实验的默认配置是 $G{=}20$、$K{=}8$、三维度。</p>
+
+<h3>3.3 粒度为什么有效：信噪比分析</h3>
+
+<p>这一节是论文方法论上最扎实的部分——它没有停在「实验涨了」，而是给出了机制。作者把正确轨迹得分 $s_c$ 与错误轨迹得分 $s_i$ 的差 $\Delta=s_c-s_i$ 拆成信号与噪声两部分（Eq. 4.1）：</p>
+
+$$\mathrm{SNR}(G)=\frac{\mathbb{E}[s_c-s_i]}{\sqrt{\mathrm{Var}(s_c-s_i)}}$$
+
+<p>人话解释：分子衡量验证器整体上多偏好正确轨迹（信号强度），分母衡量这种偏好在不同样本对之间有多不一致（噪声）。作者进一步论证：成对验证准确率是 $\mathrm{SNR}(G)$ 的单调函数——样本量固定时，标准化后的分差越大，$s_c>s_i$ 成立的概率就越高。</p>
+
+<p>这个分析回答了一个容易被忽略的疑问：既然增大 $G$ 不引入新信息，为什么准确率会涨？答案是它并不提升信号，而是让同样的信号在更细的投影空间里不被量化噪声淹没。作者对此的表述值得完整引用：</p>
+
+<blockquote>enlarging the ordered token set $V_{\text{score}}$ does not grant the verifier any new information about the trajectory. Yet, it grants the decoder a finer space in which to project the model's internal belief, so that nearby beliefs that would have been rounded to the same integer are now mapped to continuous rewards.</blockquote>
+
+<h3>3.4 评价维度分解：手写但精心设计的 rubric</h3>
+
+<p>$C$ 这条轴在论文正文里描述较简（Section 4.3），但仓库里的 <code>criteria/terminal_bench.md</code> 给出了完整内容，信息量比正文大。三个维度都被约束到「只看可观测证据」：</p>
+
+<blockquote><strong>IMPORTANT:</strong> Focus on TERMINAL OUTPUT as ground truth. Do NOT trust the agent's self-assessment or claims of success. Agents often claim success when the terminal shows errors.</blockquote>
+
+<p><strong>① Specification Adherence</strong>——重读任务描述，核对具体要求：确切文件路径、安装位置、输出格式、命名、显式约束。区分「真的满足了要求」与「解了一个想法相似但位置/格式错、漏了约束的问题」。这一维度针对的是 Agent 最常见的一类假成功：方向对而细节偏。</p>
+
+<p><strong>② Output Match</strong>——定位 Agent 执行的最后一条验证命令，将其实际 stdout/stderr 与任务描述中的预期输出逐字符比对。原文强调 <em>Ignore everything except whether the observed output matches the expected output</em>，即刻意收窄注意力以降低噪声。</p>
+
+<p><strong>③ Error Signal Detection</strong>——扫描轨迹尾部，查找显式失败标记：异常 traceback、段错误、command not found、未被后续修复的非零退出码、编译失败、测试失败。判据是 <em>a trajectory that ends with unresolved errors is almost certainly broken even if the agent claims success</em>。</p>
+
+<p>这三条的共性是把验证锚定在环境返回的客观信号上，系统性地排除 Agent 自述。从工程视角看，这比公式部分更接近性能的真实来源。</p>
+
+<h3>3.5 Probabilistic Pivot Tournament：把 best-of-N 从 $\mathcal{O}(N^2)$ 降到 $\mathcal{O}(Nk)$</h3>
+
+<p>连续奖励解决了可分辨性，但成对比较的代价随 $N$ 平方增长。PPT 分三步，源码注释写得比论文还清楚：</p>
+
+<pre><code># llm_verifier/pivot_tournament.py
+"""
+Probabilistic Pivot Tournament (PPT): O(Nk) best-of-N selection.
+1) Ring pass: score the N adjacent directed pairs of a random Hamiltonian
+   cycle. Every candidate appears once in each prompt slot, so the
+   verifier's slot bias cancels around the ring.
+2) Pivot selection: the top-k candidates by ring-pass mean preference
+   w_i / c_i become the pivot set P.
+3) Pivot rounds: score every non-pivot-vs-pivot and pivot-vs-pivot pair,
+   aggregate all comparisons into w_i, c_i, and return argmax_i w_i / c_i.
+Total comparisons: N + k(N - k) + C(k, 2) - linear in N for fixed k.
+"""
+DEFAULT_PIVOTS = 2
+
+def bradley_terry(ra, rb):
+    """p(a beats b) under the Bradley-Terry model on rewards in [0, 1]."""
+    return 1.0 / (1.0 + math.exp(-(ra - rb)))
+
+def accumulate(pairs, score, w, c):
+    """Score each directed pair and aggregate soft wins into w, c in place."""
+    for a, b in pairs:
+        ra, rb = score(a, b)
+        p = bradley_terry(ra, rb)
+        w[a] += p;        c[a] += 1
+        w[b] += 1.0 - p;  c[b] += 1</code></pre>
+
+<p><strong>Ring pass 的设计值得单独说。</strong>它不是随机抽样比较对，而是用一个几何结构消除位置偏置：</p>
+
+<blockquote>We sample a uniformly random Hamiltonian cycle $\gamma$ over $\{1,\ldots,N\}$ and score the $N$ adjacent pairs. By the cyclic structure, every candidate appears exactly once in the "A" position and once in the "B" position of the verifier prompt, so any systematic preference of the language models for one slot over the other cancels in expectation across the ring.</blockquote>
+
+<p>LLM 对提示词中先出现的候选存在系统性偏好，这是成对评测的老问题。常见对策是交换顺序各跑一次（代价翻倍）或在提示词里叮嘱模型（不可靠）。环结构的做法是让每个候选恰好各占一次 A 位和 B 位，偏置在环上期望抵消，且总比较数仍只有 $N$ 条边——用结构而非算力解决偏置。</p>
+
+<p>总比较数 $N+k(N-k)+\binom{k}{2}$，代码默认 $k{=}2$。最终返回按比较次数归一化的胜率 $\arg\max_i w_i/c_i$；归一化是必要的，因为 pivot 参与的比较次数远多于非 pivot。</p>
+
+<h3>3.6 实现细节：字母刻度与前缀缓存</h3>
+
+<p>两处工程决策直接影响可用性。第一，分数尺度用字母而非数字。README 的说明是：<em>we use a letter-based scale (A-T) instead of digits in the actual implementation to enable logprob extraction for granularity scaling</em>——多位数字会被切成多个 token，破坏「在单个打分位置取分布」的前提，而字母 A–T 恰好给出 20 个单 token 的有序刻度。对应映射在 <code>fine_grained_reward.py</code> 中即 <code>{chr(97 + i): float(GRANULARITY - i) for i in range(GRANULARITY)}</code>。</p>
+
+<p>第二，提示词做了缓存友好的排序。<code>fine_grained_reward.py</code> 的注释解释了为什么 criterion 必须放在末尾：</p>
+
+<pre><code># llm_verifier/fine_grained_reward.py
+"""Everything not specific to the criterion (task, both trajectories, rating
+scale) comes first; only the criterion varies at the tail. This maximizes
+the shared prompt prefix across criteria, so a prefix-caching backend
+serves the trace-heavy body from cache. Keep criterion-specific text
+strictly at the end when editing."""</code></pre>
+
+<p>这直接决定了 $C$ 这条轴的边际成本：轨迹正文（token 占比最大的部分）在三个维度间完全共享前缀，因此把 $C$ 从 1 提到 3 的实际开销远小于三倍；同理 $K$ 次重复也复用同一前缀。换句话说，三条 scaling 轴中有两条的成本被前缀缓存显著摊薄——这是让「验证 scaling」在成本上真正可行的关键工程细节，也是论文正文里容易被跳过、但复现时最该注意的一点。客户端侧支持 DeepSeek、Gemini/Vertex 以及任何返回 logprobs 的 OpenAI 兼容服务（如 <code>vllm serve</code>）。</p>
+
+<h2>4. 实验分析</h2>
+
+<h3>4.1 实验设置</h3>
+
+<p>评测覆盖三个领域四个 benchmark：coding（Terminal-Bench V2、SWE-Bench Verified）、robotics（RoboRewardBench）、medical（MedAgentBench）。统一协议：策略 $\pi_\theta$ 每任务生成 $N$ 条候选轨迹，验证器按 Algorithm 1 用 PPT 对成对打分，提交归一化得分最高者。默认 $G{=}20$、$K{=}8$、三维度。作者强调 <em>our method is training-free and plug-and-play</em>——四个领域用的是同一套框架，只换 criteria 文件。</p>
+
+<h3>4.2 主结果：测试时扩展</h3>
+
+<table>
+<tr><th>Benchmark</th><th>基线 #1</th><th>基线 #2</th><th>基线 #3</th><th>Pass@1</th><th>Oracle</th><th>Ours</th></tr>
+<tr><td>Terminal-Bench V2</td><td>GPT-5.5 (84.7%)</td><td>Opus 4.7 (80.2%)</td><td>G3.1 Pro (80.2%)</td><td>83.1%</td><td>92.1%</td><td><strong>86.5%</strong></td></tr>
+<tr><td>SWE-Bench Verified</td><td>Opus 4.5 (76.8%)</td><td>G3 Flash (75.8%)</td><td>M2.5 (75.8%)</td><td>76.1%</td><td>84.4%</td><td><strong>78.2%</strong></td></tr>
+<tr><td>MedAgentBench</td><td>Opus 4.8 (70.2%)</td><td>G3.5 Flash (66.3%)</td><td>GPT-5.5 (65.1%)</td><td>70.2%</td><td>75.0%</td><td><strong>73.3%</strong></td></tr>
+</table>
+
+<p><strong>解读一：增益的性质。</strong>Pass@1 到 Ours 的提升（Terminal-Bench +3.4、SWE-Bench +2.1、MedAgent +3.1）全部来自选择而非生成——同一策略、同一批候选。这意味着增益是「纯验证收益」，原则上可以叠加在任何生成端改进之上。</p>
+
+<p><strong>解读二：Oracle 缺口即验证的剩余空间。</strong>Terminal-Bench 的 Oracle 是 92.1%，Ours 86.5%，仍差 5.6 点；相对 Pass@1 的 9.0 点总缺口，本方法回收了约 62%。SWE-Bench 回收约 25%（8.3 点缺口回收 2.1 点），MedAgentBench 回收约 65%（4.8 点回收 3.1 点）。SWE-Bench 上回收比例明显偏低，提示补丁类任务的验证更难——它的产物不像 Terminal-Bench 那样有可逐字符比对的终端输出，Output Match 这一维度在这里几乎失去依托。这个差异论文没有专门讨论，但对想把方法迁移到自家场景的人来说是最重要的一条信号：<strong>方法的收益与「任务是否有客观可观测的成功证据」高度相关</strong>。</p>
+
+<p><strong>解读三：越过了单模型 SOTA。</strong>Terminal-Bench 上 86.5% 高于最强单模型 GPT-5.5 的 84.7%。也就是说，一个较弱策略配一个强验证器，可以越过更强单模型的成绩——这正是「验证是一条独立 scaling 轴」这一主张最直接的证据。</p>
+
+<h3>4.3 RoboRewardBench：与专训奖励模型的正面对比</h3>
+
+<p>这组实验在 500 对随机采样轨迹上进行，对手包括同 VLM 的离散 Judge、两个专门在机器人数据上训练的奖励模型，以及 TOPReward（Qwen 3.6）。Table 4：</p>
+
+<table>
+<tr><th>方法</th><th>Accuracy (%)</th><th>训练代价</th></tr>
+<tr><td>TOPReward</td><td>74.7</td><td>专门训练</td></tr>
+<tr><td>Robometer-4B</td><td>78.8</td><td>~1M 条比较</td></tr>
+<tr><td>RoboReward-8B</td><td>81.4</td><td>~45k episodes</td></tr>
+<tr><td>LLM-as-a-Judge（离散，同 VLM）</td><td>70.8</td><td>无</td></tr>
+<tr><td><strong>LLM-as-a-Verifier（Ours）</strong></td><td><strong>87.4</strong></td><td><strong>零样本</strong></td></tr>
+</table>
+
+<p><strong>解读。</strong>这是全文最有说服力的一组数据，原因有两点。第一，最后两行构成了严格的消融：同一个视觉语言模型，唯一差异是取期望还是取 argmax，差距 <strong>16.6 个百分点</strong>。这个对照排除了「模型更强」的解释，把增益完全归因于解码方式。第二，零样本方法超过用 45k episodes 训练的领域专用模型 6.0 个点，直接反驳了「通用方法在专业领域必然落后」的默认假设。作者的定性说明是 <em>despite being applied zero-shot and without any fine-tuning</em>。</p>
+
+<p>同一 benchmark 上还测了与人工标注的平均绝对误差（Table 5）：连续奖励配 $K{=}8$ 把 MAE 从 1.11 降到 <strong>0.72</strong>。这一点比准确率更关键——它说明改进不止于排序方向正确，绝对分值本身也更贴近人类判断，因此才具备当稠密奖励用的资格。论文另报机器人场景下 Value-Order Correlation 达 0.966，优于 Robometer、TOPReward、RoboReward。</p>
+
+<h3>4.4 自验证：模型能否评判自己</h3>
+
+<p>Terminal-Bench 2.1 上，用 <code>deepseek-v4-flash</code> 通过 mini-swe-agent 每任务生成 5 条轨迹，并用<strong>同一模型</strong>作为验证器：</p>
+
+<table>
+<tr><th>配置</th><th>Pass@1</th><th>LLM-as-a-Verifier</th><th>Oracle</th></tr>
+<tr><td>Best-of-3</td><td>79.4%</td><td><strong>86.5% ± 1.1%</strong></td><td>92.1%</td></tr>
+<tr><td>Best-of-5</td><td>78.7%</td><td><strong>88.0% ± 0.6%</strong></td><td>96.6%</td></tr>
+</table>
+
+<p><strong>解读。</strong>直觉上自验证应当失效——模型看不见自己的盲区。但 best-of-5 提升了 9.3 个点，且方差很小（±0.6%）。这说明生成与验证之间存在真实的不对称性：模型在生成时受序列决策约束（一步走错就沿着错路继续），而在验证时可以整体观察终端输出这类客观证据。细粒度打分把这道缝隙里的信息提取出来了。另外注意 Oracle 从 92.1% 升到 96.6% 而 Pass@1 略降，说明候选数增加时可提取的上界增长很快——验证器分辨力越强，增大 $N$ 的边际收益越可持续。</p>
+
+<h3>4.5 消融小结</h3>
+
+<p>Fig. 4 的三条曲线（$G$、$K$、$C$）已在 3.2 节列出，此处补充其含义：三条轴单独作用时增益都在 3–4 个点量级，量级相近，说明三种误差来源（量化噪声、单次采样偏置、维度覆盖不全）在当前设定下贡献相当。这意味着实践中不应只拧一个旋钮——把 $G$ 拉到 20 但只跑 $K{=}1$、只用一个维度，会把大部分收益留在桌上。</p>
+
+<h2>5. 讨论：三个延伸能力与适用边界</h2>
+
+<p><strong>进度估计。</strong>作者观察到验证器分数与步骤时间顺序强相关（Fig. 8），因此分数曲线可当任务完成度的代理指标。论文原文：<em>we observe a strong correlation between the chronological order of steps and the verifier score</em>。仓库中 <code>progress.py</code> 提供 <code>llm_verifier.track(...)</code> 输出逐步进度曲线，并为 Claude Code 与 Codex 提供了扩展。这个能力的实际价值可能被低估：它把「事后判对错」变成「运行中判是否在正确轨道上」，是长时程 Agent 能被安全中断和干预的前提。</p>
+
+<p><strong>RL 稠密奖励。</strong>验证器分数可作为 RL 的密集奖励，论文给出的组合形式为（Eq. 7.2）：</p>
+
+$$r_i=r_{\mathrm{correct},i}+r_{\mathrm{format},i}+\beta\,r_{\mathrm{reasoning},i}$$
+
+<p>其中 $\beta$ 调节推理质量项的权重。实验显示可提升 SAC（机器人）与 GRPO（数学推理）的样本效率。把稀疏的成败信号替换为逐步密集信号，是 RL 中最直接的样本效率来源之一。</p>
+
+<p><strong>闭源模型兼容。</strong>对不暴露 token 级 logprob 的前沿模型，Appendix B.6 给出两阶段方案：闭源模型负责推理，一个 logits 可见的开源模型负责打分，论文称可 <em>recover most of the gain</em>。</p>
+
+<p><strong>适用边界。</strong>方法最有效的场景是「存在客观可观测证据」的任务——终端输出、测试结果、机器人状态。对缺乏此类证据的开放式生成任务（写作质量、设计方案优劣），三个维度的锚定策略失去依托，效果如何论文未涉及；4.2 节 SWE-Bench 回收率偏低已经给出了这个趋势的早期迹象。</p>
+
+<h2>6. 局限分析</h2>
+
+<p><strong>作者自述（Appendix A）。</strong>第一，方法假设可访问 scoring-token logits，<em>which excludes several frontier models available only through restricted APIs</em>；两阶段绕法只能恢复「大部分」增益。第二，三条 scaling 轴并不穷尽：criteria 目前是手写的，未来应可学习或按领域动态生成；重复评估也可以替换为由验证器自身不确定性引导的自适应算力分配。第三，RL 实验仅限单轮设定，多轮长时程的逐步奖励与信用分配尚未验证，作者称其为 <em>a promising direction for future work</em>。</p>
+
+<p><strong>我的判断一：「免训练」的成本被转移而非消除。</strong>三个评价维度是按 benchmark 手写的 markdown（<code>criteria/terminal_bench.md</code>、<code>swe_bench.md</code>、<code>medagentbench.md</code>，另有 <code>TEMPLATE.md</code>）。读过 Terminal-Bench 那份就会发现其中的洞察密度很高——「只信终端输出」「定位最后一条验证命令逐字符比对」「重点扫轨迹尾部的未修复错误」，这些不是通用模板能替代的。所以「零训练」实际上是把「收集标注数据训模型」的成本换成了「专家撰写 rubric」的成本。迁移到新领域时的性能很大程度取决于谁来写这几段提示词，而这份成本在与 Robometer / RoboReward 的对比中并未计入。更麻烦的是它难以量化：论文没有做「rubric 质量 vs 验证准确率」的敏感性分析，因此我们不知道换一个不那么老练的作者来写会掉多少分。</p>
+
+<p><strong>我的判断二：PPT 的选择损失未被单独量化。</strong>Ring pass 仅用 $N$ 条边估计初始强度，每个候选只参与 2 次比较，这个样本量对判断「谁配得上当 pivot」相当薄。而代码默认 $k{=}2$，一旦真正的最优候选未进入 pivot 集，它后续只与 2 个 pivot 各比一次，很难翻盘。论文报告的是端到端指标，我没有看到 PPT 相对完整 $\mathcal{O}(N^2)$ round-robin 的选择损失（regret）被单独测量。而在论文实际使用的小 $N$ 下，这个复杂度优势其实并不成立：$N{=}5,k{=}2$ 时 PPT 需 $5+2\times3+1=12$ 次比较，而全 round-robin 只需 $\binom{5}{2}=10$ 次。$\mathcal{O}(Nk)$ 的价值只在大 $N$ 时显现，而大 $N$ 恰恰是 pivot 选错风险最高的区间——这一段缺失使得复杂度优势的实际可用范围不明确。</p>
+
+<p><strong>我的判断三：验证器与被验证者同源的风险。</strong>自验证实验结果亮眼，但同源意味着共享盲区。若生成器对某类错误存在系统性误判（例如误解了某个 API 的语义），验证器很可能重复同一误判，而这类失败恰好最难被发现。三个维度里有两个（Output Match、Error Signal Detection）锚定在环境返回上，一定程度缓解了这一点，但 Specification Adherence 依赖模型对任务描述的理解，仍然同源。论文只报告了自验证的平均增益，没有分析失败案例是否集中在同源盲区上。</p>
+
+<h2>7. 结论</h2>
+
+<p>这篇论文的贡献可以凝练为三层。<strong>概念层</strong>：把验证识别为独立于生成的第四条 scaling 轴，并给出了它可被 scale 的具体机制与信噪比解释。<strong>方法层</strong>：用「对打分分布取期望」替代 argmax，得到零训练的连续奖励，并沿 $G$、$K$、$C$ 三条推理期轴放大；配合 Ring pass 消除位置偏置、$\mathcal{O}(Nk)$ 的 PPT 控制成本、前缀缓存摊薄边际开销。<strong>实证层</strong>：coding / robotics / medical 四个 benchmark 全部 SOTA，零样本超过用 45k episodes 训练的领域专用奖励模型，并衍生出进度估计与 RL 稠密奖励两项能力。</p>
+
+<p>最值得记住的是那个 70.8% → 87.4% 的对照：同一个模型、同一批数据，仅改变读取输出的方式。这提示了一个更一般的问题——在多少任务上，我们所谓的「模型能力不足」实际上是「我们读取模型输出的方式太粗」？如果验证真能像生成一样被系统 scale，那么「生成候选池 + 精细挑选」这条路的天花板将主要由验证器的分辨力决定，而不再由生成器的单次准确率决定。这是一个值得追踪的范式转移。</p>
+
+<div class="golden">每一次 argmax，都在丢弃一整片分布。<br>验证不是生成的附属检查，而是一条独立的、尚未被拧到底的算力旋钮。</div>
+</body>
+</html>

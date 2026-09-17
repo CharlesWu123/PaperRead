@@ -1,0 +1,300 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RewardHarness：100 条标注，把奖励模型从"训权重"改成"长上下文" — 深度解读</title>
+<style>
+:root{--text:#1a1a1a;--bg:#fafaf8;--accent:#2563eb;--muted:#6b7280;--border:#e5e7eb;--code-bg:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Noto Serif SC",serif;color:var(--text);background:var(--bg);line-height:1.85;padding:2.5rem 1.5rem;max-width:720px;margin:0 auto;font-size:17px}
+h1{font-size:2rem;margin:0 0 .3rem;line-height:1.3}
+h2{font-size:1.35rem;margin:2.8rem 0 .8rem;color:var(--accent);padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.1rem;margin:1.5rem 0 .5rem;color:#333}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:2.5rem;line-height:1.8}
+.meta a{color:var(--accent);text-decoration:none}
+blockquote{border-left:3px solid var(--accent);padding:.6rem 1.2rem;margin:1.5rem 0;background:#f0f4ff;border-radius:0 8px 8px 0}
+pre{background:var(--code-bg);padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.5;margin:1.5rem 0;border:1px solid var(--border)}
+code{font-family:"SF Mono","Fira Code",monospace;font-size:.9em}
+p{margin:1rem 0}
+strong{color:#111}
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.93rem}
+td,th{border:1px solid var(--border);padding:.6rem .9rem;text-align:left}
+th{background:#f9fafb;font-weight:600}
+.summary-box{background:linear-gradient(135deg,#f0f4ff,#faf5ff);padding:1.5rem;border-radius:12px;margin:1.5rem 0}
+.summary-box h3{margin:0 0 .5rem;color:var(--accent)}
+.golden{font-size:1.25rem;font-weight:600;color:var(--accent);text-align:center;padding:2rem 1rem;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);margin:2.5rem 0;line-height:1.5}
+@media(max-width:600px){body{font-size:16px;padding:1.2rem 1rem}h1{font-size:1.5rem}}
+</style>
+<!-- KaTeX -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<!-- Mermaid -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'});</script>
+</head>
+<body>
+<h1>100 条标注干翻 20 万条：奖励模型的"权重"时代要结束了？</h1>
+<div class="meta">
+论文：<strong>RewardHarness: Self-Evolving Agentic Post-Training</strong>　arXiv:2605.08703v1 [cs.AI]，2026-05-09<br>
+作者：Yuxuan Zhang、Penghui Du、Bo Li、Cong Wei（共同一作），Junwen Miao、Huaisong Zhang、Songcheng Cai、Yubo Wang、Dongfu Jiang†、Yuyu Zhang、Ping Nie†、Wenhu Chen†、Changqian Yu§、Kelsey R. Allen†（§ Project Lead，† Advisors）<br>
+单位：UBC / Vector Institute / 快手 Kolors Team / CMU / Waterloo / Etude AI / 清华 / Georgia Tech<br>
+论文页：<a href="https://arxiv.org/abs/2605.08703">arxiv.org/abs/2605.08703</a>　项目页：<a href="https://rewardharness.com">rewardharness.com</a><br>
+代码：<a href="https://github.com/TIGER-AI-Lab/RewardHarness">github.com/TIGER-AI-Lab/RewardHarness</a>（已公开，Apache-2.0，15 stars，120 commits，v0.1.0，Python 3.10+，最后推送 2026-05-18）
+</div>
+
+<h2>一、先看一个不太合理的对比</h2>
+
+<p>你手里有两个学生，要考同一门课：给一张原图、一句修图指令、几张修完的图，判断哪张改得更好。</p>
+
+<p>甲同学的复习方式是刷题：二十万对人类偏好比较，一条条喂进去做 SFT，练出一个专门打分的模型。乙同学只看了 100 条示范，然后开始自己给自己写笔记、写检查清单，反复推敲了 77 遍。</p>
+
+<p>你猜谁赢了？RewardHarness 这篇论文里，乙赢了。它在图像编辑评测上拿到 <strong>47.4% 的平均排序准确率，比 GPT-5 高 5.3 分</strong>，而它用掉的偏好数据是 EditReward 那套的 <strong>0.05%</strong>。</p>
+
+<p>0.05% 是个什么概念？别人抄了两千页题库，你只翻了一页，考得还更好。而且乙同学全程<strong>一个参数都没动过</strong>——它的模型权重是冻结的。</p>
+
+<div class="summary-box">
+<h3>一句话版本</h3>
+把"训一个奖励模型"改成"给一个通用视觉模型攒一套评审手册"，手册由 100 条人类示范自己迭代长出来，模型权重全程不动。
+</div>
+
+<h2>二、为什么以前非得那么干？</h2>
+
+<p>先说清楚"奖励模型"（reward model）是干什么的。说白了，它就是个打分员：你要让生图模型学会人类喜欢什么，得先有个东西能替人类说"这张好、那张差"，RL 才有方向。</p>
+
+<p>过去的标准流水线是三步：收集大规模人类偏好标注 → SFT 训练一个专用奖励模型 → 拿它当 reward 信号做 RL 对齐。这套路子跑了好几年，工程上很成熟。</p>
+
+<p>但它有四个绕不开的坑，论文在动机部分点得很直：标注成本高；必须额外训练一遍；输出是一个不透明的标量分（scalar reward），你没法问它"你为什么给 3 分"；最后一条最扎心——<strong>它对闭源、只给 API 的基础模型完全没辙</strong>，因为你没法微调别人的权重。</p>
+
+<p>图像编辑这个场景把这些坑都放大了。判一张编辑图好不好，你得同时看三样东西：编辑指令、源图、编辑结果。偏好又细又多维——文字有没有拼错、物体数对不对、背景换了前景有没有塌、艺术风格是不是那个风格。</p>
+
+<p>这就是论文摘要里点名的那个缺口：</p>
+
+<blockquote>"This creates a data-efficiency gap: humans can often infer the target evaluation criteria from only a few examples, while models are usually trained on hundreds of thousands of comparisons."</blockquote>
+
+<p>你想想自己第一次当评委的经历。别人给你看五个例子、讲一遍评分要点，你基本就知道该看什么了。人类靠的不是把二十万个样本背进脑子，而是<strong>提炼出一份评分标准</strong>。</p>
+
+<h2>三、核心洞察：奖励建模不一定要动权重</h2>
+
+<p>论文的那句关键话是：把奖励建模<strong>重新定义为"上下文进化"（context evolution），而不是"权重优化"</strong>。</p>
+
+<p>知识不一定要压进参数里，它可以就明明白白写在上下文里。以前你想让模型变强只有一条路——改它的脑子；这篇论文走的是另一条路——<strong>不改脑子，改它手边那本工作手册</strong>。就像你不给新来的审稿人做开颅手术，你给他一份评审细则和几张检查表，他当天就能上岗。</p>
+
+<h2>四、它到底怎么做的</h2>
+
+<h3>第 0 步：把打分这件事写成一个函数</h3>
+
+<p>给一张源图 $I_s$、一句编辑指令 $p$、K 张候选编辑图 $\{I_1,\dots,I_K\}$，系统要输出一组标量分 $\mathbf{s}=(s_1,\dots,s_K)$ 和一个排序 $\pi$，满足 $I_{\pi(1)}\succ I_{\pi(2)}\succ\cdots\succ I_{\pi(K)}$。全文 §2.1 里唯一那个编号公式长这样：</p>
+
+<p>$$\mathbf{s},\pi=\mathcal{M}\bigl(I_{s},\;\{I_{k}\}_{k=1}^{K},\;p,\;\mathcal{C}\bigr)$$</p>
+
+<p>人话解释：$\mathcal{M}$ 是那个通用视觉模型，$\mathcal{C}$ 是推理时临时组装进去的"评审手册"。这个公式里没有任何可学参数——<strong>$\mathcal{M}$ 的参数永不更新，唯一会变的是 $\mathcal{C}$</strong>。这也是为什么这篇论文没有 Bradley-Terry、没有显式 ranking loss：它的"目标函数"实际上就是验证集上的排序准确率。</p>
+
+<p>分数是 1–5 的序数质量估计，评测只看相对顺序，同分算 tie。这里有个小细节值得挑出来：论文写的是 1–5，但开源仓库 README 说产出的是 "1–4 preference judgment"，目录也明明白白写着 <code>score-guidelines/ # 1–4 scoring rubric templates</code>。论文和代码在这一点上没对齐。</p>
+
+<h3>第 1 步：Library —— 一本从零页开始的手册</h3>
+
+<p>系统的全部"知识"都装在一个带版本的 Library 里，里面只有两类东西：Skill 和 Tool。而这个 Library <strong>初始是空的</strong>，一条都没有。</p>
+
+<p><strong>Skill 是结构化 Markdown 写的评价准则</strong>，字段包括 name、一句话描述、scoring rubric（把质量拆成可评估的 criteria）、examples。比如 <code>realism-and-artifact-penalties</code> 这条，专门区分两种"不真实"：视觉 artifact 一律扣分，但概念上的不真实——如果指令明确要求（比如"把猫变成宇航员"）——是可以接受的。</p>
+
+<p><strong>Tool 是结构化 Markdown 写的定向视觉分析流程</strong>，字段包括 name、purpose、输入输出、调用条件、逐步执行协议。注意 Tool 不是独立训练的模块，它是一份 "procedural in-context specification"：通用 VLM 读完这份文档，就能临时扮演某个视觉分析专家，或者按 Tool 的 schema 发起一次结构化的二级 VLM 查询，全程不需要任何参数更新。</p>
+
+<p>比如 <code>text-and-ocr-analyzer</code>：抽取并比对源图和编辑图里的文字，专抓整体印象式评估最容易漏掉的错字和位置错误。</p>
+
+<p>一句话记住两者的分工：<strong>Skill 是声明式的（判什么），Tool 是过程式的（怎么看）</strong>。前者是评分表，后者是量尺。</p>
+
+<h3>第 2 步：Orchestrator —— 既当调度员又当教研组长</h3>
+
+<p>Orchestrator 是一个基于 Claude 的 LLM，兼两份工。</p>
+
+<p><strong>推理时它是调度员</strong>：看完指令、源图、候选图，通过 Router 选出该用哪些 Skill 和 Tool，组装成上下文 $\mathcal{C}$ 交给 Sub-Agent。为了不把上下文撑爆，Tool 用了 <strong>progressive disclosure（渐进披露）</strong>：先只让它看 name + description，只有满足调用条件才加载完整 schema。</p>
+
+<p>这招像什么？像一个工具箱的抽屉都贴着标签，你先扫标签，确定要用扳手才把那格拉开——不用把整箱工具全倒在桌上。</p>
+
+<p><strong>进化时它是教研组长</strong>：拿 Sub-Agent 的推理链（reasoning chain）对照标准答案，做 root-cause 分析，写出一份该怎么改手册的提案。</p>
+
+<h3>第 3 步：Sub-Agent —— 一个可换的、冻结的评审</h3>
+
+<p>Sub-Agent 是一个冻结的、可插拔的 VLM，默认用 Qwen2.5-VL-7B-Instruct，论文也验证了直接换成 Gemini 一样能跑（Table 1）。它读完 $\mathcal{C}$ 里的手册，就临时变成一个专用评审，走三步推理链：</p>
+
+<p>一，<strong>Rubric application</strong>：把 $\mathcal{C}$ 里每个 Skill 的 rubric 逐条应用到每张候选图，产出 per-criterion 评估。二，<strong>Tool-guided analysis</strong>（可选）：满足调用条件的 Tool 按各自协议做定向分析——OCR 抽取、空间关系校验、物体计数——结构化结果追加到推理链里。三，<strong>Aggregation and ranking</strong>：把所有分项评估和工具输出汇总成 $\mathbf{s}$ 和 $\pi$。</p>
+
+<p>你注意这个结构的妙处：换 Sub-Agent 不用重训手册，换手册不用重训 Sub-Agent。两边解耦了。</p>
+
+<h3>第 4 步：自进化循环 —— 77 轮的自我批改</h3>
+
+<p>这是全篇最核心的机制。输入只有 N=100 条人类偏好示范 $D=\{(I_s^{(i)},p^{(i)},\{I_k^{(i)}\},\mathbf{s}^{*(i)},\pi^{*(i)})\}_{i=1}^{N}$，Orchestrator 自己把它拆成 60 条训练、40 条留出验证。</p>
+
+<p>然后每一轮跑五个阶段：<strong>Evaluation</strong>（检索最相关的条目，Sub-Agent 出分）→ <strong>Scoring</strong>（按排序一致性划成 correct / error，标量分差只用来做诊断）→ <strong>Chain analysis</strong>（对错误做根因诊断）→ <strong>Library update</strong> → <strong>Validation and gating</strong>。</p>
+
+<p>Chain analysis 那一步有个很干净的三对一映射，值得单独记：<strong>缺失评价维度 → 新建 Skill；rubric 应用错了 → 改 Skill；感知幻觉 → 新建或改进 Tool</strong>。同时它也会去挖那些答对的推理链，把真正起作用的条目识别出来强化保留。</p>
+
+<p>Library 的更新动作只有三种：<strong>create / modify / deprecate</strong>——没有 merge。另外还有一个 aggressive pruning 模式，负责把冗余条目砍掉。</p>
+
+<p>最后一道闸门是最关键的：新手册要在那 40 条验证集上评一遍，<strong>只有比当前最好成绩更好才被接受，否则整个更新回滚</strong>。论文原文说得很实在：</p>
+
+<blockquote>"many proposed updates were rolled back, and Skill proposals were accepted less often than Tool proposals."</blockquote>
+
+<p>这套流程像什么？像一个考生每次模考完都要做错题本，但他有个铁规矩：新总结的方法必须在另外 40 道从没见过的题上考得更好，才准写进错题本，否则当场撕掉。</p>
+
+<p>停止条件不是收敛判据，就是一个固定的迭代预算。论文一共跑了 <strong>77 轮</strong>，最后挑出验证集最优的那一版并冻结——<strong>iteration 69</strong>。</p>
+
+<h3>第 5 步：手册长胖又变瘦的曲线</h3>
+
+<p>准确率轨迹是这样的：空手册基线 <strong>42.5%</strong> → 长到 13 条时在 <strong>52.5%</strong> 卡住（plateau）→ iter 69 冲到 <strong>62.5%</strong>，相对提升 47%。被接受的更新集中在几个很窄的窗口：iters 5–7、10、58–60。</p>
+
+<p>规模轨迹更有意思：从 0 条起步 → iter 10 变成 6 skills + 3 tools（9 条）→ iter 49 涨到峰值 13 条（8 Skills + 5 Tools）→ 约第 50 轮开始剪枝 → iter 69 收成 <strong>7 条（3 Skills + 4 Tools）</strong>。</p>
+
+<p>先长胖再瘦身，最后工具比技能还多。这说明什么？说明后期的收益不是来自"想出更多评分维度"，而是来自"给模型配更靠谱的眼睛"。看不准比想不到更致命。</p>
+
+<h3>第 6 步：最终那 7 条手册长什么样</h3>
+
+<table>
+<tr><th>名称</th><th>类型</th><th>干什么</th></tr>
+<tr><td>objective-visual-description-first</td><td>Skill</td><td>强制先客观描述每张图再评价，抑制幻觉与位置偏置</td></tr>
+<tr><td>realism-and-artifact-penalties</td><td>Skill</td><td>惩罚视觉 artifact，但指令要求时允许概念上的不真实</td></tr>
+<tr><td>style-and-background-transformation-evaluation</td><td>Skill</td><td>管背景/风格变换评估，强制前景保持与照片真实感</td></tr>
+<tr><td>text-and-ocr-analyzer</td><td>Tool</td><td>通过二级 VLM 调用抽取并校验图中文字的拼写、位置、可读性</td></tr>
+<tr><td>spatial-and-object-analyzer</td><td>Tool</td><td>顺序计数物体，用结构化 JSON 分析空间关系与朝向</td></tr>
+<tr><td>visual-qa-tool</td><td>Tool</td><td>回答关于图像内容的定向视觉问题，防幻觉与左右互换</td></tr>
+<tr><td>cultural-and-style-knowledge-oracle</td><td>Tool</td><td>识别艺术风格、文化指代、受某艺术家启发的元素</td></tr>
+</table>
+
+<p>你把这 7 条连起来读一遍，会发现它们全是在治 VLM 的老毛病：先描述再评价治的是"看图说话跟着感觉走"，OCR 工具治的是"文字瞎编"，空间工具治的是"左右不分数不清"。这就是可解释性的直接好处——<strong>你能读懂它为什么给这个分</strong>。</p>
+
+<h3>第 7 步：新旧范式对照</h3>
+
+<table>
+<tr><th>维度</th><th>传统 reward model</th><th>RewardHarness</th></tr>
+<tr><td>知识存在哪</td><td>模型权重</td><td>显式上下文（Skills + Tools 文档）</td></tr>
+<tr><td>要多少标注</td><td>数十万偏好对（如 200K）</td><td>100 条示范（约 0.05%）</td></tr>
+<tr><td>要不要训练</td><td>要，SFT 一遍</td><td>不要，权重全程冻结</td></tr>
+<tr><td>怎么变强</td><td>梯度更新</td><td>create / modify / deprecate + 验证门控回滚</td></tr>
+<tr><td>输出形态</td><td>不透明标量分</td><td>标量分 + 可读推理链</td></tr>
+<tr><td>能否用闭源基座</td><td>不能（改不了权重）</td><td>能（只需 API）</td></tr>
+<tr><td>换基座模型</td><td>重新训练</td><td>直接替换（论文验证 Qwen ↔ Gemini）</td></tr>
+</table>
+
+<p>论文 Figure 1 就是在讲这张表的两半：</p>
+
+<blockquote>"The conventional paradigm collects large-scale human preference data, trains a reward model, and uses it as the reward signal for RL alignment. In contrast, RewardHarness starts from a small set of preference demonstrations and self-evolves a Skills-and-Tools Library through iterative evaluation and analysis, yielding an interpretable reward system."</blockquote>
+
+<h3>第 8 步：论文说的和代码写的，对得上吗</h3>
+
+<p>我去翻了仓库，两处对应关系挺硬。第一处是 <code>configs/default.yaml</code>：</p>
+
+<pre><code>evolution:
+  train_dataset: AgPerry/EditReward-Data-100
+  train_n: 60
+  val_n: 40
+  max_iterations: 5
+  batch_concurrent: 128
+  explore_margin: 0.075
+  augment_swap: true
+  prune_every_n: 50
+  seed: 42</code></pre>
+
+<p><code>train_n: 60</code> / <code>val_n: 40</code> 和论文 §2.5 的 60/40 拆分完全一致，数据集名字 <code>EditReward-Data-100</code> 就是那个 N=100 校准集。<code>prune_every_n: 50</code> 正好对上论文"约第 50 轮开始剪枝"。<code>augment_swap</code> 是把候选顺序交换以对抗位置偏置——和 <code>objective-visual-description-first</code> 那条 Skill 治的是同一个病。唯一对不上的是 <code>max_iterations</code> 默认只有 5，论文跑了 77。</p>
+
+<p>第二处是 <code>src/evolver.py</code>：</p>
+
+<pre><code>applied = {"skills_added": 0, "skills_updated": 0, "skills_deleted": 0,
+           "tools_added": 0, "tools_updated": 0, "tools_deleted": 0}
+for u in signals.get("skill_updates", []):
+    if u["action"] == "add":    self.library.add_skill(...)
+    elif u["action"] == "update": self.library.update_skill(...)
+    elif u["action"] == "delete": self.library.delete_skill(u["name"])</code></pre>
+
+<p>它的 docstring 写着 "Applies improvement signals to Library (add/update Skills and Tools). Supports snapshot/restore for rollback on val_acc regression."。add / update / delete 严格对应论文的 create / modify / deprecate，snapshot/restore 就是那道回滚闸门的实现。仓库还有 <code>src/</code> 下的 router.py、chain_analyzer.py、sub_agent.py，以及签入的 library_gemini_v1…v5，约 107 个测试不需要 GPU 和网络。</p>
+
+<h2>五、实验：数字背后是什么意思</h2>
+
+<p>先看主战场。Table 1 在 EditReward-Bench（K=2/3/4 三种候选数）加 GenAI-Bench 上算排序准确率，Δ 是相对 GPT-4o 的差值。</p>
+
+<table>
+<tr><th>模型</th><th>K=2</th><th>K=3</th><th>K=4</th><th>GenAI-Bench</th><th>Avg</th><th>Δ</th></tr>
+<tr><td>GPT-4o</td><td>45.7</td><td>27.3</td><td>7.3</td><td>53.5</td><td>33.5</td><td>–</td></tr>
+<tr><td>GPT-5</td><td>57.5</td><td>38.5</td><td>12.8</td><td>59.6</td><td>42.1</td><td>+8.6</td></tr>
+<tr><td>Gemini-2.0-Flash</td><td>52.4</td><td>33.3</td><td>13.5</td><td>53.3</td><td>38.1</td><td>+4.6</td></tr>
+<tr><td>Gemini-2.5-Flash</td><td>58.6</td><td>39.9</td><td>12.2</td><td>57.0</td><td>41.9</td><td>+8.4</td></tr>
+<tr><td>Claude-Haiku-4.5</td><td>57.9</td><td>30.7</td><td>7.4</td><td>47.1</td><td>35.8</td><td>+2.3</td></tr>
+<tr><td>Qwen2.5-VL-7B</td><td>52.7</td><td>24.7</td><td>3.4</td><td>40.5</td><td>30.3</td><td>−3.2</td></tr>
+<tr><td>Qwen2.5-VL-32B</td><td>50.5</td><td>25.3</td><td>4.1</td><td>39.3</td><td>29.8</td><td>−3.7</td></tr>
+<tr><td>MiMo-VL-7B</td><td>49.5</td><td>30.4</td><td>9.5</td><td>57.9</td><td>36.8</td><td>+3.3</td></tr>
+<tr><td>EditReward (Qwen)</td><td>57.0</td><td>36.0</td><td>10.8</td><td>64.0</td><td>42.0</td><td>+8.5</td></tr>
+<tr><td>EditReward (MiMo)</td><td>56.5</td><td>42.7</td><td>11.5</td><td>65.7</td><td>44.1</td><td>+10.6</td></tr>
+<tr><td><strong>RewardHarness (Gemini-2.0-Flash)</strong></td><td colspan="4" style="text-align:center;color:#6b7280">（分列数字未获取）</td><td><strong>47.4</strong></td><td>—</td></tr>
+</table>
+
+<p>最值得看的不是 47.4 这个绝对值，而是<strong>同一个基座的前后差</strong>。Gemini-2.0-Flash 裸模型是 38.1，套上 RewardHarness 变成 47.4，涨了 9.3 分。同一个大脑，只是手里多了 7 条手册。</p>
+
+<p>第二个值得看的是 K=4 那一列的惨状：所有模型都在 3% 到 13.5% 之间挣扎。四张图排全对本来就难（随机是 1/24 ≈ 4.2%），这说明这个 benchmark 远没被做完，谁都别太得意。</p>
+
+<p>第三个是 EditReward (Qwen) 的 42.0。它是拿 200K 偏好对做 SFT 练出来的；而 RewardHarness 用 Claude 当 Orchestrator、冻结的 Qwen2.5-VL-7B 当 Sub-Agent 时就超过了它——数据量只有 0.05%。<strong>这不是"少量数据也能凑合"，这是"少量数据加对方法反而更好"。</strong></p>
+
+<p>然后是真正决定这套东西有没有用的地方：把它当 reward 去做 RL，下游模型真能变好吗？Table 2 用 RewardHarness 给 FLUX.2-klein-base-4B 做 GRPO，在 ImgEdit-Bench 上评测（分数越高越好）。</p>
+
+<table>
+<tr><th>模型</th><th>Add</th><th>Adjust</th><th>Extract</th><th>Replace</th><th>Remove</th><th>Bg.</th><th>Style</th><th>Compose</th><th>Action</th><th>Overall</th></tr>
+<tr><td>AnyEdit</td><td>3.18</td><td>2.95</td><td>1.88</td><td>2.47</td><td>2.23</td><td>2.23</td><td>2.85</td><td>1.56</td><td>2.65</td><td>2.45</td></tr>
+<tr><td>UltraEdit</td><td>3.44</td><td>2.81</td><td>2.13</td><td>2.96</td><td>1.45</td><td>2.86</td><td>3.76</td><td>1.91</td><td>2.98</td><td>2.70</td></tr>
+<tr><td>Step1X-Edit</td><td>3.88</td><td>3.14</td><td>1.76</td><td>3.40</td><td>2.41</td><td>3.16</td><td>4.63</td><td>2.64</td><td>2.52</td><td>3.06</td></tr>
+<tr><td>BAGEL</td><td>3.56</td><td>3.31</td><td>1.70</td><td>3.30</td><td>2.62</td><td>3.24</td><td>4.49</td><td>2.38</td><td>4.17</td><td>3.20</td></tr>
+<tr><td>OmniGen2</td><td>3.57</td><td>3.06</td><td>1.77</td><td>3.74</td><td>3.20</td><td>3.57</td><td>4.81</td><td>2.52</td><td>4.68</td><td>3.44</td></tr>
+<tr><td>Ovis-U1</td><td>4.13</td><td>3.62</td><td>2.98</td><td>4.45</td><td>4.06</td><td>4.22</td><td>4.69</td><td>3.45</td><td>4.61</td><td>4.00</td></tr>
+<tr><td>GPT-Image-1</td><td>4.61</td><td>4.33</td><td>2.90</td><td>4.35</td><td>3.66</td><td>4.57</td><td>4.93</td><td>3.96</td><td>4.89</td><td>4.20</td></tr>
+<tr><td>Flux.1 Kontext [dev]</td><td>3.76</td><td>3.45</td><td>2.15</td><td>3.98</td><td>2.94</td><td>3.78</td><td>4.38</td><td>2.96</td><td>4.26</td><td>3.52</td></tr>
+<tr><td>FLUX.2-klein-base-4B</td><td>3.27</td><td>4.00</td><td>2.04</td><td>3.07</td><td>2.90</td><td>3.47</td><td>4.26</td><td>3.19</td><td>4.44</td><td>3.32</td></tr>
+<tr><td>+RL (EditReward)</td><td>4.21</td><td>4.01</td><td>2.02</td><td>3.21</td><td>2.58</td><td>3.69</td><td>4.32</td><td>2.85</td><td>4.34</td><td>3.45</td></tr>
+<tr><td><strong>+RL (RewardHarness)</strong></td><td>4.03</td><td>4.27</td><td>2.24</td><td>3.12</td><td>2.19</td><td>4.22</td><td>4.44</td><td>3.19</td><td>4.22</td><td><strong>3.52</strong></td></tr>
+</table>
+
+<p>base 是 3.32，用 EditReward 当 reward 抬到 3.45，用 RewardHarness 抬到 3.52。两条路线的<strong>涨点分布还不一样</strong>：EditReward 在 Add / Replace 上提升更多，RewardHarness 在 Adjust / Extract / Background 上更强，而且保住了 base 在 Compose 上的 3.19（EditReward 那边掉到了 2.85）。</p>
+
+<p>这个差异其实是可解释的：手册里那条 <code>style-and-background-transformation-evaluation</code> 专治背景和风格变换，而 Bg. 一列正好从 3.47 涨到 4.22，是全表涨幅最猛的一格。<strong>你往手册里写了什么，下游模型就在哪个维度变强</strong>——这种因果链在传统标量奖励模型里是看不到的。</p>
+
+<p>还有个数字值得念一遍：3.52 这个成绩和 Flux.1 Kontext [dev] 打平，而 RewardHarness 用的 backbone 只有 4B。当然也别过度兴奋——GPT-Image-1 是 4.20，Ovis-U1 是 4.00，天花板还在很上面。Remove 那一列反而从 2.90 掉到 2.19，这是实打实的退化，论文的解读只提了涨的部分。</p>
+
+<h2>六、这件事的意义比一个 SOTA 大</h2>
+
+<p>技术上，它给奖励建模拆出了一条新的扩展轴。论文结论里那句话我觉得是全篇最有分量的：</p>
+
+<blockquote>"More broadly, these results suggest a complementary scaling axis for reward modeling: explicit evaluation context."</blockquote>
+
+<p>过去我们扩的是参数量和数据量，这里扩的是<strong>写清楚的评价上下文</strong>。这两条轴不冲突，可以叠加。</p>
+
+<p>产业上，它把奖励模型的门槛从"你有没有标注团队和训练集群"改成了"你有没有 100 条高质量示范和一个 API key"。对绝大多数团队来说，这两件事的难度差了几个数量级。而且因为不碰权重，闭源基座第一次能直接当奖励模型的地基用。</p>
+
+<p>方法学上，我觉得最值得抄的其实不是 Skill / Tool 这套设计，而是<strong>那道验证门控</strong>。让模型自我改进的尝试遍地都是，绝大多数死在"越改越差还不知道"。这篇论文的做法很朴素：留 40 条不给看，改完必须在这 40 条上更好，不然就回滚。自进化系统缺的从来不是创造力，是刹车。</p>
+
+<h2>七、别忽略这些坑</h2>
+
+<p>作者自己在 §5 里挑明了第一条，也是最要命的一条——Orchestrator 依赖闭源模型：</p>
+
+<blockquote>"The Orchestrator currently relies on a proprietary LLM (Claude) for routing, chain analysis, and library evolution… This coupling limits full reproducibility and introduces a dependency on API availability and cost."</blockquote>
+
+<p>换句话说，那个又当调度员又当教研组长的大脑，是租来的。这直接影响可复现性，也把成本和可用性绑在了别人的 API 上。第二条作者自述是门控机制本身的代价：</p>
+
+<blockquote>"The conservative rollback gate reduces regressions, but it does not guarantee discovery of globally optimal Skills or Tools; useful proposals may be rejected when they help rare cases but slightly hurt frequent ones."</blockquote>
+
+<p>刹车踩得太稳，就会把那些"救了长尾但轻微拖累主流"的好想法一起否掉。作者还提到第三点：目前只做了单模态单任务，40 条验证集偏小，有过度专化的风险。项目页补了一句更实在的：最终收成 7 条的紧凑 library，"may hide longer-tail failure modes the calibration set never surfaces"。</p>
+
+<p>我自己再补两点判断。一是那个 <strong>1–5 还是 1–4 的矛盾</strong>：论文写 1–5，仓库 README 和 <code>score-guidelines/</code> 写 1–4，这不是笔误级别的小事——如果实际跑的是 1–4，rubric 的粒度和论文描述就有偏差，想复现的人得先自己确认一遍。二是<strong>准确率轨迹的可疑之处</strong>：77 轮里被接受的更新只集中在 iters 5–7、10、58–60 这几个窗口，中间几十轮几乎没进展。62.5% 出现在 iter 69，而 iter 49 峰值 13 条时只有 52.5% 一线，这条曲线在 40 条验证集上的方差有多大，论文没给（也没有消融实验能帮你判断是哪个条目在起作用）。</p>
+
+<h2>八、回到开头那两个学生</h2>
+
+<p>甲同学刷了二十万道题，考了 42.0。乙同学看了 100 道题，写了 77 版错题本，扔掉一半，最后留下 7 条，考了 47.4。</p>
+
+<p>但真正的差别不在分数。你去问甲"你为什么给这张图打 3 分"，它给不出答案，它只有一个数。你去问乙，它会告诉你：先客观描述了三张图，然后调了 OCR 工具发现第二张的招牌文字拼错了，所以扣分。</p>
+
+<p>而且乙的错题本是一份 Markdown。你能读、能改、能自己往里加一条、能拿去给另一个模型用。它不是压在几十亿参数里的一团权重，它是<strong>写下来的东西</strong>。</p>
+
+<p>这大概才是这篇论文真正在问的问题：我们让模型变强的时候，有多少次是因为真的必须动它的脑子，又有多少次只是因为我们懒得把标准写清楚？</p>
+
+<div class="golden">别再急着教模型你的偏好——先把它写下来，写清楚的标准比训进去的权重跑得更远。</div>
+
+</body>
+</html>

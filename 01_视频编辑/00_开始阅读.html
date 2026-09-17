@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>视频编辑论文入门阅读地图</title>
+<style>
+:root{--bg:#f7f8fa;--paper:#fff;--text:#18202a;--muted:#687384;--border:#dfe4ea;--blue:#1769aa;--green:#16794f;--amber:#a45c00;--red:#a43c43;--ink:#253649}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",sans-serif;line-height:1.75;letter-spacing:0}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
+header{background:#182938;color:#fff;padding:3.5rem 1.5rem 3rem}
+.hero{max-width:1080px;margin:0 auto}
+h1{font-size:clamp(2rem,4vw,3.2rem);line-height:1.2;margin:0 0 1rem;letter-spacing:0}
+.lead{max-width:800px;color:#dce6ee;font-size:1.08rem;margin:0}
+.stats{display:flex;gap:1.4rem;flex-wrap:wrap;margin-top:2rem}.stat{border-left:3px solid #5fb7ee;padding-left:.8rem}.stat strong{font-size:1.45rem;display:block}.stat span{font-size:.85rem;color:#c6d6e2}
+nav{position:sticky;top:0;z-index:3;background:rgba(255,255,255,.96);border-bottom:1px solid var(--border);backdrop-filter:blur(8px)}
+nav .inner{max-width:1080px;margin:auto;display:flex;gap:1rem;padding:.75rem 1.5rem;overflow-x:auto;white-space:nowrap;font-size:.92rem}
+main{max-width:1080px;margin:0 auto;padding:2rem 1.5rem 4rem}
+h2{font-size:1.55rem;margin:3rem 0 1rem;padding-bottom:.55rem;border-bottom:2px solid var(--border);color:var(--ink);letter-spacing:0}
+h3{font-size:1.08rem;margin:0 0 .5rem;letter-spacing:0}
+.notice{background:#eef6ff;border-left:4px solid var(--blue);padding:1rem 1.2rem;margin:1.5rem 0}
+.quick{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:1px;background:var(--border);border:1px solid var(--border);margin:1.5rem 0}.quick a{background:var(--paper);padding:1rem;display:block;font-weight:600}.quick small{display:block;color:var(--muted);font-weight:400;margin-top:.3rem}
+.path{background:var(--paper);border:1px solid var(--border);padding:1.2rem;overflow-x:auto}
+.group{margin:1.5rem 0 2.5rem}.group-head{display:flex;align-items:baseline;gap:.8rem;margin-bottom:.8rem}.group-no{font-size:.82rem;font-weight:700;color:#fff;background:var(--ink);padding:.2rem .55rem;border-radius:4px}.group-desc{color:var(--muted);font-size:.92rem}
+.paper-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.8rem}
+.paper{background:var(--paper);border:1px solid var(--border);border-radius:6px;padding:1rem;min-height:142px}.paper:hover{border-color:#9eb7cc}.paper .meta{font-size:.78rem;color:var(--muted);margin-bottom:.35rem}.paper p{font-size:.9rem;color:#495565;margin:.4rem 0}.tag{display:inline-block;font-size:.72rem;padding:.12rem .4rem;border-radius:3px;background:#eef2f6;color:#415162;margin-right:.3rem}
+table{width:100%;border-collapse:collapse;background:var(--paper);font-size:.9rem;margin:1rem 0}th,td{border:1px solid var(--border);padding:.65rem .75rem;text-align:left;vertical-align:top}th{background:#eef2f6;color:#314153}
+.reading-plan{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.week{background:var(--paper);border-top:3px solid var(--green);padding:1rem 1.1rem}.week strong{color:var(--green)}
+footer{border-top:1px solid var(--border);color:var(--muted);font-size:.85rem;padding:1.5rem 0;margin-top:3rem}
+@media(max-width:850px){.paper-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.quick{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:560px){header{padding:2.4rem 1rem}main{padding:1.2rem 1rem 3rem}.paper-grid,.reading-plan{grid-template-columns:1fr}.quick{grid-template-columns:1fr}.paper{min-height:0}}
+</style>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:'neutral',securityLevel:'loose'});</script>
+</head>
+<body>
+<header><div class="hero">
+<h1>视频编辑论文入门阅读地图</h1>
+<p class="lead">从“把图像扩散模型临时改造成视频编辑器”，一直读到统一 Video DiT、首帧生成式传播、主体与动作解耦、语义规划和 Video-As-Prompt。每篇解读都围绕同一组问题：改什么、保留什么、如何跨帧稳定。</p>
+<div class="stats"><div class="stat"><strong>30</strong><span>篇逐篇解读</span></div><div class="stat"><strong>6</strong><span>条技术路线</span></div><div class="stat"><strong>10</strong><span>篇最短必读路线</span></div><div class="stat"><strong>2022-2026</strong><span>方法演进范围</span></div></div>
+</div></header>
+<nav><div class="inner"><a href="/library">全部文件</a><a href="00_整体总结.md">整体总结</a><a href="#start">从这里开始</a><a href="#map">方法地图</a><a href="#papers">全部论文</a><a href="#choice">选型矩阵</a><a href="#plan">阅读计划</a><a href="#sources">资料来源</a></div></nav>
+<main>
+<section id="start">
+<h2>从这里开始</h2>
+<div class="notice"><strong>入门原则：</strong>不要先背公式。每篇先回答三个问题：输入里什么定义了编辑目标？什么约束未编辑区域？什么机制建立跨帧对应？能回答这三个问题，就抓住了论文主干。</div>
+<div class="quick">
+<a href="00_整体总结.md">先读：整体总结<small>快速理解发展路线、六类方法和共同难题</small></a>
+<a href="00_阅读路线.md">完整阅读路线<small>按六阶段学习，含最短 10 篇路线</small></a>
+<a href="00_方法选型.md">方法选型速查<small>按风格、局部、动作、主体、视角选论文</small></a>
+<a href="00_术语速查.md">术语速查<small>DDIM inversion、attention、LoRA、FVD 等</small></a>
+<a href="00_论文清单.md">论文与来源清单<small>核对 30 篇范围和历史资料</small></a>
+</div>
+</section>
+<section id="map">
+<h2>一张图理解技术演进</h2>
+<div class="path"><pre class="mermaid">flowchart LR
+ A[Image Diffusion] --> B[Video adaptation<br/>Tune-A-Video]
+ B --> C[Attention control<br/>Video-P2P and FateZero]
+ C --> D[Correspondence<br/>TokenFlow FLATTEN VidToMe]
+ D --> E[Inversion and propagation<br/>Videoshop DNI GenProp]
+ E --> F[Subject and motion<br/>DIVE VideoMage Reangle]
+ F --> G[Unified Video DiT<br/>VACE VideoDirector]
+ G --> H[System level<br/>OpenVE Bernini VAP]
+</pre></div>
+<p>早期论文主要给图像扩散模型补“时间一致性”；中期工作开始研究更可靠的反演、特征对应和首帧传播；新工作则把编辑当成视频基础模型的原生能力，并增加统一条件接口、数据体系和语义规划。</p>
+</section>
+<section id="papers">
+<h2>六条阅读路线与全部论文</h2>
+<div class="group"><div class="group-head"><span class="group-no">01</span><h3>基础范式</h3><span class="group-desc">先理解图像扩散模型怎样被改造成视频编辑器</span></div><div class="paper-grid">
+<div class="paper"><div class="meta">ICCV 2023</div><h3><a href="01_基础范式/01_Tune-A-Video.md">Tune-A-Video</a></h3><p>用单视频微调学习原视频运动，建立“保留运动、替换语义”的早期范式。</p><span class="tag">单视频微调</span></div>
+<div class="paper"><div class="meta">ICCV 2023</div><h3><a href="01_基础范式/02_Text2Video-Zero.md">Text2Video-Zero</a></h3><p>不用视频训练，通过相关噪声和跨帧注意力把 T2I 模型扩展到视频。</p><span class="tag">零样本</span></div>
+<div class="paper"><div class="meta">CVPR 2024</div><h3><a href="01_基础范式/03_Video-P2P.md">Video-P2P</a></h3><p>把 Prompt-to-Prompt 的词语注意力控制扩展到真实视频。</p><span class="tag">Cross-attention</span></div>
+<div class="paper"><div class="meta">ICCV 2023</div><h3><a href="01_基础范式/04_FateZero.md">FateZero</a></h3><p>保存反演阶段的自注意力与交叉注意力，并在编辑时融合。</p><span class="tag">Attention fusion</span></div>
+<div class="paper"><div class="meta">SIGGRAPH Asia 2023</div><h3><a href="01_基础范式/05_Rerender-A-Video.md">Rerender A Video</a></h3><p>先编辑关键帧，再通过 patch matching 和 blending 传播到全视频。</p><span class="tag">关键帧传播</span></div>
+<div class="paper"><div class="meta">ICLR 2024</div><h3><a href="01_基础范式/06_TokenFlow.md">TokenFlow</a></h3><p>用源视频特征对应，把关键帧编辑特征传播到所有帧。</p><span class="tag">特征传播</span></div>
+</div></div>
+<div class="group"><div class="group-head"><span class="group-no">02</span><h3>一致性机制</h3><span class="group-desc">比较光流、噪声、token、形变场和 I2V 五种思路</span></div><div class="paper-grid">
+<div class="paper"><div class="meta">ICLR 2024</div><h3><a href="02_一致性机制/01_FLATTEN.md">FLATTEN</a></h3><p>让同一条光流轨迹上的 patch 在注意力中互相通信。</p><span class="tag">光流</span></div>
+<div class="paper"><div class="meta">CVPR 2024</div><h3><a href="02_一致性机制/02_RAVE.md">RAVE</a></h3><p>随机重组 latent 网格，让不同帧在扩散过程中共享风格和内容。</p><span class="tag">噪声洗牌</span></div>
+<div class="paper"><div class="meta">CVPR 2024</div><h3><a href="02_一致性机制/03_VidToMe.md">VidToMe</a></h3><p>合并跨帧相似 token，兼顾一致性、速度和显存。</p><span class="tag">Token merging</span></div>
+<div class="paper"><div class="meta">2023</div><h3><a href="02_一致性机制/04_CoDeF.md">CoDeF</a></h3><p>把视频压缩为 canonical content 和时间形变场，在标准图上编辑一次。</p><span class="tag">形变场</span></div>
+<div class="paper"><div class="meta">TMLR 2024</div><h3><a href="02_一致性机制/05_AnyV2V.md">AnyV2V</a></h3><p>任意图像编辑器修改首帧，再向 I2V 注入源视频时空特征。</p><span class="tag">I2V</span></div>
+</div></div>
+<div class="group"><div class="group-head"><span class="group-no">03</span><h3>反演与传播</h3><span class="group-desc">理解为什么编辑要反演，以及怎样绕开或改进它</span></div><div class="paper-grid">
+<div class="paper"><div class="meta">ECCV 2024</div><h3><a href="03_反演与传播/01_Videoshop.md">Videoshop</a></h3><p>用噪声外推改善视频反演，把任意首帧局部编辑传播到后续帧。</p><span class="tag">噪声外推</span></div>
+<div class="paper"><div class="meta">ECCV 2024</div><h3><a href="03_反演与传播/02_DNI.md">DNI</a></h3><p>在编辑区域稀释原结构噪声，为非刚性动作变化腾出生成空间。</p><span class="tag">噪声稀释</span></div>
+<div class="paper"><div class="meta">ECCV 2024</div><h3><a href="03_反演与传播/03_DreamMotion.md">DreamMotion</a></h3><p>直接优化原视频，用空间和时间自相似性保护结构与运动。</p><span class="tag">Score distillation</span></div>
+<div class="paper"><div class="meta">WACV 2025</div><h3><a href="03_反演与传播/04_FastVideoEdit.md">FastVideoEdit</a></h3><p>利用 consistency model 减少反演和多步采样的成本。</p><span class="tag">Consistency model</span></div>
+<div class="paper"><div class="meta">CVPR 2025</div><h3><a href="03_反演与传播/05_GenProp.md">GenProp</a></h3><p>训练内容编码器和 I2V，把插入、删除、替换、跟踪统一为首帧传播。</p><span class="tag">生成式传播</span></div>
+</div></div>
+<div class="group"><div class="group-head"><span class="group-no">04</span><h3>主体、运动与视角</h3><span class="group-desc">把身份、动作、轨迹和相机分开理解</span></div><div class="paper-grid">
+<div class="paper"><div class="meta">ECCV 2024</div><h3><a href="04_主体运动视角/01_MotionDirector.md">MotionDirector</a></h3><p>用空间 LoRA 学外观、时间 LoRA 学动作，迁移参考视频运动。</p><span class="tag">动作定制</span></div>
+<div class="paper"><div class="meta">ECCV 2024</div><h3><a href="04_主体运动视角/02_DragAnything.md">DragAnything</a></h3><p>先识别实体，再让整个实体沿用户轨迹运动。</p><span class="tag">轨迹控制</span></div>
+<div class="paper"><div class="meta">ICCV 2025</div><h3><a href="04_主体运动视角/03_DIVE.md">DIVE</a></h3><p>用 DINOv2 特征表示源视频运动，用参考图 LoRA 注册目标身份。</p><span class="tag">主体替换</span></div>
+<div class="paper"><div class="meta">CVPR 2025</div><h3><a href="04_主体运动视角/04_VideoMage.md">VideoMage</a></h3><p>融合多个主体 LoRA 和动作 LoRA，并在采样时协调空间与时间注意力。</p><span class="tag">多主体交互</span></div>
+<div class="paper"><div class="meta">ICCV 2025</div><h3><a href="04_主体运动视角/05_Reangle-A-Video.md">Reangle-A-Video</a></h3><p>学习与视角无关的运动，再用 DUSt3R 引导多视角首帧修复。</p><span class="tag">视角重设</span></div>
+</div></div>
+<div class="group"><div class="group-head"><span class="group-no">05</span><h3>统一编辑框架</h3><span class="group-desc">从单点技巧转向 Video DiT 原生编辑能力</span></div><div class="paper-grid">
+<div class="paper"><div class="meta">CVPR 2025</div><h3><a href="05_统一编辑框架/01_Align-A-Video.md">Align-A-Video</a></h3><p>确定性地优化锚点帧奖励，再把优化特征传播到其他帧。</p><span class="tag">奖励微调</span></div>
+<div class="paper"><div class="meta">2025</div><h3><a href="05_统一编辑框架/02_VACE.md">VACE</a></h3><p>用 VCU 和 Context Adapter 统一参考、编辑、mask 和结构控制。</p><span class="tag">统一接口</span></div>
+<div class="paper"><div class="meta">CVPR 2025</div><h3><a href="05_统一编辑框架/03_VideoDirector.md">VideoDirector</a></h3><p>在 T2V 模型中分别约束时间运动、空间外观和文本语义。</p><span class="tag">T2V 直接编辑</span></div>
+<div class="paper"><div class="meta">CVPR 2025</div><h3><a href="05_统一编辑框架/04_SketchVideo.md">SketchVideo</a></h3><p>把一到两张关键帧草图传播到全视频，并保护未编辑区域。</p><span class="tag">草图控制</span></div>
+<div class="paper"><div class="meta">CVPR 2025</div><h3><a href="05_统一编辑框架/05_Visual-Prompting-OCVE.md">Visual Prompting OCVE</a></h3><p>把编辑前后首帧组织成视觉示例，用 inpainting 模型生成后续帧。</p><span class="tag">无反演</span></div>
+</div></div>
+<div class="group"><div class="group-head"><span class="group-no">06</span><h3>数据、底座与规划</h3><span class="group-desc">从单个算法上升到完整视频编辑系统</span></div><div class="paper-grid">
+<div class="paper"><div class="meta">2025</div><h3><a href="06_数据底座规划/01_Wan.md">Wan</a></h3><p>开放视频基础模型提供 VAE、Video DiT 和统一编辑底座。</p><span class="tag">基础模型</span></div>
+<div class="paper"><div class="meta">2025/2026</div><h3><a href="06_数据底座规划/02_OpenVE-3M.md">OpenVE-3M</a></h3><p>用 3M 编辑对、8 类 taxonomy 和 benchmark 补齐数据与评测。</p><span class="tag">数据集</span></div>
+<div class="paper"><div class="meta">2026</div><h3><a href="06_数据底座规划/03_Bernini.md">Bernini</a></h3><p>MLLM 先规划目标视觉语义，DiT 再负责视频渲染和保真。</p><span class="tag">语义规划</span></div>
+<div class="paper"><div class="meta">2025</div><h3><a href="06_数据底座规划/04_Video-As-Prompt.md">Video-As-Prompt</a></h3><p>把参考视频作为动态语义提示，迁移动作、风格、变化和运镜。</p><span class="tag">参考视频提示</span></div>
+</div></div>
+</section>
+<section id="choice"><h2>按任务快速选方法</h2>
+<table><thead><tr><th>你要做的事</th><th>先读</th><th>核心判断</th></tr></thead><tbody>
+<tr><td>风格、颜色、材质变化</td><td>TokenFlow / FLATTEN / VidToMe</td><td>更重视时间一致性，不要求大幅运动变化</td></tr>
+<tr><td>精确局部添加、删除、替换</td><td>Videoshop / GenProp / VACE</td><td>最好有编辑后首帧或 mask 明确区域</td></tr>
+<tr><td>保持原动作、替换主体</td><td>DIVE</td><td>运动来自源视频，身份来自文本或参考图</td></tr>
+<tr><td>学习或指定新动作</td><td>MotionDirector / DragAnything / VideoMage</td><td>区分抽象动作、显式轨迹和多主体交互</td></tr>
+<tr><td>改变相机视角</td><td>Reangle-A-Video</td><td>需要几何与跨视角一致性，不只是普通外观编辑</td></tr>
+<tr><td>一个模型处理多任务</td><td>VACE / Wan</td><td>统一接口降低部署数量，但训练成本高</td></tr>
+<tr><td>复杂指令或动态示例</td><td>Bernini / Video-As-Prompt</td><td>先理解目标语义，再决定怎样渲染</td></tr>
+</tbody></table>
+</section>
+<section id="plan"><h2>建议的两周阅读计划</h2><div class="reading-plan">
+<div class="week"><strong>第 1-2 天</strong><h3>先建立基本矛盾</h3><p>Tune-A-Video、Text2Video-Zero、Video-P2P、FateZero、TokenFlow。</p></div>
+<div class="week"><strong>第 3-4 天</strong><h3>比较一致性机制</h3><p>FLATTEN、RAVE、VidToMe、CoDeF、AnyV2V。</p></div>
+<div class="week"><strong>第 5-6 天</strong><h3>理解反演与首帧传播</h3><p>Videoshop、DNI、DreamMotion、FastVideoEdit、GenProp。</p></div>
+<div class="week"><strong>第 7-9 天</strong><h3>拆分主体、动作与视角</h3><p>MotionDirector、DragAnything、DIVE、VideoMage、Reangle-A-Video。</p></div>
+<div class="week"><strong>第 10-11 天</strong><h3>看统一编辑框架</h3><p>Align-A-Video、VACE、VideoDirector、SketchVideo、Visual Prompting。</p></div>
+<div class="week"><strong>第 12-14 天</strong><h3>建立完整系统观</h3><p>Wan、OpenVE-3M、Bernini、Video-As-Prompt，再回看方法选型表。</p></div>
+</div></section>
+<section id="sources"><h2>历史资料与使用边界</h2>
+<p>本整理吸收了此前的 <a href="补充阅读/video_editing_papers_report.html">视频编辑论文综合报告</a> 和 <a href="补充阅读/2510.20888v1_report.md">Video-As-Prompt 阅读报告</a>，并将其中四篇论文重新压缩为统一格式。</p>
+<div class="notice">不同论文使用的视频长度、分辨率、数据集和指标不同，表格数字不能直接组成排行榜。实际选型必须单独检查长视频、大运动、遮挡、身份稳定、未编辑区域保真和推理成本。</div>
+</section>
+<footer>整理日期：2026-07-14 · 资料目录：01_视频编辑</footer>
+</main>
+</body>
+</html>

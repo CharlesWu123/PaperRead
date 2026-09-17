@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>LLM-as-a-Verifier — 故事解读</title>
+<style>
+:root{--text:#1a1a1a;--bg:#fafaf8;--accent:#2563eb;--muted:#6b7280;--border:#e5e7eb;--code-bg:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Noto Serif SC",serif;color:var(--text);background:var(--bg);line-height:1.85;padding:2.5rem 1.5rem;max-width:720px;margin:0 auto;font-size:17px}
+h1{font-size:2rem;margin:0 0 .3rem;line-height:1.3}
+h2{font-size:1.35rem;margin:2.8rem 0 .8rem;color:var(--accent);padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.1rem;margin:1.5rem 0 .5rem;color:#333}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:2.5rem;line-height:1.8}
+.meta a{color:var(--accent);text-decoration:none}
+blockquote{border-left:3px solid var(--accent);padding:.6rem 1.2rem;margin:1.5rem 0;background:#f0f4ff;border-radius:0 8px 8px 0}
+pre{background:var(--code-bg);padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.5;margin:1.5rem 0;border:1px solid var(--border)}
+pre.mermaid{background:transparent;border:none;text-align:center}
+code{font-family:"SF Mono","Fira Code",monospace;font-size:.9em}
+p{margin:1rem 0}
+strong{color:#111}
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.93rem}
+td,th{border:1px solid var(--border);padding:.6rem .9rem;text-align:left}
+th{background:#f9fafb;font-weight:600}
+ol,ul{margin:1rem 0 1rem 1.4rem}
+li{margin:.5rem 0}
+.summary-box{background:linear-gradient(135deg,#f0f4ff,#faf5ff);padding:1.5rem;border-radius:12px;margin:1.5rem 0}
+.summary-box h3{margin:0 0 .5rem;color:var(--accent)}
+.golden{font-size:1.25rem;font-weight:600;color:var(--accent);text-align:center;padding:2rem 1rem;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);margin:2.5rem 0;line-height:1.5}
+@media(max-width:600px){body{font-size:16px;padding:1.2rem 1rem}h1{font-size:1.5rem}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'});</script>
+</head>
+<body>
+<h1>它把 27% 的「不知道」变成了 0%</h1>
+<div class="meta">
+读 arXiv:2607.05391v2 —— <em>LLM-as-a-Verifier: A General-Purpose Verification Framework</em><br>
+UC Berkeley Sky Computing Lab · Stanford Scaling Intelligence / IRIS / Autonomous Systems Lab<br>
+<a href="https://arxiv.org/abs/2607.05391">论文</a> ·
+<a href="https://github.com/llm-as-a-verifier/llm-as-a-verifier">代码已开源</a> ·
+<a href="https://llm-as-a-verifier.com">项目主页</a>
+</div>
+
+<h2>先做一道题</h2>
+
+<p>你手上有两条 Coding Agent 的执行轨迹，都声称把任务做完了。一条真的做完了，另一条在倒数第三步吞了一个 traceback 然后自我宣布成功。</p>
+
+<p>你让一个很强的大模型来当裁判，让它给每条轨迹打 1 到 5 分。跑 100 对这样的题，结果是什么？</p>
+
+<p>答案有点荒诞：<strong>88 对打平</strong>。判对 12 对，判错 0 对。</p>
+
+<p>你可能想说，判错 0 对，这裁判不是很稳吗？但你再看一眼——它在 88% 的情况下什么都没说。它不是判断力不够，它是<strong>连一个能用来排序的数都没给出来</strong>。</p>
+
+<h2>问题不在裁判，在那个「整数」</h2>
+
+<p>这就是这篇论文的切入点，而且切得很怪：它认为问题不出在模型不够强，而出在我们<strong>取分数的那一下手法</strong>。</p>
+
+<p>标准的 LLM-as-a-Judge 是这么工作的：让模型在打分位置输出一个 token，然后取概率最高的那个 token 作为分数。论文原文说得很直白：</p>
+
+<blockquote>they prompt the model to output a discrete score token and select the highest-probability token as the final score, <strong>collapsing the full scoring distribution into a single value</strong>. This leads to inherently coarse evaluations.</blockquote>
+
+<p>关键在 collapsing 这个词。模型在打分那一刻，其实心里有一整片概率分布：可能 4 分占 41%，5 分占 39%，3 分占 15%。这三个数字里藏着丰富的信息——它其实在犹豫，而且偏向高分。但 argmax 一刀切下去，只剩一个「4」。</p>
+
+<p>另一条轨迹的分布可能是 4 分占 55%、5 分占 20%、3 分占 20%。它也变成「4」。</p>
+
+<p>两条优劣清楚不同的轨迹，输出了同一个整数。这就是那 88% 打平的来源。论文在 Terminal-Bench 上统计过这个现象在真实评测里的规模：<strong>27% 的打分打平</strong>（Fig. 7）。</p>
+
+<p>打个比方：这好比你有一台能称到 0.1 克的电子秤，但你每次读数都只抄整数位。秤没坏，是你在读数那一步把精度扔了。</p>
+
+<h2>那个改动，一行公式</h2>
+
+<p>作者的做法简单到有点让人不服气：<strong>别取最大值，取期望</strong>。</p>
+
+$$R(x,\tau)=\frac{1}{CK}\sum_{c=1}^{C}\sum_{k=1}^{K}\sum_{g=1}^{G} p_\theta(v_g \mid x,c,\tau)\,\phi(v_g)$$
+
+<p>$p_\theta(v_g)$ 是模型给第 $g$ 个分数 token 的概率，$\phi(v_g)$ 把这个 token 翻译成一个实数。上面那个例子里，$0.41\times4+0.39\times5+0.15\times3=4.04$，另一条是 $0.55\times4+0.20\times5+0.20\times3=3.80$。</p>
+
+<p>整数「4」和「4」，变成了 4.04 和 3.80。可以排序了。</p>
+
+<p>论文对这件事的解释很精准，也值得引一下原文：</p>
+
+<blockquote>enlarging the ordered token set $V_{\text{score}}$ does not grant the verifier any new information about the trajectory. Yet, it grants the decoder <strong>a finer space in which to project the model's internal belief</strong>, so that nearby beliefs that would have been rounded to the same integer are now mapped to continuous rewards.</blockquote>
+
+<p>请注意它没有夸大：<strong>信息量一点都没增加</strong>。增加的只是投影空间的分辨率。模型早就知道，只是我们之前没让它说出来。</p>
+
+<p>所以顺着这条路，第二个旋钮也自然出现了：既然分数是投影，那把刻度做细一点会怎样？把 1–5 分换成 1–20 分（实现里用字母 A–T，因为字母 token 更适合抽 logprob）。同一批 100 对题：</p>
+
+<table>
+<tr><th>方法</th><th>判对</th><th>打平</th><th>判错</th></tr>
+<tr><td>Judge（取 argmax，$G{=}5$）</td><td>12</td><td><strong>88</strong></td><td>0</td></tr>
+<tr><td>Verifier（取期望，$G{=}5$）</td><td>69</td><td>0</td><td>31</td></tr>
+<tr><td>Verifier（取期望，$G{=}20$）</td><td><strong>77</strong></td><td>0</td><td>23</td></tr>
+</table>
+
+<p>打平从 88 直接掉到 0。可用信号从 12% 变成 100%，其中 77% 判对。</p>
+
+<h2>为什么细刻度真的有用，而不只是看起来有用</h2>
+
+<p>这里作者做了一件我很欣赏的事：他们没有停在「实验涨了」。他们把正确轨迹和错误轨迹的分差 $\Delta=s_c-s_i$ 拆成了信号和噪声两部分：</p>
+
+$$\mathrm{SNR}(G)=\frac{\mathbb{E}[s_c-s_i]}{\sqrt{\mathrm{Var}(s_c-s_i)}}$$
+
+<p>分子是「验证器多偏爱正确轨迹」，分母是「这种偏爱有多不稳定」。然后他们指出，成对验证的准确率是 $\mathrm{SNR}(G)$ 的单调函数——样本量固定时，标准化后的分差越大，$s_c>s_i$ 的概率就越高。</p>
+
+<p>换句话说，调大 $G$ 不是碰巧涨点，而是在拉高信噪比。这一步把经验观察变成了机制。</p>
+
+<h2>三个旋钮，可以按预算拧</h2>
+
+<p>公式里其实藏着三条独立的轴，这是全文最有工程价值的一段。</p>
+
+<p><strong>$G$（打分粒度）</strong>——把分数尺度做细，提升分离度。Terminal-Bench 2.0 上从 $G{=}1$ 的 73.1% 涨到 $G{=}20$ 的 77.5%。</p>
+
+<p><strong>$K$（重复评估次数）</strong>——同一条轨迹多打几次分求平均，把单次采样的随机偏置磨平。$K{=}1$ 的 74.7% 涨到 $K{=}16$ 的 77.4%。</p>
+
+<p><strong>$C$（评价维度分解）</strong>——不问「这条轨迹好不好」，而是拆成几个正交的具体问题分别问。单一维度是 75.2%–76.4%，三个维度集成到 78.3%。</p>
+
+<p>三个旋钮各自针对奖励估计里不同的误差来源，所以是互补的，不是重复的。而且它们都是纯推理期的旋钮——你的延迟预算宽，就拧大；预算紧，就拧小。不需要重新训练任何东西。</p>
+
+<h2>那三个维度具体在问什么</h2>
+
+<p>这部分论文里比较简略，但仓库里 <code>criteria/terminal_bench.md</code> 写得非常具体，我觉得比公式更值得看。它开头有一句硬规则：</p>
+
+<blockquote><strong>IMPORTANT:</strong> Focus on TERMINAL OUTPUT as ground truth. Do NOT trust the agent's self-assessment or claims of success. Agents often claim success when the terminal shows errors.</blockquote>
+
+<p>然后是三个问题：</p>
+
+<p><em>一、Specification Adherence。</em>回去重读任务描述，检查那些具体的要求——确切的文件路径、安装位置、输出格式、命名、显式约束。Agent 是真的满足了这些要求，还是解了一个「想法对但地方错、格式错、漏了约束」的相似问题？这一条抓的是最常见的一类假成功。</p>
+
+<p><em>二、Output Match。</em>找到 Agent 跑的最后那条验证命令，把它的实际 stdout 和任务描述里说的预期输出对比，必要时逐字符比。只看观察到的输出是否匹配，其他一概不管。</p>
+
+<p><em>三、Error Signal Detection。</em>扫轨迹，尤其是后面几步，找显式的失败标记：报错、traceback、段错误、command not found、没被后续修掉的非零退出码、编译失败、测试失败。原话是：<em>a trajectory that ends with unresolved errors is almost certainly broken even if the agent claims success.</em></p>
+
+<p>你会发现这三条都在防同一件事：<strong>Agent 的嘴</strong>。</p>
+
+<h2>还有个成本问题</h2>
+
+<p>连续分数解决了「能不能排序」，但 best-of-N 要两两比较，$N$ 条轨迹就是 $\mathcal{O}(N^2)$ 次。$N$ 稍大就付不起。</p>
+
+<p>作者的 Probabilistic Pivot Tournament 分三步。第一步叫 Ring pass，设计得挺巧：</p>
+
+<blockquote>We sample a uniformly random Hamiltonian cycle $\gamma$ over $\{1,\ldots,N\}$ and score the $N$ adjacent pairs. By the cyclic structure, every candidate appears exactly once in the "A" position and once in the "B" position of the verifier prompt, so any systematic preference of the language models for one slot over the other <strong>cancels in expectation across the ring</strong>.</blockquote>
+
+<p>把 $N$ 个候选随机串成一个环，只比相邻的。因为是环，每个候选恰好当过一次「A 选手」、一次「B 选手」——大模型那个众所皆知的位置偏好（更爱选前面那个），在环上自动抵消了。用一个几何结构消掉一个系统性偏置，而不是加一句「请不要偏爱 A」的提示词。</p>
+
+<p>第二步：环上平均胜率最高的 $k$ 个当 pivot。第三步：其余候选只跟这 $k$ 个比。总比较数 $N+k(N-k)+\binom{k}{2}$，$k$ 固定时是线性的。每次比较用 Bradley–Terry 转成软胜场，代码里就一行：</p>
+
+<pre><code># llm_verifier/pivot_tournament.py
+def bradley_terry(ra, rb):
+    """p(a beats b) under the Bradley-Terry model on rewards in [0, 1]."""
+    return 1.0 / (1.0 + math.exp(-(ra - rb)))</code></pre>
+
+<h2>还有一个隐藏的成本问题：为什么这么贵的做法能跑得起来</h2>
+
+<p>你可能已经在心里算账了：粒度 20、重复 8 次、三个维度，这是 24 次打分调用。轨迹动辄几万 token，这不是要贵到天上去？</p>
+
+<p>作者在代码注释里留了答案，我觉得这是全文最容易被跳过、但复现时最该看的一段：</p>
+
+<pre><code># llm_verifier/fine_grained_reward.py
+"""Everything not specific to the criterion (task, both trajectories, rating
+scale) comes first; only the criterion varies at the tail. This maximizes
+the shared prompt prefix across criteria, so a prefix-caching backend
+serves the trace-heavy body from cache."""</code></pre>
+
+<p>提示词是刻意排序的：任务描述、两条轨迹、评分尺度全部放前面，只有「这次要评哪个维度」那一句放在最末尾。于是三个维度、八次重复，共用同一个前缀——而那个前缀恰好是 token 占比最大的轨迹正文。有前缀缓存的后端只需要把它算一次。</p>
+
+<p>换句话说，三条 scaling 轴里有两条的成本被摊薄了。这不是锦上添花的优化，而是「验证也能 scale」这个主张在经济上成立的前提。少了这一步，$K{=}8$ 和 $C{=}3$ 就只是论文里好看的数字。</p>
+
+<p>顺带一个细节：分数刻度用的是字母 A–T 而不是数字 1–20。原因很实在——两位数会被切成多个 token，「在单个位置读一整片分布」这个前提就破了。字母恰好给出 20 个单 token 的有序刻度。这种地方就是论文和能跑的代码之间的差距。</p>
+
+<h2>结果：一个不训练的东西，打赢了训练过的</h2>
+
+<table>
+<tr><th>Benchmark</th><th>最强基线</th><th>Pass@1</th><th>本文</th><th>Oracle</th></tr>
+<tr><td>Terminal-Bench V2</td><td>GPT-5.5 84.7%</td><td>83.1%</td><td><strong>86.5%</strong></td><td>92.1%</td></tr>
+<tr><td>SWE-Bench Verified</td><td>Opus 4.5 76.8%</td><td>76.1%</td><td><strong>78.2%</strong></td><td>84.4%</td></tr>
+<tr><td>MedAgentBench</td><td>Opus 4.8 70.2%</td><td>70.2%</td><td><strong>73.3%</strong></td><td>75.0%</td></tr>
+</table>
+
+<p>这些数字本身不算惊人，2 到 3 个点。但要看清一件事：<strong>它没有换生成模型</strong>。同一个策略产出同一批候选，只是换了挑选的方式，Terminal-Bench 就从 83.1% 到 86.5%。Oracle 是 92.1%，意味着候选里本来就藏着更好的答案，之前只是挑不出来。</p>
+
+<p>真正让我停下来的是机器人那组。RoboRewardBench 上（500 对随机采样轨迹），对手是专门为机器人训练的奖励模型：Robometer-4B 用了约 100 万条比较数据，RoboReward-8B 用了约 45k episodes。</p>
+
+<table>
+<tr><th>方法</th><th>准确率</th><th>训练数据</th></tr>
+<tr><td>TOPReward</td><td>74.7%</td><td>专门训练</td></tr>
+<tr><td>Robometer-4B</td><td>78.8%</td><td>~1M 比较</td></tr>
+<tr><td>RoboReward-8B</td><td>81.4%</td><td>~45k episodes</td></tr>
+<tr><td>LLM-as-a-Judge（离散，同 VLM）</td><td>70.8%</td><td>无</td></tr>
+<tr><td><strong>LLM-as-a-Verifier</strong></td><td><strong>87.4%</strong></td><td><strong>零样本</strong></td></tr>
+</table>
+
+<p>看最后两行的差距：<strong>70.8% → 87.4%，同一个视觉语言模型，唯一区别是取期望而不是取 argmax</strong>。那 16.6 个点不是新知识，是原本就在分布里、被 argmax 丢掉的东西。而 45k episodes 训出来的能力，被一个不训练的解码技巧超过了 6 个点。同一个 benchmark 上换成看和人工标注的平均绝对误差，连续奖励加 $K{=}8$ 把 MAE 从 1.11 压到 0.72（Table 5）——不只是排序对了，绝对分值也更贴近人。</p>
+
+<p>还有一个我没想到会成立的实验：自验证。用 <code>deepseek-v4-flash</code> 生成轨迹，再用<strong>同一个模型</strong>来评判自己的产出。直觉上这该失效——它评判不出自己看不见的错误。但 best-of-3 从 79.4% 涨到 86.5%±1.1%，best-of-5 从 78.7% 涨到 88.0%±0.6%。生成和验证之间确实存在一道不对称的缝隙，而细粒度打分能撬开它。</p>
+
+<h2>顺手长出来的三样东西</h2>
+
+<p>连续分数一旦有了，能干的事就不止排序了。</p>
+
+<p>作者发现验证器分数和步骤的时间顺序强相关（Fig. 8）——也就是说，这个分数天然是一条<strong>任务完成度曲线</strong>。他们给 Claude Code 和 Codex 都做了扩展，让你能实时看 Agent 干到哪了。对长时间跑的 Agent 来说，这比事后判对错有用得多：你可以在它开始瞎折腾的时候就掐掉。</p>
+
+<p>其次，这个分数可以直接当 RL 的稠密奖励用：$r_i=r_{\mathrm{correct},i}+r_{\mathrm{format},i}+\beta\,r_{\mathrm{reasoning},i}$，提升了 SAC（机器人）和 GRPO（数学推理）的样本效率。稀疏的成败信号变成每步都有的密集信号，这在 RL 里是很值钱的转换。</p>
+
+<p>第三，对不给 logprob 的闭源模型，有个两阶段绕法：让闭源模型出推理，让一个 logits 可见的开源模型出分数（Appendix B.6）。</p>
+
+<h2>意义在哪：一个被漏掉的维度</h2>
+
+<p>过去几年 scaling 的故事是三段：预训练、后训练、测试时计算。这篇论文的主张是，这三段全都在 scaling <strong>生成</strong>，而<strong>验证</strong>没被 scale 过。</p>
+
+<p>为什么这个区分重要？因为 Agent 时代的瓶颈正在从「能不能做出来」转向「能不能判断做对了没有」。Oracle 92.1% 对 Pass@1 83.1% 那 9 个点的落差就是证据——答案已经在候选池里，我们缺的是眼力，不是能力。</p>
+
+<p>产业上还有一层更直接的影响：训练一个专用奖励模型的门槛很高，你得先攒几十万条人工比较数据，而且换个领域基本要从头再来。这篇论文给出的路子是零训练、纯提示词加解码技巧，换领域的成本从「重新收数据重新训」变成「重写三段 rubric」。对做垂类 Agent 的团队来说，这个差别不是省一点钱，而是一件原本做不了的事变成了一周能试出来的事。</p>
+
+<p>而且方法学上有个漂亮的地方：整个框架不训练任何参数，改的只是<strong>如何读模型的输出</strong>。这暗示我们对已有模型的利用可能长期是不充分的——每次 argmax，都在丢弃一整片分布。有多少「模型能力不足」其实是「读数方式太粗」，是个开放问题。而如果验证真的能像生成那样被 scale，那么「先生成一堆再挑」这条路的天花板，就取决于验证器有多细，而不再取决于生成器有多准。</p>
+
+<h2>不足要说清</h2>
+
+<p>作者自己列了三条：依赖 scoring-token logits，把一批只提供受限 API 的前沿模型排除在外；三条 scaling 轴不穷尽，criteria 目前是手写的，未来应当可学习或按领域动态生成，重复评估也可以换成由验证器自身不确定性引导的自适应算力分配；RL 部分只验证了单轮，多轮长时序的信用分配还没做。</p>
+
+<p>我自己会补两条。第一，「免训练」这个卖点有隐性成本：那三个评价维度是按 benchmark 手写的 markdown 文件，我读了 <code>criteria/terminal_bench.md</code>，写得相当见功力——「只信终端输出」「找最后那条验证命令逐字符比对」这些洞察不是随手能写出来的。换一个新领域，性能上限很大程度取决于谁来写这几段 rubric，而这份人力成本没被计入对比。第二，Ring pass 只用 $N$ 条边估计初始强度，样本量很薄；$k$ 取得小的时候（代码里默认 $k{=}2$），pivot 选错就直接把真正的最优候选排除在精细比较之外了。论文报了端到端增益，但我没看到 PPT 相对完整 $\mathcal{O}(N^2)$ round-robin 的选择损失被单独量化。</p>
+
+<h2>回到开头那道题</h2>
+
+<p>那 88 对打平，现在是 0 对。</p>
+
+<p>没有换更强的模型，没有喂更多数据，没有训练任何参数。只是在读分数的那一步，把小数位捡回来了。</p>
+
+<p>裁判一直都知道答案。我们之前只是让它四舍五入了。</p>
+
+<div class="golden">生成在 scaling，验证还在取整。<br>模型的犹豫本身就是信息，argmax 把它扔了。</div>
+</body>
+</html>

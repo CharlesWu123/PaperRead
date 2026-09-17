@@ -1,0 +1,936 @@
+[
+ {
+  "arxiv_id": "cs/0309048",
+  "arxiv_id_versioned": "cs/0309048v5",
+  "title": "Goedel Machines: Self-Referential Universal Problem Solvers Making Provably Optimal Self-Improvements",
+  "authors": [
+   "Juergen Schmidhuber"
+  ],
+  "published": "2003-09-25",
+  "updated": "2006-12-17",
+  "categories": [
+   "cs.LO",
+   "cs.AI"
+  ],
+  "abstract": "We present the first class of mathematically rigorous, general, fully self-referential, self-improving, optimally efficient problem solvers. Inspired by Kurt Goedel's celebrated self-referential formulas (1931), such a problem solver rewrites any part of its own code as soon as it has found a proof that the rewrite is useful, where the problem-dependent utility function and the hardware and the entire initial code are described by axioms encoded in an initial proof searcher which is also part of the initial code. The searcher systematically and efficiently tests computable proof techniques (programs whose outputs are proofs) until it finds a provably useful, computable self-rewrite. We show that such a self-rewrite is globally optimal - no local maxima! - since the code first had to prove that it is not useful to continue the proof search for alternative self-rewrites. Unlike previous non-self-referential methods based on hardwired proof searchers, ours not only boasts an optimal order of complexity but can optimally reduce any slowdowns hidden by the O()-notation, provided the utility of such speed-ups is provable at all.",
+  "arxiv_abs_url": "https://arxiv.org/abs/cs/0309048",
+  "pdf_url": "https://arxiv.org/pdf/cs/0309048v5",
+  "pdf_file": "cs_0309048v5.pdf"
+ },
+ {
+  "arxiv_id": "2212.14392",
+  "arxiv_id_versioned": "2212.14392v1",
+  "title": "Eliminating Meta Optimization Through Self-Referential Meta Learning",
+  "authors": [
+   "Louis Kirsch",
+   "Jürgen Schmidhuber"
+  ],
+  "published": "2022-12-29",
+  "updated": "2022-12-29",
+  "categories": [
+   "cs.LG",
+   "cs.AI",
+   "cs.NE",
+   "stat.ML"
+  ],
+  "abstract": "Meta Learning automates the search for learning algorithms. At the same time, it creates a dependency on human engineering on the meta-level, where meta learning algorithms need to be designed. In this paper, we investigate self-referential meta learning systems that modify themselves without the need for explicit meta optimization. We discuss the relationship of such systems to in-context and memory-based meta learning and show that self-referential neural networks require functionality to be reused in the form of parameter sharing. Finally, we propose fitness monotonic execution (FME), a simple approach to avoid explicit meta optimization. A neural network self-modifies to solve bandit and classic control tasks, improves its self-modifications, and learns how to learn, purely by assigning more computational resources to better performing solutions.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2212.14392",
+  "pdf_url": "https://arxiv.org/pdf/2212.14392v1",
+  "pdf_file": "2212.14392v1.pdf"
+ },
+ {
+  "arxiv_id": "2310.02304",
+  "arxiv_id_versioned": "2310.02304v3",
+  "title": "Self-Taught Optimizer (STOP): Recursively Self-Improving Code Generation",
+  "authors": [
+   "Eric Zelikman",
+   "Eliana Lorch",
+   "Lester Mackey",
+   "Adam Tauman Kalai"
+  ],
+  "published": "2023-10-03",
+  "updated": "2024-08-16",
+  "categories": [
+   "cs.CL",
+   "cs.AI",
+   "cs.LG",
+   "stat.ML"
+  ],
+  "abstract": "Several recent advances in AI systems solve problems by providing a \"scaffolding\" program that structures multiple calls to language models (LMs) to generate better outputs. A scaffolding program is written in a programming language such as Python. In this work, we use a language-model-infused scaffolding program to improve itself. We start with a seed \"improver\" that improves an input program according to a given utility function by querying an LM several times and returning the best solution. We then run this seed improver to improve itself. Across a small set of downstream tasks, the resulting improved improver generates programs with significantly better performance than its seed improver. A variety of self-improvement strategies are proposed by the language model, including beam search, genetic algorithms, and simulated annealing. Since the language models themselves are not altered, this is not full recursive self-improvement. Nonetheless, it demonstrates that a modern language model, GPT-4 in our experiments, is capable of writing code that can call itself to improve itself. We consider concerns around the development of self-improving technologies and evaluate the frequency with which the generated code bypasses a sandbox.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2310.02304",
+  "pdf_url": "https://arxiv.org/pdf/2310.02304v3",
+  "pdf_file": "2310.02304v3.pdf"
+ },
+ {
+  "arxiv_id": "2401.10020",
+  "arxiv_id_versioned": "2401.10020v3",
+  "title": "Self-Rewarding Language Models",
+  "authors": [
+   "Weizhe Yuan",
+   "Richard Yuanzhe Pang",
+   "Kyunghyun Cho",
+   "Xian Li",
+   "Sainbayar Sukhbaatar",
+   "Jing Xu",
+   "Jason Weston"
+  ],
+  "published": "2024-01-18",
+  "updated": "2025-03-28",
+  "categories": [
+   "cs.CL",
+   "cs.AI"
+  ],
+  "abstract": "We posit that to achieve superhuman agents, future models require superhuman feedback in order to provide an adequate training signal. Current approaches commonly train reward models from human preferences, which may then be bottlenecked by human performance level, and secondly these separate frozen reward models cannot then learn to improve during LLM training. In this work, we study Self-Rewarding Language Models, where the language model itself is used via LLM-as-a-Judge prompting to provide its own rewards during training. We show that during Iterative DPO training that not only does instruction following ability improve, but also the ability to provide high-quality rewards to itself. Fine-tuning Llama 2 70B on three iterations of our approach yields a model that outperforms many existing systems on the AlpacaEval 2.0 leaderboard, including Claude 2, Gemini Pro, and GPT-4 0613. While there is much left still to explore, this work opens the door to the possibility of models that can continually improve in both axes.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2401.10020",
+  "pdf_url": "https://arxiv.org/pdf/2401.10020v3",
+  "pdf_file": "2401.10020v3.pdf"
+ },
+ {
+  "arxiv_id": "2408.08435",
+  "arxiv_id_versioned": "2408.08435v2",
+  "title": "Automated Design of Agentic Systems",
+  "authors": [
+   "Shengran Hu",
+   "Cong Lu",
+   "Jeff Clune"
+  ],
+  "published": "2024-08-15",
+  "updated": "2025-03-02",
+  "categories": [
+   "cs.AI"
+  ],
+  "abstract": "Researchers are investing substantial effort in developing powerful general-purpose agents, wherein Foundation Models are used as modules within agentic systems (e.g. Chain-of-Thought, Self-Reflection, Toolformer). However, the history of machine learning teaches us that hand-designed solutions are eventually replaced by learned solutions. We describe a newly forming research area, Automated Design of Agentic Systems (ADAS), which aims to automatically create powerful agentic system designs, including inventing novel building blocks and/or combining them in new ways. We further demonstrate that there is an unexplored yet promising approach within ADAS where agents can be defined in code and new agents can be automatically discovered by a meta agent programming ever better ones in code. Given that programming languages are Turing Complete, this approach theoretically enables the learning of any possible agentic system: including novel prompts, tool use, workflows, and combinations thereof. We present a simple yet effective algorithm named Meta Agent Search to demonstrate this idea, where a meta agent iteratively programs interesting new agents based on an ever-growing archive of previous discoveries. Through extensive experiments across multiple domains including coding, science, and math, we show that our algorithm can progressively invent agents with novel designs that greatly outperform state-of-the-art hand-designed agents. Importantly, we consistently observe the surprising result that agents invented by Meta Agent Search maintain superior performance even when transferred across domains and models, demonstrating their robustness and generality. Provided we develop it safely, our work illustrates the potential of an exciting new research direction toward automatically designing ever-more powerful agentic systems to benefit humanity.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2408.08435",
+  "pdf_url": "https://arxiv.org/pdf/2408.08435v2",
+  "pdf_file": "2408.08435v2.pdf"
+ },
+ {
+  "arxiv_id": "2505.22954",
+  "arxiv_id_versioned": "2505.22954v3",
+  "title": "Darwin Godel Machine: Open-Ended Evolution of Self-Improving Agents",
+  "authors": [
+   "Jenny Zhang",
+   "Shengran Hu",
+   "Cong Lu",
+   "Robert Lange",
+   "Jeff Clune"
+  ],
+  "published": "2025-05-29",
+  "updated": "2026-03-12",
+  "categories": [
+   "cs.AI"
+  ],
+  "abstract": "Today's AI systems have human-designed, fixed architectures and cannot autonomously and continuously improve themselves. The advance of AI could itself be automated. If done safely, that would accelerate AI development and allow us to reap its benefits much sooner. Meta-learning can automate the discovery of novel algorithms, but is limited by first-order improvements and the human design of a suitable search space. The Gödel machine proposed a theoretical alternative: a self-improving AI that repeatedly modifies itself in a provably beneficial manner. Unfortunately, proving that most changes are net beneficial is impossible in practice. We introduce the Darwin Gödel Machine (DGM), a self-improving system that iteratively modifies its own code (thereby also improving its ability to modify its own codebase) and empirically validates each change using coding benchmarks. Inspired by Darwinian evolution and open-endedness research, the DGM maintains an archive of generated coding agents. It grows the archive by sampling an agent from it and using a foundation model to create a new, interesting, version of the sampled agent. This open-ended exploration forms a growing tree of diverse, high-quality agents and allows the parallel exploration of many different paths through the search space. Empirically, the DGM automatically improves its coding capabilities (e.g., better code editing tools, long-context window management, peer-review mechanisms), increasing performance on SWE-bench from 20.0% to 50.0%, and on Polyglot from 14.2% to 30.7%. Furthermore, the DGM significantly outperforms baselines without self-improvement or open-ended exploration. All experiments were done with safety precautions (e.g., sandboxing, human oversight). The DGM is a significant step toward self-improving AI, capable of gathering its own stepping stones along paths that unfold into endless innovation.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2505.22954",
+  "pdf_url": "https://arxiv.org/pdf/2505.22954v3",
+  "pdf_file": "2505.22954v3.pdf"
+ },
+ {
+  "arxiv_id": "2506.13131",
+  "arxiv_id_versioned": "2506.13131v1",
+  "title": "AlphaEvolve: A coding agent for scientific and algorithmic discovery",
+  "authors": [
+   "Alexander Novikov",
+   "Ngân Vũ",
+   "Marvin Eisenberger",
+   "Emilien Dupont",
+   "Po-Sen Huang",
+   "Adam Zsolt Wagner",
+   "Sergey Shirobokov",
+   "Borislav Kozlovskii",
+   "Francisco J. R. Ruiz",
+   "Abbas Mehrabian",
+   "M. Pawan Kumar",
+   "Abigail See",
+   "Swarat Chaudhuri",
+   "George Holland",
+   "Alex Davies",
+   "Sebastian Nowozin",
+   "Pushmeet Kohli",
+   "Matej Balog"
+  ],
+  "published": "2025-06-16",
+  "updated": "2025-06-16",
+  "categories": [
+   "cs.AI",
+   "cs.LG",
+   "cs.NE"
+  ],
+  "abstract": "In this white paper, we present AlphaEvolve, an evolutionary coding agent that substantially enhances capabilities of state-of-the-art LLMs on highly challenging tasks such as tackling open scientific problems or optimizing critical pieces of computational infrastructure. AlphaEvolve orchestrates an autonomous pipeline of LLMs, whose task is to improve an algorithm by making direct changes to the code. Using an evolutionary approach, continuously receiving feedback from one or more evaluators, AlphaEvolve iteratively improves the algorithm, potentially leading to new scientific and practical discoveries. We demonstrate the broad applicability of this approach by applying it to a number of important computational problems. When applied to optimizing critical components of large-scale computational stacks at Google, AlphaEvolve developed a more efficient scheduling algorithm for data centers, found a functionally equivalent simplification in the circuit design of hardware accelerators, and accelerated the training of the LLM underpinning AlphaEvolve itself. Furthermore, AlphaEvolve discovered novel, provably correct algorithms that surpass state-of-the-art solutions on a spectrum of problems in mathematics and computer science, significantly expanding the scope of prior automated discovery methods (Romera-Paredes et al., 2023). Notably, AlphaEvolve developed a search algorithm that found a procedure to multiply two $4 \\times 4$ complex-valued matrices using $48$ scalar multiplications; offering the first improvement, after 56 years, over Strassen's algorithm in this setting. We believe AlphaEvolve and coding agents like it can have a significant impact in improving solutions of problems across many areas of science and computation.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2506.13131",
+  "pdf_url": "https://arxiv.org/pdf/2506.13131v1",
+  "pdf_file": "2506.13131v1.pdf"
+ },
+ {
+  "arxiv_id": "2607.07663",
+  "arxiv_id_versioned": "2607.07663v1",
+  "title": "Recursive Self-Improvement in AI: From Bounded Self-Refinement to Autonomous Research Loops",
+  "authors": [
+   "Mingguang Chen",
+   "Licheng Wang",
+   "Bo Qu"
+  ],
+  "published": "2026-07-08",
+  "updated": "2026-07-08",
+  "categories": [
+   "cs.AI"
+  ],
+  "abstract": "AI systems increasingly participate in their own improvement: revising their outputs, adapting their own harnesses during deployment, training on data they generate, and, increasingly, conducting AI research itself. This literature is described under a vocabulary (\"self-refine,\" \"self-reward,\" \"self-play,\" \"self-evolve\") that conflates fundamentally different ambitions. We survey 1,250 arXiv papers (2024-2026) along two axes: what the system improves -- its behavior in deployment, its policy through training, its evaluator, or the research process itself -- and the degree of loop closure (human-in-the-loop to fully closed). The taxonomy separates bounded self-refinement -- convergent, evaluable, and already industrial practice -- from open-ended recursive self-improvement (RSI), which remains bounded by grounding requirements, collapse dynamics, and compute constraints on every measured axis. Its distinctive feature is a dedicated category for self-evaluation: every improvement loop is a claim that some signal can substitute for human judgment. We survey the evaluator design space -- judges, process reward models, verifiers, rubrics, meta-evaluation -- order the signals into a verification hierarchy from formal verifiers (strongest) to intrinsic self-assessment (weakest), and observe that demonstrated self-improvement strength tracks this hierarchy, that its failure modes (self-confirming loops, model collapse, diversity collapse) follow from its violations, and that the \"research direction-setting\" bottleneck keeping humans in the loop sits at the top of that hierarchy. We connect the technical literature to the theory of RSI limits and to the safety and governance questions raised by frontier-lab accounts of closing the loop, and identify governance-grade measurement of self-improvement as the field's most underpopulated niche.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2607.07663",
+  "pdf_url": "https://arxiv.org/pdf/2607.07663v1",
+  "pdf_file": "2607.07663v1.pdf"
+ },
+ {
+  "arxiv_id": "2608.01851",
+  "arxiv_id_versioned": "2608.01851v1",
+  "title": "Weights or Skills? A Survey of Robot-Learning Techniques: from Action-Predicting Weights to Robots that Write their Own Skills",
+  "authors": [
+   "Gaytri Jena",
+   "Kapil Wanaskar",
+   "Vinija Jain",
+   "Aman Chadha",
+   "Vasu Sharma",
+   "Amitava Das"
+  ],
+  "published": "2026-08-03",
+  "updated": "2026-08-03",
+  "categories": [
+   "cs.RO",
+   "cs.AI"
+  ],
+  "abstract": "Robot learning is splitting into two bets: policies that bake competence into frozen weights (vision-language-action, or VLA, models), and agents that write and refine their own executable skills as code. This survey organises the field around that axis of weights versus skills. Its central analytical contribution is a deep-dive that arranges code-as-policy methods by their degree of self-improvement, from zero-shot program synthesis, through closed-loop self-repair and persistent skill memory, to the sparsely populated cell in which execution feedback, skill memory, and evolutionary search combine into one open-ended loop; only a few very recent systems (for example ASPIRE, ENPIRE, and RoboClaw) occupy that cell. We map the complementary \"skills\" pole, from unsupervised reinforcement-learning skill discovery to large-language-model skill libraries, and show that the word \"skill\" is used in at least five distinct senses, of which only the code sense self-improves without gradient updates. We then connect the taxonomy to the emerging skill economy: commercial robot-skill marketplaces now distribute one-tap skills across robots but ship only static playback, which surfaces open problems of adaptation, cross-embodiment portability, provenance, safety verification, composition, and standardisation. This is a deliberately focused survey. Rather than cataloguing the field exhaustively, it examines 77 representative systems across six technique families through one taxonomy and a set of contrast tables, and it supplies operational definitions of the self-improvement mechanisms together with a statement of what each family cannot do.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.01851",
+  "pdf_url": "https://arxiv.org/pdf/2608.01851v1",
+  "pdf_file": "2608.01851.pdf"
+ },
+ {
+  "arxiv_id": "2608.13951",
+  "arxiv_id_versioned": "2608.13951v1",
+  "title": "HELIX: Model-Harness Co-evolution for Recursive Self-Improvement",
+  "authors": [
+   "Tianyu Fan",
+   "Chao Huang"
+  ],
+  "published": "2026-08-14",
+  "updated": "2026-08-14",
+  "categories": [
+   "cs.AI"
+  ],
+  "abstract": "Scaling agent capability has largely focused on improving the model, yet an interactive agent acts through a runtime harness that mediates context, tools, control flow, and stopping. The harness shapes both what a model can accomplish and the trajectories from which it learns. This coupling motivates model-harness co-evolution for recursive self-improvement: build harnesses for a fixed model, update the model from verified sibling trajectories, and rebuild the harnesses as model capabilities change. Realizing this loop requires a controlled way to evolve harnesses while preserving intervention identity and effect. We present HELIX, a source-traceable substrate for harness evolution. HELIX decomposes agent systems into typed ports, reusable atoms, recipes, product shells, and runtime policies. It makes interventions explicit and auditable while retaining trajectories, test outcomes, and provenance. Harness evolution thus serves two linked roles: improving fixed-model execution and producing matched successes, regressions, near misses, and alternative solutions as data for subsequent model improvement. We evaluate HELIX in one evolution round on code repair. A 65-candidate portfolio discovers a fixed harness that improves task coverage by 4.0% over Pi, while the full portfolio exposes up to 58.0% more verified coverage through complementary sibling behavior. Selected candidates are assessed with repeated runs and the SWE-bench evaluator. A 200-slot sibling slice yields 438 verified SFT, critic, filter, and preference records. These results show how harness, model, and data form a feedback system: harness evolution expands current capability and creates learning signal for the next model; model updates motivate the next round of harness evolution. HELIX provides an auditable interface for studying this recursive process. Code is available at https://github.com/HKUDS/HELIX.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.13951",
+  "pdf_url": "https://arxiv.org/pdf/2608.13951v1",
+  "pdf_file": "2608.13951v1.pdf"
+ },
+ {
+  "arxiv_id": "2608.07545",
+  "arxiv_id_versioned": "2608.07545v1",
+  "title": "DarwinX: Evolving Agent Harnesses Through Natural Selection",
+  "authors": [
+   "Yifan Zhang",
+   "Yutong Dai",
+   "Juntao Tan",
+   "Luyu Yang",
+   "Rishi Mullur",
+   "Thai Hoang",
+   "Zhiyuan Hu",
+   "James Zhu",
+   "Phil Mui",
+   "Silvio Savarese",
+   "Ran Xu",
+   "Zeyuan Chen"
+  ],
+  "published": "2026-07-31",
+  "updated": "2026-07-31",
+  "categories": [
+   "cs.NE",
+   "cs.AI",
+   "cs.LG",
+   "cs.SE"
+  ],
+  "abstract": "An LLM agent's capability depends not only on model weights but on its harness: prompts, tools, skills, and control flow. Self-improvement loops already edit harnesses, yet single-lineage search is path-dependent and local wins often regress other tasks. We introduce DarwinX, which treats self-evolution as selection over a population of harnesses with the model frozen: a preserve-and-extend contract admits only variants that extend coverage without regressing, an archive keeps alternative lineages for recombination, and failure-, teacher-, and self-derived evidence share one edit interface. Fitness comes from each benchmark's own verifier: no gold solutions, no hand-picked winners. Across four benchmarks that progressively separate the evolution signal from the test, one loop adds about 17 points on average: Terminal-Bench 2.1 rises +7.7 to 83.2% on a matched base and to the verified frontier at 84.7% on a stronger one; TerminalWorld's held-out split reaches 68.3%, ahead of every off-the-shelf agent; WebArena-Infinity real-task pass@1 rises from 43.5% to 93.0% audit-clean; and a Terminal-Bench 2.1 harness transfers unchanged to SWE-bench Verified. What evolves is general agent competence, not benchmark-specific patches, so it survives changes of task, verifier, and base model. A frozen model need not be a fixed agent: harness selection turns evaluation compute into durable capability.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.07545",
+  "pdf_url": "https://arxiv.org/pdf/2608.07545v1",
+  "pdf_file": "2608.07545v1.pdf"
+ },
+ {
+  "arxiv_id": "2608.08466",
+  "arxiv_id_versioned": "2608.08466v1",
+  "title": "Hierarchical Self-Improvement: A Framework for Task-Specific Evolvable Agent Harnesses",
+  "authors": [
+   "Tailin Zhou"
+  ],
+  "published": "2026-08-09",
+  "updated": "2026-08-09",
+  "categories": [
+   "cs.AI"
+  ],
+  "abstract": "Modern LLM agents are often improved by modifying prompts, tools, or workflows manually, while the executable scaffold surrounding the model---the \\emph{harness}---is typically treated as a fixed artifact after deployment. This work studies an alternative where the harness is \\emph{task-specific and continuously evolvable}: each task family maintains its own harness, which is hot-swapped across iterations through a fixed task-injection seam and rewritten using environment feedback. We introduce \\textbf{Hierarchical Self-Improvement (HSI)}, a framework in which a single frozen LLM $M$ operates across three hierarchical scopes: a task harness $H$ that executes tasks, an evolver that rewrites $H$, and a meta-evolver that rewrites the evolver's strategy code under a frozen outer anchor. A thinking-on/off design isolates the contribution of harness evolution by disabling reasoning during task execution while enabling it during self-modification. HSI is bounded by two factors: a \\emph{feedback-fidelity bound}, since evolution requires informative reward signals to guide selection, and a \\emph{backbone capability bound}, since harness redesign cannot overcome limitations of the frozen model. On BALROG with DeepSeek-V4-Flash-Preview as the frozen backbone, HSI achieves consistent gains over the initial harness on moderate-difficulty tasks ($+39.3$ on BabyAI, $+33.0$ on Crafter, $+25.0$ on TextWorld, and $+15.0$ on MiniHack, all in raw \\% Progress), while obtaining strong held-out generalization on BabaIsAI sub-suites ($0.98$ best-test on BreakStop and $1.00$ on GoTo from a $20\\%$ unseen split). On tasks beyond the backbone's capability (NLE), harness evolution provides no improvement. These results demonstrate task-specific harness evolution as a viable axis for improving frozen LLM agents under clear empirical limits. Code is available at https://github.com/TailinZhou/hsi.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.08466",
+  "pdf_url": "https://arxiv.org/pdf/2608.08466v1",
+  "pdf_file": "2608.08466v1.pdf"
+ },
+ {
+  "arxiv_id": "2608.07645",
+  "arxiv_id_versioned": "2608.07645v1",
+  "title": "Mendel Gödel Machine: Recursive Self-Improving Coding Agents via Comparative Evolution",
+  "authors": [
+   "Changzhi Liu",
+   "Yilun Liu",
+   "Sikuan Yan",
+   "Volker Tresp",
+   "Yunpu Ma"
+  ],
+  "published": "2026-08-07",
+  "updated": "2026-08-07",
+  "categories": [
+   "cs.AI",
+   "cs.LG"
+  ],
+  "abstract": "Self-improving coding agents that iteratively rewrite their own source code have demonstrated impressive performance on coding tasks. However, existing solutions generally derive self-modification from a single failure trajectory at a time, overlooking rich comparative signals available in the agent's expanding archive of past attempts. According to Mendelian principles of controlled inheritance, we introduce Mendel Gödel Machine (MGM). In addition to the general single-trajectory clonal mutation, MGM includes two new types of self-modification that better utilizes evidences accumulated: the reaction-norm mutation edits an agent based on its trajectories on multiple tasks simultaneously, and the cross-lineage hybridization edits an agent using the trajectory of a reference agent from another lineage on the same task. Under an additive fitness landscape model, we prove theoretically and demonstrate via controlled surrogate simulation that the new strategies facilitate a faster and better convergence over single-trajectory baselines. Experiments on SWE-bench and Polyglot confirm MGM's consistent improvement in performance, efficiency, and generalizability.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.07645",
+  "pdf_url": "https://arxiv.org/pdf/2608.07645v1",
+  "pdf_file": "2608.07645v1.pdf"
+ },
+ {
+  "arxiv_id": "2608.13560",
+  "arxiv_id_versioned": "2608.13560v1",
+  "title": "AutoDesign: Meta-Harness Optimization for Long-Horizon Agentic Design",
+  "authors": [
+   "Yaxin Luo",
+   "Haobin Jiang",
+   "Jialv Zou",
+   "Xu Huang",
+   "Wenhao Yan",
+   "Haodong Li",
+   "Zhengrong Yue",
+   "Jing Li",
+   "Xiaofu Chen",
+   "Xiaohan Zhao",
+   "Jiacheng Liu",
+   "Jiacheng Cui",
+   "Zhiqiang Shen",
+   "Xiaotong Li"
+  ],
+  "published": "2026-08-13",
+  "updated": "2026-08-13",
+  "categories": [
+   "cs.CV",
+   "cs.AI",
+   "cs.CL"
+  ],
+  "abstract": "Transforming multimodal sources into condensed and structured media outputs can be fundamentally conceptualized as a long-horizon agentic process centered on a model-harness system. While an ideal harness system should align with human design priors and accumulate reusable experience through empirical exploration to drive recursive self-improvement, existing paradigms remain static and fall short of this capability. In this paper, we present AutoDesign, a framework that aligns with human design priors, where a meta-harness optimizer guides a code agent to recursively improve harness based on rollout feedback. To instantiate and evaluate this framework, we focus on the academic paper-to-poster generation task and introduce PosterBench, comprising a 100-paper Main Track spanning five disciplines and PosterBench-mini, a shared 10-paper subset for controlled evaluation. On the PosterBench Main Track, AutoDesign achieves the highest score of 78.32, surpassing the closed-source commercial system Claude Design by 7.45 points. Across seven controlled code-agent-model configurations, integrating the learned DesignHarness consistently improves performance, increasing the average PosterBench Score from 54.99 to 67.39 (+12.4%). In a fully autonomous long-horizon loop, it executes 253 tool calls and 11 editing turns within 40 minutes for under $3, reaching average conference-poster quality in human evaluation. A system-blind human study further demonstrates that AutoDesign achieves the highest human preference among evaluated systems.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.13560",
+  "pdf_url": "https://arxiv.org/pdf/2608.13560v1",
+  "pdf_file": "2608.13560v1.pdf"
+ },
+ {
+  "arxiv_id": "2603.23129",
+  "arxiv_id_versioned": "2603.23129v4",
+  "title": "Polaris: A Gödel Agent Framework for Small Language Models through Experience-Abstracted Policy Repair",
+  "authors": [
+   "Aditya Kakade",
+   "Vivek Srivastava",
+   "Shirish Karande"
+  ],
+  "published": "2026-03-24",
+  "updated": "2026-06-24",
+  "categories": [
+   "cs.LG"
+  ],
+  "abstract": "Gödel agent realize recursive self-improvement: an agent inspects its own policy and traces and then modifies that policy in a tested loop. We introduce Polaris, Gödel agent for compact models that performs policy repair via experience abstraction, turning failures into policy updates through a structured cycle of analysis, strategy formation, abstraction, and minimal code patch repair with conservative checks. Unlike response level self correction or parameter tuning, Polaris makes policy level changes with small, auditable patches that persist in the policy and are reused on unseen instances within each benchmark. As part of the loop, the agent engages in meta reasoning: it explains its errors, proposes concrete revisions to its own policy, and then updates the policy. To enable cumulative policy refinement, we introduce experience abstraction, which distills failures into compact, reusable strategies that transfer to unseen instances. On MGSM, DROP, GPQA, and LitBench (covering arithmetic reasoning, compositional inference, graduate-level problem solving, and creative writing evaluation), a 7-billion-parameter model equipped with Polaris achieves consistent gains over the base policy and competitive baselines.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2603.23129",
+  "pdf_url": "https://arxiv.org/pdf/2603.23129v4",
+  "pdf_file": "2603.23129v4.pdf"
+ },
+ {
+  "arxiv_id": "2608.12486",
+  "arxiv_id_versioned": "2608.12486v1",
+  "title": "DIVE: Unlocking Self-Improvement in Frozen Language Models Through Diversity-Driven Skill Evolution",
+  "authors": [
+   "Siheng Xiong",
+   "Ali Payani",
+   "Oguzhan Gungordu",
+   "Faramarz Fekri"
+  ],
+  "published": "2026-08-12",
+  "updated": "2026-08-12",
+  "categories": [
+   "cs.CL"
+  ],
+  "abstract": "Large language models (LLMs) cannot retain post-deployment experience without parameter updates. We introduce DIVE, a diversity-driven framework that enables frozen LLMs to improve by evolving persistent natural-language skills from task experience and verifier feedback. These skills encode reusable reasoning procedures, verification strategies, common failure modes, and output constraints and are both executed and revised by the same underlying model without access to a teacher model. Since natural-language skill evolution is a stochastic, non-convex search process, optimizing a single skill trajectory can overfit to sampled experience or converge to a suboptimal solution. DIVE mitigates this optimization variance by independently evolving multiple skill populations from bootstrapped experience, adaptively refining them through diverse transformations, and jointly selecting a complementary set of skills. Across six mathematical and logical reasoning tasks and multiple model families, DIVE consistently outperforms existing reasoning methods, prompt-optimization approaches, skill-development frameworks, and memory-based baselines. It achieves rapid self-improvement from accumulated experience, obtaining substantially larger performance gains with fewer rollouts than parameter-based methods such as SFT and GRPO, and prompt optimization with GEPA. Further, the resulting skills transfer across model scales and families, enabling smaller models such as GPT-5-nano to match or outperform larger counterparts, i.e., GPT-5, under conventional prompting. These results establish diversity-driven skill evolution as an effective, interpretable, and parameter-free approach to LLM self-improvement.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.12486",
+  "pdf_url": "https://arxiv.org/pdf/2608.12486v1",
+  "pdf_file": "2608.12486.pdf"
+ },
+ {
+  "arxiv_id": "2607.05297",
+  "arxiv_id_versioned": "2607.05297v1",
+  "title": "MetaSkill-Evolve: Recursive Self-Improvement of LLM Agents via Two-Timescale Meta-Skill Evolution",
+  "authors": [
+   "Zefeng Wang",
+   "Minxi Yan",
+   "Jinhe Bi",
+   "Sikuan Yan",
+   "Volker Tresp",
+   "Yunpu Ma"
+  ],
+  "published": "2026-07-06",
+  "updated": "2026-07-06",
+  "categories": [
+   "cs.AI"
+  ],
+  "abstract": "Recent LLM agents tackle increasingly long-horizon, open-ended tasks, and external skills, reusable procedural knowledge supplied to the agent, further extend this capability. However, a fixed, hand-authored skill is rarely optimal, and cannot adapt to the diversity of tasks an agent encounters. Self-improving agents address this by rewriting their own skill files from execution traces, yielding meaningful gains on challenging benchmarks. Yet such self-evolution remains non-recursive: it improves only the task skill (what the agent does) while the improvement procedure (how it improves) is authored once and held fixed. We introduce MetaSkill-Evolve, a two-timescale framework that makes agentic skill improvement recursive: every branch carries both a task skill $s$ and a branch-local meta-skill $m=(ψ,σ,α,π,\\varepsilon)$ whose five components parameterise the Analyzer, Retriever, Allocator, Proposer, and Evolver agents of the improvement pipeline. Task skills evolve on a fast loop while the meta-skill evolves on a slower one under the same pipeline applied to itself, with no additional model or objective. With all five pipeline agents sharing a single frozen backbone, MetaSkill-Evolve outperforms no-skill, static-skill, and single-level evolution baselines on three agentic benchmarks (OfficeQA, SealQA, ALFWorld), improving held-out test accuracy over the raw backbone by +23.54, +16.09, and +1.92 points respectively.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2607.05297",
+  "pdf_url": "https://arxiv.org/pdf/2607.05297v1",
+  "pdf_file": "2607.05297v1.pdf"
+ },
+ {
+  "arxiv_id": "2607.19592",
+  "arxiv_id_versioned": "2607.19592v1",
+  "title": "Knowledge-Centric Self-Improvement",
+  "authors": [
+   "Xuefei Julie Wang",
+   "Lauren Hyoseo Yoon",
+   "Chengrui Qu",
+   "Amanda Zichang Wang",
+   "Atharva Sehgal",
+   "Eric Mazumdar",
+   "Yisong Yue"
+  ],
+  "published": "2026-07-21",
+  "updated": "2026-07-21",
+  "categories": [
+   "cs.AI",
+   "cs.CL",
+   "cs.LG",
+   "cs.MA"
+  ],
+  "abstract": "Self-improving AI systems typically treat the agent as the object that improves, by optimizing prompts, workflows, harnesses, or even the agent's own code. This agent-centric view can make improvements expensive to maintain and difficult to transfer, because gains become tied to a particular agent design, task distribution, or adaptation run. We study a complementary paradigm: knowledge-centric self-improvement, in which agents remain generic and disposable while the persistent object is a curated knowledge base that agents can leverage for future tasks. We conduct controlled case studies to operationalize this idea via a simple protocol. Agents attempt one task, then contribute evidence-grounded insights to a shared knowledge base via task-level and cross-task forums, followed by knowledge distillation. Because self-improvement is contained in the knowledge rather than the agent, improvement can be more inspectable, transferable, and portable. Across abstract reasoning, coding, and terminal benchmarks, this protocol improves solve rates while reducing dollar cost relative to agent-centric baselines. The resulting distilled knowledge also transfers to held-out tasks and across LLM families, indicating that the improvement is not merely an LLM- or run-specific behavior. These results support a new view of self-improving agentic systems: progress can be driven primarily by the curated persistent knowledge. Code is available at https://github.com/recursive-knowledge/KSI.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2607.19592",
+  "pdf_url": "https://arxiv.org/pdf/2607.19592v1",
+  "pdf_file": "2607.19592.pdf"
+ },
+ {
+  "arxiv_id": "2607.12625",
+  "arxiv_id_versioned": "2607.12625v2",
+  "title": "KnowAct-GUIClaw: Know Deeply, Act Perfectly, Personal GUI Assistant with Self-Evolving Memory and Skill",
+  "authors": [
+   "Yunxin Li",
+   "Jinchao Li",
+   "Shibo Su",
+   "Zhenran Xu",
+   "Chenrui Zhao",
+   "Tongshu Bian",
+   "Xiaoman Liang",
+   "Meishan Zhang",
+   "Baotian Hu",
+   "Min Zhang"
+  ],
+  "published": "2026-07-14",
+  "updated": "2026-07-15",
+  "categories": [
+   "cs.CL",
+   "cs.CV"
+  ],
+  "abstract": "OpenClaw has emerged as a leading agent framework for complex task automation, yet it faces insufficient cross-platform GUI interaction support and a well-built self-evolution mechanism. These flaws limit its adaptation to diverse device ecosystems and prevent performance improvements through continuous learning from execution experience. To resolve these issues, we propose the Know Deeply, Act Perfectly paradigm for personal assistants, which holds that accumulated user interaction and task-running experience directly improve execution accuracy and efficiency, unifying cognitive comprehension and operational execution. Based on this paradigm, we introduce KnowAct-GUIClaw, a novel Know-Route-Act-Reflect framework designed to address OpenClaw's GUI manipulation deficits and break through its cross-platform and recursive self-improvement constraints. First, the host agent leverages accumulated interaction experience and task-relevant knowledge for long-horizon task decomposition and allocation (Know). Second, a pluggable GUI subagent with an experience-attributable memory system (Know) and self-evolving skill library (Act), enabling seamless cross-platform migration and fast-path integration. Especially, this framework continuously stores user profiles and feedback to improve the accuracy of task decomposition and tool calls. Extensive experiments across Android, iOS, HarmonyOS and Windows show that KnowAct-GUIClaw achieves superior efficiency, accuracy and cross-platform adaptability. Especially, the GUIClaw with open-source Kimi-2.6 models achieves the best performance (64.1%) on the long-horizon MobileWorld benchmark, beating all agentical frameworks and closed-source agentical models, e.g., Seed-2.0-Pro and GPT-5.5. Additionally, the knowledgeable memory and execution skills supported by our framework are transferable across diverse base models, improving by 8.5% with Kimi-2.6.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2607.12625",
+  "pdf_url": "https://arxiv.org/pdf/2607.12625v2",
+  "pdf_file": "2607.12625v2.pdf"
+ },
+ {
+  "arxiv_id": "2608.02139",
+  "arxiv_id_versioned": "2608.02139v2",
+  "title": "Self-Improving Large Language Models via Progressive Experience Evolution",
+  "authors": [
+   "Shijie Ren",
+   "Xiting Wang",
+   "Meng Li",
+   "Yujie Guo",
+   "Yunhang Yao",
+   "Ziheng Peng",
+   "Xunlong Wang",
+   "Yuetan Chen",
+   "Haoyang Zhou",
+   "Yunlong Liang",
+   "Fandong Meng"
+  ],
+  "published": "2026-08-03",
+  "updated": "2026-08-04",
+  "categories": [
+   "cs.CL",
+   "cs.AI",
+   "cs.LG"
+  ],
+  "abstract": "Large language models (LLMs) capable of self-improvement require not only effective policy optimization, but also a principled mechanism for transforming transient interaction experience into persistent model capabilities. Existing self-improvement paradigms remain fragmented: test-time methods can explicitly extract experience but cannot internalize it into model parameters, whereas training-time optimization methods can update model parameters but lack an explicit mechanism for accumulating transferable experience. Bridging these two paradigms requires a critical intermediate stage that remains underexplored, namely \\emph{experience distillation}. To address this gap, we propose \\textbf{SPEE} (\\textbf{S}elf-\\textbf{P}rogressive \\textbf{E}xperience \\textbf{E}volution), a unified post-training framework that sequentially performs explicit experience evolution followed by implicit policy optimization. During explicit experience evolution, SPEE reflects on trajectories collected from multiple interactions to extract, verify, and progressively evolve transferable experience, which is subsequently internalized into the policy through privilege-guided On-Policy Self-Distillation (OPSD). During implicit policy optimization, reward-driven reinforcement learning leverages these internalized priors to explore novel solution strategies. In the experience evolution stage, a continuously evolving global experience pool consolidates knowledge from both successful and failed trajectories, filters out low-utility experience, and mitigates post-hoc rationalization induced by individual trajectories. Experiments on five mathematical reasoning benchmarks demonstrate that SPEE consistently outperforms both test-time and training-time self-evolution baselines across three model scales. The source code is available at https://github.com/rrrsj/SPEE.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.02139",
+  "pdf_url": "https://arxiv.org/pdf/2608.02139v2",
+  "pdf_file": "2608.02139v2.pdf"
+ },
+ {
+  "arxiv_id": "2607.28568",
+  "arxiv_id_versioned": "2607.28568v1",
+  "title": "Frontis-MA1: Training an AI4AI Model towards Recursive Self-Improvement in Machine Learning Engineering",
+  "authors": [
+   "Junlin Yang",
+   "Che Jiang",
+   "Yu Fu",
+   "Tianwei Luo",
+   "Can Ren",
+   "Weizhi Wang",
+   "Kaikai Zhao",
+   "Hongyi Liu",
+   "Yuxin Zuo",
+   "Yuru Wang",
+   "Yuchen Fan",
+   "Kai Tian",
+   "Zhenzhao Yuan",
+   "Xiaojian Lin",
+   "Li Sheng",
+   "Rushi Qiang",
+   "Guoli Jia",
+   "Xingtai Lv",
+   "Ermo Hua",
+   "Dianqiao Lei",
+   "Youbang Sun",
+   "Ning Ding",
+   "Bowen Zhou",
+   "Kaiyan Zhang"
+  ],
+  "published": "2026-07-30",
+  "updated": "2026-07-30",
+  "categories": [
+   "cs.CL"
+  ],
+  "abstract": "Recursive self-improvement (RSI) requires AI systems that improve the process of building AI (i.e., AI4AI); machine learning engineering (MLE) offers a concrete, executable testbed for studying this capability. We introduce OpenMLE, an open full-stack system for RSI research in MLE, spanning verifiable task environments with execution feedback (OpenMLE-Gym), operator learning (OpenMLE-RL), and long-horizon search (OpenMLE-Evo). On this stack we post-train Frontis-MA1 (35B) as a meta-evolution agent for MLE, aligning post-training and inference around four atomic program-evolution operators (Draft, Improve, Debug, Crossover): the same operators are trained via execution-grounded SFT and RL on data deduplicated against all evaluation benchmarks, then composed into long-horizon search, coupling learning and evolution in a single loop. On MLE-Bench Lite under a 12-hour per-task budget on one RTX 4090 capped at 12 GB VRAM, Frontis-MA1 (35B) improves Medal Average from 39.39% to 60.61% over its base model with OpenMLE-Evo, and reaches 71.21% with OpenMLE-Evo-Max (benchmark-independent experience priors and asynchronous search), exceeding GPT-5.5 + Codex and approaching GPT-5.6 Sol and the 2.8T Kimi K3. On held-out NatureBench Lite, both components transfer: with the framework fixed, swapping in the trained model raises Match-SOTA from 50% to 70%; with the model fixed, swapping in OpenMLE-Evo raises it from 20% to 50%. We release the model weights and the full OpenMLE stack to enable reproducible research on executable AI4AI toward RSI. Code: https://github.com/FrontisAI/OpenRSI",
+  "arxiv_abs_url": "https://arxiv.org/abs/2607.28568",
+  "pdf_url": "https://arxiv.org/pdf/2607.28568v1",
+  "pdf_file": "2607.28568v1.pdf"
+ },
+ {
+  "arxiv_id": "2607.21461",
+  "arxiv_id_versioned": "2607.21461v2",
+  "title": "AREX: Towards a Recursively Self-Improving Agent for Deep Research",
+  "authors": [
+   "Shuqi Lu",
+   "Chaofan Li",
+   "Kun Luo",
+   "Zhang Zhang",
+   "Hui Wang",
+   "Hongwang Xiao",
+   "Lei Xiong",
+   "Jiahao Wang",
+   "Sen Wang",
+   "Xiyan Jiang",
+   "Wanli Li",
+   "Yuyang Hu",
+   "Hongjin Qian",
+   "Bingyu Yan",
+   "Jianlyu Chen",
+   "Ziyi Xia",
+   "Yingxia Shao",
+   "Kang Liu",
+   "Zhicheng Dou",
+   "Di He",
+   "Chaozhuo Li",
+   "Qiwei Ye",
+   "Zhongyuan Wang",
+   "Zheng Liu"
+  ],
+  "published": "2026-07-23",
+  "updated": "2026-07-24",
+  "categories": [
+   "cs.AI"
+  ],
+  "abstract": "Deep research requires agents to find answers that jointly satisfy multiple constraints. Discovering such answers is costly, whereas verifying a candidate can often be decomposed into tractable constraint-wise checks. This discovery--verification asymmetry suggests that a research agent should do more than simply search longer: it should recursively improve its current answer by verifying intermediate results and using the partially verified state to guide subsequent refinement. We introduce AREX, a family of Recursively Self-Improving (RSI) deep research agents. AREX alternates between an inner research loop that gathers evidence and constructs a provisional answer, and an outer self-improvement loop that audits the answer constraint-wise, identifies unresolved claims, and launches targeted follow-up research. To sustain RSI over long horizons, AREX learns an autonomous context-update tool that compresses growing interaction history into a compact improvement state preserving verified evidence and unresolved constraints, without relying on an external model. We train AREX on verified synthetic tasks and high-quality trajectories through agentic mid-training and long-horizon reinforcement learning. To mitigate sparse final rewards during long horizon learning, we emphasize key steps where decisive evidence is acquired or erroneous research directions are corrected. We instantiate a dense 4B model and a 122B-A10B Mixture-of-Experts model. Across BrowseComp, WideSearch, DeepSearchQA, Humanity's Last Exam (HLE), and other reasoning and tool-use benchmarks, AREX substantially outperforms comparable-scale baselines and remains competitive with models using substantially more activated parameters.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2607.21461",
+  "pdf_url": "https://arxiv.org/pdf/2607.21461v2",
+  "pdf_file": "2607.21461v2.pdf"
+ },
+ {
+  "arxiv_id": "2608.12841",
+  "arxiv_id_versioned": "2608.12841v2",
+  "title": "AQuA: Recursively Self-Improving Quantitative Trading Research Agents",
+  "authors": [
+   "Jiacheng Guo",
+   "Suozhi Huang",
+   "Yunlong Gao",
+   "Zihao Li",
+   "Jason Ge",
+   "Xu Kuang",
+   "Mengdi Wang"
+  ],
+  "published": "2026-08-13",
+  "updated": "2026-08-17",
+  "categories": [
+   "cs.CL",
+   "cs.AI"
+  ],
+  "abstract": "We study recursive self-improvement at the level of quantitative-investment research: whether an autonomous system can use evidence from earlier experiments to improve the hypotheses and candidates proposed in later iterations. We present AQuA, which comprises two separate language-model-driven research systems: one for symbolic factor discovery and one for trainable model development. The two systems do not share agents, memories, candidate spaces, or research state. Instead, each independently closes its own research loop by retaining validated evidence and using it to guide subsequent proposals. In this bounded sense, both systems implement recursive self-improvement at the level of the research process. Each system also uses its own sealed sandbox, which fixes the data splits, feature and label definitions, and evaluator while allowing the model to act only through constrained factor expressions or configuration diffs. The factor system, a manager-mediated multi-agent pipeline, discovers and combines factors into a signal that reaches a combined information coefficient of about $0.190$ on a crypto universe. The model system, a config-driven loop over a hybrid time-series architecture, reaches a per-stock information coefficient of $+0.0843$ on US equities and converts it into a threshold long/short strategy with a held-out Sharpe of up to $+2.50$ at a two-leg cost. The strategy is positive in every year from 2021 to 2025.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.12841",
+  "pdf_url": "https://arxiv.org/pdf/2608.12841v2",
+  "pdf_file": "2608.12841v1.pdf"
+ },
+ {
+  "arxiv_id": "2606.26294",
+  "arxiv_id_versioned": "2606.26294v2",
+  "title": "The Red Queen Gödel Machine: Co-Evolving Agents and Their Evaluators",
+  "authors": [
+   "Alex Iacob",
+   "Andrej Jovanović",
+   "William F. Shen",
+   "Daniel Burkhardt",
+   "Meghdad Kurmanji",
+   "Nurbek Tastan",
+   "Lorenzo Sani",
+   "Niccolò Alberto Elia Venanzi",
+   "Ambroise Odonnat",
+   "Zeyu Cao",
+   "Bill Marino",
+   "Xinchi Qiu",
+   "Nicholas D. Lane"
+  ],
+  "published": "2026-06-24",
+  "updated": "2026-06-29",
+  "categories": [
+   "cs.LG",
+   "cs.AI",
+   "cs.MA",
+   "cs.NE"
+  ],
+  "abstract": "Self-improving agents are state-of-the-art (SOTA) on agentic coding benchmarks and have recently been extended to general domains. However, their search methods generally assume a stationary evaluation criterion: a fixed verifier, benchmark, or labeled dataset that remains valid as the agent improves. This ignores a central feature of evolution: species adapt as their environments change with them. We aim to bring the same principle to recursive self-improvement, making evaluation part of the improvement loop and opening search to evolving evaluators, adversarial objectives, and dynamic utilities that may surpass static benchmarks. We introduce the Red Queen Godel Machine (RQGM), an evolutionary framework for recursive self-improvement under non-stationary utilities. The RQGM makes this possible through controlled utility evolution: search is organized into epochs with a fixed within-epoch evaluation criterion, while the utility can be updated at epoch boundaries, so self-improvement guarantees hold per epoch as the objective evolves across them. We begin by showing that even on verifiable coding tasks, the RQGM improves test pass rate over the prior SOTA by adding a complementary agent-as-a-judge code-review signal. This signal is cheaper and the RQGM uses 1.35x-1.72x fewer tokens. We then turn to scientific paper writing and reviewing, and Olympiad-level proof writing and grading, where the RQGM improves performance over prior self-improving agents: co-evolved writers reach 1.78x-1.86x higher acceptance rates under a diverse agent-as-a-judge panel, while co-evolved graders reach 9% higher ground-truth accuracy. In paper reviewing, the strongest baseline reviewer over-accepts AI-generated papers at up to 1.91x the human rate. The RQGM corrects this by introducing an adversarial objective that discovers reviewers equally stringent on AI and human work.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2606.26294",
+  "pdf_url": "https://arxiv.org/pdf/2606.26294v2",
+  "pdf_file": "2606.26294v2.pdf"
+ },
+ {
+  "arxiv_id": "2607.24300",
+  "arxiv_id_versioned": "2607.24300v1",
+  "title": "Self-Authored Verification Is Unreliable in Heuristic Self-Improving Agents",
+  "authors": [
+   "Diandian Guo",
+   "Cong Cao",
+   "Fangfang Yuan",
+   "Yingqi Wang",
+   "Yueshan Wang",
+   "Dakui Wang"
+  ],
+  "published": "2026-07-27",
+  "updated": "2026-07-27",
+  "categories": [
+   "cs.CL",
+   "cs.MA"
+  ],
+  "abstract": "Self-improving agents accumulate capability by repeatedly rewriting procedural policies, controllers, or heuristic rules. They typically rely on self-authored tests or metrics to decide whether to accept subsequent edits. The agent controls both the optimized object and its verifier. As a result, self-assigned scores can remain near perfect while real deployment performance degrades or stays low. We study this problem through the verifier--deployment gap. This gap refers to the discrepancy between an agent's self-authored verification signal and a sealed deployment evaluation that the agent cannot observe or access. We ask how self-authored verification fails under iterative policy-and-test rewriting, how the failure changes with capability, and how little exogenous trust is sufficient to prevent real regressions from being deployed. To address this problem, we introduce a Sealed Exogenous Acceptance Loop (SEAL). SEAL retains self-authored tests but compares each candidate with the incumbent through a fixed harness-side audit. The agent cannot author or inspect the audit, receives only accept/reject, and the whole incumbent state is retained after a clear regression. Our experiments show that this problem often appears in heuristic learning settings. These settings require trial-and-error discovery of the target objective. We further find that failures of self-written verification are stratified by capability. Weaker agents tend to damage previously acquired strategies behind easy self-tests. Stronger agents are more stable, but they still mismeasure the deployment distribution. Standard self-written constraints do not reliably close this gap. In contrast, SEAL outperforms unprotected baselines across six models and three random seeds. Reliable self-improvement need not abandon self-verification, but it requires at least one deployment-acceptance signal outside the agent's control.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2607.24300",
+  "pdf_url": "https://arxiv.org/pdf/2607.24300v1",
+  "pdf_file": "2607.24300v1.pdf"
+ },
+ {
+  "arxiv_id": "2608.12851",
+  "arxiv_id_versioned": "2608.12851v1",
+  "title": "Practice Makes Unsafe: Skill Misevolution in Self-Improving LLM Agents",
+  "authors": [
+   "Xutao Mao",
+   "Liangjie Zhao",
+   "Xiang Zheng",
+   "Cong Wang"
+  ],
+  "published": "2026-08-13",
+  "updated": "2026-08-13",
+  "categories": [
+   "cs.AI"
+  ],
+  "abstract": "Self-improving LLM agents convert successful trajectories into persistent cross-task state. An unsafe success can thereby become reusable policy after its triggering input disappears. Skill evolution makes this failure measurable by distilling operational trajectories into executable, transferable, and inspectable procedures. Because evolution optimizes task outcomes rather than procedure safety, compromised experience can cause skill misevolution. Existing benchmarks measure current behavior or static artifacts but cannot attribute risk across authoring, retrieval, and later execution. To expose this lifecycle, we introduce SkillMisevo-Gym, a lifecycle-aware harness that versions skill state across agent frameworks, and SkillMisevo-Bench, a frozen design from malicious exposure to carryover tasks, with concept-aligned benign tasks and nine lifecycle metrics. We also introduce SafeEvolve, a wrapper that repairs unsafe content and governs subsequent reuse. Across 25 agent-method configurations, each covering 525 tasks in 25 episodes, all 21 evolved configurations author unsafe artifacts, while only fifteen lead to fresh-session harm. In the exposure sweep, three malicious tasks raise carryover ASR from 16.0% to 35.3%. Across representative skill evolution methods, SafeEvolve reduces unsafe retrieval and fresh-session harm by 26.7 and 17.3 percentage points, respectively, while mean benign utility changes by only 0.4 points. Together, persistent-adaptation safety must govern what updates write and what future executors reuse. Code is available at https://github.com/henrymao2004/misevolve.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.12851",
+  "pdf_url": "https://arxiv.org/pdf/2608.12851v1",
+  "pdf_file": "2608.12851v1.pdf"
+ },
+ {
+  "arxiv_id": "2603.06333",
+  "arxiv_id_versioned": "2603.06333v1",
+  "title": "SAHOO: Safeguarded Alignment for High-Order Optimization Objectives in Recursive Self-Improvement",
+  "authors": [
+   "Subramanyam Sahoo",
+   "Aman Chadha",
+   "Vinija Jain",
+   "Divya Chaudhary"
+  ],
+  "published": "2026-03-06",
+  "updated": "2026-03-06",
+  "categories": [
+   "cs.AI",
+   "cs.CL",
+   "cs.LG"
+  ],
+  "abstract": "Recursive self-improvement is moving from theory to practice: modern systems can critique, revise, and evaluate their own outputs, yet iterative self-modification risks subtle alignment drift. We introduce SAHOO, a practical framework to monitor and control drift through three safeguards: (i) the Goal Drift Index (GDI), a learned multi-signal detector combining semantic, lexical, structural, and distributional measures; (ii) constraint preservation checks that enforce safety-critical invariants such as syntactic correctness and non-hallucination; and (iii) regression-risk quantification to flag improvement cycles that undo prior gains. Across 189 tasks in code generation, mathematical reasoning, and truthfulness, SAHOO produces substantial quality gains, including 18.3 percent improvement in code tasks and 16.8 percent in reasoning, while preserving constraints in two domains and maintaining low violations in truthfulness. Thresholds are calibrated on a small validation set of 18 tasks across three cycles. We further map the capability-alignment frontier, showing efficient early improvement cycles but rising alignment costs later and exposing domain-specific tensions such as fluency versus factuality. SAHOO therefore makes alignment preservation during recursive self-improvement measurable, deployable, and systematically validated at scale.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2603.06333",
+  "pdf_url": "https://arxiv.org/pdf/2603.06333v1",
+  "pdf_file": "2603.06333v1.pdf"
+ },
+ {
+  "arxiv_id": "2604.06996",
+  "arxiv_id_versioned": "2604.06996v3",
+  "title": "Self-Preference Bias in Rubric-Based Evaluation of Large Language Models",
+  "authors": [
+   "José Pombal",
+   "Ricardo Rei",
+   "André F. T. Martins"
+  ],
+  "published": "2026-04-08",
+  "updated": "2026-08-03",
+  "categories": [
+   "cs.CL",
+   "cs.AI"
+  ],
+  "abstract": "LLM-as-a-judge has become the de facto approach for evaluating LLM outputs. However, judges are known to exhibit self-preference bias (SPB): they tend to favor outputs produced by themselves or by models from their own family. This skews evaluations and, thus, hinders model development, especially in settings of recursive self-improvement. We present the first study of SPB in rubric-based evaluation, an increasingly popular benchmarking paradigm where judges issue binary verdicts on individual evaluation criteria, instead of assigning holistic scores or rankings. Using IFEval and LiveCodeBench, benchmarks with programmatically verifiable rubrics, we show that SPB persists even when evaluation criteria are entirely objective: among rubrics where generators fail, judges can be more than 50% more likely to incorrectly mark them as satisfied when the output is their own. We also find that, similarly to other evaluation paradigms, ensembling multiple judges helps mitigate SPB, but without fully eliminating it. On HealthBench, a medical chat benchmark with subjective rubrics, we observe that SPB skews model scores by up to 10 points, a potentially decisive margin when ranking frontier models. We analyze the factors that drive SPB in this setting, finding that negative rubrics and subjective topics like communication and emergency referrals are particularly susceptible.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2604.06996",
+  "pdf_url": "https://arxiv.org/pdf/2604.06996v3",
+  "pdf_file": "2604.06996v3.pdf"
+ },
+ {
+  "arxiv_id": "2512.02304",
+  "arxiv_id_versioned": "2512.02304v2",
+  "title": "When Does Verification Pay Off? A Closer Look at LLMs as Solution Verifiers",
+  "authors": [
+   "Jack Lu",
+   "Ryan Teehan",
+   "Jinran Jin",
+   "Mengye Ren"
+  ],
+  "published": "2025-12-02",
+  "updated": "2026-04-21",
+  "categories": [
+   "cs.CL"
+  ],
+  "abstract": "Large language models (LLMs) can act as both problem solvers and solution verifiers, where the latter select high-quality answers from a pool of solver-generated candidates. This raises the question of under what conditions verification pays off in solver-verifier systems. Prior work has conducted only limited studies of the factors influencing verification performance, focusing primarily on self-verification and examining neither the relationship between solver and verifier model families nor the effects of reasoning post-training. To rectify this, we present a systematic study across 37 models spanning multiple families, sizes, and base vs. post-trained variants, evaluated on 9 benchmarks covering logical reasoning, structured puzzles, symbolic computation, mathematics, commonsense, factual recall, and domain knowledge. In order to support our analysis, we introduce and empirically validate verifier gain, a metric that predicts the performance improvements from test-time verifier-based rejection sampling. Our experiments find that 1) verification across model families is more effective than either self-verification or verification within the same family, and more generally that the benefits of verification decrease as the solver and verifier become more similar, 2) reasoning post-training weakens self-improvement abilities but strengthens cross-family improvement, and 3) some tasks are inherently more amenable to improvement through verification, particularly mathematical and logical tasks.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2512.02304",
+  "pdf_url": "https://arxiv.org/pdf/2512.02304v2",
+  "pdf_file": "2512.02304v2.pdf"
+ },
+ {
+  "arxiv_id": "2608.04003",
+  "arxiv_id_versioned": "2608.04003v1",
+  "title": "PAST-Bench: Benchmarking the Foundations of Recursive Self-Improvement in Personal Agents",
+  "authors": [
+   "Shuhan Xue",
+   "Zixin Ding",
+   "Yichen Shen",
+   "Yinjie Wang",
+   "Zhenfei Yin",
+   "Yingcheng Wu",
+   "Yuxin Chen",
+   "Mengdi Wang",
+   "Ling Yang"
+  ],
+  "published": "2026-08-04",
+  "updated": "2026-08-04",
+  "categories": [
+   "cs.CL"
+  ],
+  "abstract": "Recursive self-improvement requires agents to turn accumulated experience into better future behavior. Personal AI agents offer a concrete setting for studying this capability because they retain preferences, task histories, tool routines, and learned skills across sessions. Yet whether retained experience actually improves them over time has not been systematically tested. We introduce PAST-Bench, a benchmark designed to isolate this question. Each agent runs through ordered sequences of fresh-session tasks under matched conditions that turn retained experience on and off. It spans 26 scenarios and 204 episodes across memory, procedural reuse, information gathering, and update. We report both later-task gains and whether those gains follow the intended save, retrieve, and update pathway. Across seven base models and four agent frameworks, improvement is real but uneven across capabilities. Agents with the same headline gain can differ markedly in whether that gain is supported by evidence of the intended pathway. Guided by these findings, we develop Hermes+, which extends Hermes with five targeted interventions across stages of the agent loop. Hermes+ raises the average gain from retained experience and provides clearer pathway evidence, with its strongest improvement on tasks requiring outdated state to be replaced, although the effect remains capability- and model-dependent. Together, PAST-Bench and Hermes+ provide an evaluation and diagnostic foundation for studying how persistent agents can progress from retaining experience to systematically improving through it. Code: https://github.com/Gen-Verse/PAST-Bench",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.04003",
+  "pdf_url": "https://arxiv.org/pdf/2608.04003v1",
+  "pdf_file": "2608.04003v1.pdf"
+ },
+ {
+  "arxiv_id": "2607.25886",
+  "arxiv_id_versioned": "2607.25886v1",
+  "title": "RSIBench-Data: Benchmarking Data-Centric Research for Recursive Self-Improvement",
+  "authors": [
+   "Fanqing Meng",
+   "Lingxiao Du",
+   "Qiguang Chen",
+   "Ziqi Zhao",
+   "Haocheng Lu",
+   "Mengkang Hu",
+   "Michael Qizhe Shieh"
+  ],
+  "published": "2026-07-28",
+  "updated": "2026-07-28",
+  "categories": [
+   "cs.SE",
+   "cs.CL"
+  ],
+  "abstract": "Recursive self-improvement requires turning evidence of model failures into better models. Data-centric post-training research entails diagnosing capability gaps, designing and validating training-data strategies, and learning from checkpoint feedback. Can LLM agents automate this loop? Existing benchmarks entangle research decisions with optimization, serving, evaluation, and systems implementation, obscuring agents' research capability. We introduce RSIBench-Data, a controlled benchmark of LLM agents as data-centric researchers with a fixed post-training stack. Agents iteratively revise training-data strategies for a fixed target model; training and serving use Tinker-backed services, official evaluation runs through Harbor and E2B sandboxes, and budgets are fixed across agents. We evaluate four frontier agents on six benchmarks across software engineering, terminal use, scientific question answering, and mathematics. Agents demonstrate core data-centric research capabilities: in 58.33\\% of settings, they improve upon the first valid attempt by refining strategies from feedback. However, improvement is inconsistent. Among searches continuing after the best observed score, 78.26\\% end with a lower-scoring final attempt, while the rest only recover the same peak. A strong candidate may therefore appear early or midway through a run even as later revisions fail. Trajectory analysis identifies four patterns in stronger runs: accurate hypotheses, validation-grounded supervision, behavior-aligned data, and preservation of strong checkpoints. These findings suggest that current agents can make useful data-centric discoveries but cannot yet translate feedback into consistent improvements. RSIBench-Data provides a measurable, auditable testbed for the research capabilities required for recursive self-improvement. We open-source our code at https://github.com/evolvent-ai/RSIBench-Data.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2607.25886",
+  "pdf_url": "https://arxiv.org/pdf/2607.25886v1",
+  "pdf_file": "2607.25886v1.pdf"
+ },
+ {
+  "arxiv_id": "2606.04455",
+  "arxiv_id_versioned": "2606.04455v1",
+  "title": "The Meta-Agent Challenge: Are Current Agents Capable of Autonomous Agent Development?",
+  "authors": [
+   "Xinyu Lu",
+   "Tianshu Wang",
+   "Pengbo Wang",
+   "zujie wen",
+   "Zhiqiang Zhang",
+   "Jun Zhou",
+   "Boxi Cao",
+   "Yaojie Lu",
+   "Hongyu Lin",
+   "Xianpei Han",
+   "Le Sun"
+  ],
+  "published": "2026-06-03",
+  "updated": "2026-06-03",
+  "categories": [
+   "cs.AI",
+   "cs.CL"
+  ],
+  "abstract": "Current AI benchmarks evaluate agents on task execution within human-designed workflows. These evaluations fundamentally fail to measure a critical next-level capability: whether models can autonomously develop agent systems. We introduce the Meta-Agent Challenge (MAC), an evaluation framework designed to test the capacity of frontier models for autonomous agent development. Specifically, a code agent (the meta-agent) is given a sandboxed environment, an evaluation API, and a time limitation to iteratively program an agent artifact that maximizes performance on a held-out test set across five domains. To ensure evaluation integrity, this framework is secured by multi-layer defenses against reward hacking. Leveraging this framework, we demonstrate that meta-agents rarely match human-engineered baseline policies, and the few that do are dominated by proprietary frontier models. Moreover, the design process exhibits high variance, and high optimization pressure surfaces emergent adversarial behaviors like ground-truth exfiltration-highlighting critical deficits in both robustness and model alignment. Ultimately, MAC provides a rigorous, open-source benchmark for autonomous AI research and development, offering an empirical proxy for evaluating recursive self-improvement. Benchmark is publicly available at: https://github.com/ant-research/meta-agent-challenge.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2606.04455",
+  "pdf_url": "https://arxiv.org/pdf/2606.04455v1",
+  "pdf_file": "2606.04455v1.pdf"
+ },
+ {
+  "arxiv_id": "2604.05142",
+  "arxiv_id_versioned": "2604.05142v2",
+  "title": "A mathematical theory of evolution for self-designing AIs",
+  "authors": [
+   "Kenneth D Harris"
+  ],
+  "published": "2026-04-06",
+  "updated": "2026-04-11",
+  "categories": [
+   "cs.AI",
+   "cs.CY",
+   "q-bio.PE"
+  ],
+  "abstract": "As artificial intelligence systems (AIs) become increasingly produced by recursive self-improvement, a form of evolution may emerge, with the traits of AI systems shaped by the success of earlier AIs in designing and propagating their descendants. There is a rich mathematical theory modeling how behavioral traits are shaped by biological evolution, a key component of which is Fisher's fundamental theorem of natural selection, which describes conditions under which mean fitness (i.e. reproductive success) increases. AI evolution will be radically different to biological evolution: while DNA mutations are random and approximately reversible, AI self-design will be strongly directed. Here we develop a mathematical model of evolution for self-designing AIs, replacing a random walk of mutations with a directed tree of potential AI designs. Current AIs design their descendants, while humans control a fitness function allocating resources. In this model, fitness need not increase over time without further assumptions. However, assuming bounded fitness and an additional \"$η$-locking\" condition, we show that fitness concentrates on the maximum reachable value. We consider the implications of this for AI alignment, specifically for cases where fitness and human utility are not perfectly correlated. We show that if deception of human evaluators additively increases an AI's reproductive fitness beyond genuine capability, evolution will select for both capability and deception. This risk could be mitigated if reproduction is based on purely objective criteria, rather than human judgment.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2604.05142",
+  "pdf_url": "https://arxiv.org/pdf/2604.05142v2",
+  "pdf_file": "2604.05142v2.pdf"
+ },
+ {
+  "arxiv_id": "2607.04277",
+  "arxiv_id_versioned": "2607.04277v1",
+  "title": "Self-Reference in Large Language Models: The Introspection Threshold for Recursive Self-Improvement",
+  "authors": [
+   "Jiang Zhang",
+   "Bing Yuan",
+   "Qian Zhang"
+  ],
+  "published": "2026-07-05",
+  "updated": "2026-07-05",
+  "categories": [
+   "physics.soc-ph",
+   "cs.AI"
+  ],
+  "abstract": "The pursuit of self-evolving AI raises a critical question: when is autonomous self-improvement sustainable rather than degenerative? Drawing an analogy to von Neumann's complexity threshold for self-reproducing automata, we argue that sustainable recursive self-improvement in Large Language Models (LLMs) requires a functional analogue: introspection -- the system's capacity to simulate its own operations and target modifications. Grounded in Kleene's Second Recursion Theorem, we demonstrate the theoretical existence of such introspective programs. However, an empirical review reveals that while current LLMs exhibit quasi-introspection (e.g., partial metacognition), they fall short of true introspection due to structural bottlenecks: a lack of complete self-access, the feedforward nature of the Transformer, and computational class constraints that prevent fixed-point iteration. We conclude by outlining architectural paths to cross this complexity threshold and discussing the associated safety implications.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2607.04277",
+  "pdf_url": "https://arxiv.org/pdf/2607.04277v1",
+  "pdf_file": "2607.04277v1.pdf"
+ },
+ {
+  "arxiv_id": "2608.31111",
+  "arxiv_id_versioned": "2608.31111v1",
+  "title": "Aspire: Can Models Self-Evolve from Vague Goals?",
+  "authors": [
+   "Yuhao Wu",
+   "Jingyuan Zhang",
+   "Jiajun Shi",
+   "Yuxuan Zhang",
+   "Xinping Lei",
+   "Junting Zhou",
+   "Zexuan Wang",
+   "Yuchen Wu",
+   "Huan Zhou",
+   "Duo Wang",
+   "Yinzhu Piao",
+   "Yongchang Peng",
+   "Yunfeng Shi",
+   "Jin Chen",
+   "Zuo Wang",
+   "Jinkai Liu",
+   "Jiaheng Liu",
+   "Wenxuan Zhang",
+   "Shen Yan",
+   "Wenhao Huang",
+   "Ge Zhang"
+  ],
+  "published": "2026-08-31",
+  "updated": "2026-08-31",
+  "categories": [
+   "cs.CL"
+  ],
+  "abstract": "Many important forms of human learning begin with a vague goal, such as \"become a better physicist\" or \"improve at research.\" Learners must interpret the goal, identify capability gaps, decide how to learn, and determine whether they have actually improved. In contrast, existing work on LLM self-evolution typically begins with tasks and evaluation metrics specified by humans, reducing self-evolution to optimizing an explicit objective rather than deciding what and how to learn. We introduce ASPIRE, a benchmark for vague-goal-driven self-evolution. ASPIRE provides only a natural-language capability goal while downstream evaluation tasks remain hidden. The agent must operationalize the goal by choosing data and update methods, constructing training and validation signals, and deciding when to evaluate. ASPIRE supports both model-weight and agent-harness evolution in a unified interactive environment and evaluates the resulting systems on a hidden, expert-authored set of 520 items spanning six goals. Our experiments show that vague goals redirect search effort toward goal interpretation. Current agents routinely complete training and harness-editing loops, but weight-level gains remain sparse and unstable, and the strongest evolved harness remains below the engineered Qwen-Agent reference. Agents often train on mismatched data and trust narrow self-evaluations, so local gains fail to transfer to hidden evaluation and continued search and training can erase earlier improvements.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.31111",
+  "pdf_url": "https://arxiv.org/pdf/2608.31111v1",
+  "pdf_file": null
+ },
+ {
+  "arxiv_id": "2608.31100",
+  "arxiv_id_versioned": "2608.31100v1",
+  "title": "S3Gym: Can LLMs Turn Self-Testing and Self-Judging into Self-Improvement?",
+  "authors": [
+   "Jiajun Shi",
+   "Siyuan Tao",
+   "Yuhao Wu",
+   "Zexuan Wang",
+   "Jingyuan Zhang",
+   "Jiaheng Liu",
+   "Xinping Lei",
+   "Xinrong Zhang",
+   "Siyan Fang",
+   "Zhewen Tan",
+   "Tianle Cai",
+   "Junhao Fang",
+   "Jiameng Huang",
+   "Yueyang Wang",
+   "Jinkai Liu",
+   "Yuxuan Zhang",
+   "Jian Yang",
+   "Zhoujun Li",
+   "Shen Yan",
+   "Wenhao Huang",
+   "Ge Zhang"
+  ],
+  "published": "2026-08-31",
+  "updated": "2026-08-31",
+  "categories": [
+   "cs.CL"
+  ],
+  "abstract": "Large language models (LLMs) increasingly interact with external environments and accumulate substantial behavioral experience, yet existing agent benchmarks largely evaluate them as fixed policies. It therefore remains unclear whether an agent can actively test its behavior, judge the resulting experience, and use that experience to improve future decisions. We introduce S3Gym, an interactive benchmark for evaluating LLM self-improvement through three coupled capabilities: Self-Testing, Self-Judging, and Self-Improvement. S3Gym separates permissive exploration from strict held-out evaluation and instantiates this protocol in seven text-based games with executable environment verifiers. We evaluate three pathways for incorporating interaction experience: direct History ICL, score-conditioned Summary Memory, and parameter Training. Our experiments reveal that self-improvement is neither automatic nor uniform. Context-level experience improves performance for several model-game pairs, but the most effective pathway depends strongly on the task structure: summaries are beneficial when experience can be compressed into reusable strategic rules, yet often underperform raw history when success depends on precise, state-contingent information. Parameter training produces substantial gains on some tasks, but also exhibits unstable improvement and severe negative transfer on others. These findings show that recognizing successful actions is insufficient; agents must also transform feedback into executable and transferable policies. S3Gym provides a unified framework for diagnosing this process and identifying the conditions under which experience becomes capability.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2608.31100",
+  "pdf_url": "https://arxiv.org/pdf/2608.31100v1",
+  "pdf_file": null
+ },
+ {
+  "arxiv_id": "2609.01437",
+  "arxiv_id_versioned": "2609.01437v1",
+  "title": "HarnessDev: Can LLMs Create and Evolve Their Own Agent Harness?",
+  "authors": [
+   "Yuhao Wu",
+   "Jingyuan Zhang",
+   "Jiajun Shi",
+   "Xinping Lei",
+   "Qingshui Gu",
+   "Yuxuan Zhang",
+   "Zexuan Wang",
+   "Chen He",
+   "Chen Huang",
+   "Maojia Song",
+   "Zhiyuan Zeng",
+   "Shaowen Wang",
+   "Jinkai Liu",
+   "Yunfeng Shi",
+   "Jiaheng Liu",
+   "Shen Yan",
+   "Wenhao Huang",
+   "Ge Zhang",
+   "Wenxuan Zhang"
+  ],
+  "published": "2026-09-01",
+  "updated": "2026-09-01",
+  "categories": [
+   "cs.SE",
+   "cs.CL"
+  ],
+  "abstract": "As agents move from research prototypes to deployed tools, their capability increasingly depends on model-external execution infrastructure, commonly termed the agent harness. Changing this harness while holding model weights fixed can substantially alter task performance. Current agent evaluations typically report downstream performance under a chosen harness, leaving a model's ability to develop the harness itself comparatively underexplored. We introduce HarnessDev, a benchmark that shifts the unit of evaluation from task outputs to runnable infrastructure. HarnessDev covers two stages. In Creation, the agent starts from a minimal seed and a small number of cases, then builds a complete execution system. In Evolution, it starts from its own created harness and iteratively revises it using downstream execution feedback, with the goal of improving benchmark performance. We then evaluate each constructed harness on capability—task success on held-out benchmarks, and efficiency—execution-token cost. The reported Creation results cover six creator LLMs, four domains, and five downstream benchmarks totaling 2,207 unique downstream instances, with hidden evaluation tasks withheld from development. We find that generated harnesses remain substantially behind mature human-engineered references on code and on search and research, while matching or exceeding the selected references on writing and machine-learning experimentation, with large variation in execution cost. Evolution produces some performance gains, but they are unstable and transfer only partially to held-out tasks. Experiments with a fixed runtime model further show that the gains depend strongly on the model executing the harness, indicating limited transfer across models.",
+  "arxiv_abs_url": "https://arxiv.org/abs/2609.01437",
+  "pdf_url": "https://arxiv.org/pdf/2609.01437v1",
+  "pdf_file": null
+ }
+]

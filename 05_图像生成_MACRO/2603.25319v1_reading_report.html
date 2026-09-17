@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MACRO: Advancing Multi-Reference Image Generation with Structured Long-Context Data — 深度解读</title>
+<style>
+:root{--text:#1a1a1a;--bg:#fafaf8;--accent:#2563eb;--muted:#6b7280;--border:#e5e7eb;--code-bg:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Noto Serif SC",serif;color:var(--text);background:var(--bg);line-height:1.85;padding:2.5rem 1.5rem;max-width:760px;margin:0 auto;font-size:17px}
+h1{font-size:2rem;margin:0 0 .3rem;line-height:1.3}
+h2{font-size:1.35rem;margin:2.8rem 0 .8rem;color:var(--accent);padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.1rem;margin:1.5rem 0 .5rem;color:#333}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:2.5rem;line-height:1.8}
+.meta a{color:var(--accent);text-decoration:none}
+blockquote{border-left:3px solid var(--accent);padding:.6rem 1.2rem;margin:1.5rem 0;background:#f0f4ff;border-radius:0 8px 8px 0}
+pre{background:var(--code-bg);padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.5;margin:1.5rem 0;border:1px solid var(--border)}
+code{font-family:"SF Mono","Fira Code",monospace;font-size:.9em}
+p{margin:1rem 0}
+strong{color:#111}
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.93rem}
+td,th{border:1px solid var(--border);padding:.6rem .9rem;text-align:left;vertical-align:top}
+th{background:#f9fafb;font-weight:600}
+.summary-box{background:linear-gradient(135deg,#f0f4ff,#faf5ff);padding:1.5rem;border-radius:12px;margin:1.5rem 0}
+.summary-box h3{margin:0 0 .5rem;color:var(--accent)}
+.golden{font-size:1.25rem;font-weight:600;color:var(--accent);text-align:center;padding:2rem 1rem;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);margin:2.5rem 0;line-height:1.5}
+.caption{color:var(--muted);font-size:.9rem;margin-top:-.8rem}
+.small{font-size:.92rem;color:var(--muted)}
+@media(max-width:600px){body{font-size:16px;padding:1.2rem 1rem}h1{font-size:1.5rem}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'});</script>
+</head>
+<body>
+<h1>MACRO：结构化长上下文数据如何推进多参考图像生成</h1>
+<div class="meta">
+论文：<strong>MACRO: Advancing Multi-Reference Image Generation with Structured Long-Context Data</strong><br>
+作者：Zhekai Chen, Yuqing Wang, Manyuan Zhang, Xihui Liu<br>
+机构：HKU MMLab, Meituan<br>
+链接：<a href="https://arxiv.org/abs/2603.25319">arXiv:2603.25319</a> · 项目页 <a href="https://macro400k.github.io/">macro400k.github.io</a> · 代码 <a href="https://github.com/HKU-MMLab/Macro">HKU-MMLab/Macro</a><br>
+代码状态：官方仓库已公开；README 显示 Macro-Dataset、Macro-Bagel、Macro-OmniGen2、Macro-Qwen-Image-Edit 已提供 HuggingFace 下载入口。论文正文写作时称 dataset 和 benchmark “will be publicly released”，当前仓库状态已经更进一步。
+</div>
+
+<div class="summary-box">
+<h3>一句话总结</h3>
+<p>这篇论文的核心不是提出一个新生成模型，而是用一个覆盖 4 类任务、40 万样本、最多 10 张参考图的结构化数据集 MacroData 和评测集 MacroBench，证明多参考图像生成的主要瓶颈很大程度来自数据缺口：模型不是“天生不行”，而是长期没有被系统训练去理解多图之间的身份、空间、叙事和时间依赖。</p>
+</div>
+
+<h2>研究背景与动机</h2>
+<p>近年来，图像生成从纯文本条件逐步转向 in-context generation：用户把文字和参考图交错给模型，模型根据上下文生成新图。这种范式非常贴近真实创作流程。一个设计师可能要把某个人物、某件衣服、某个房间、某种绘画风格合成到同一张图中；一个视频创作者可能希望模型读懂前面若干关键帧，再生成下一帧；一个 3D/空间任务可能要求模型从多个视角推断目标视角。</p>
+<p>问题在于，现有开源模型在少量参考图上看起来不错，但参考图一多就掉得很快。论文开篇明确指出：OmniGen2 最多受限于 5 张输入图，Bagel 虽然理论上可接受更多输入，但超过 3 张后会显著退化。这类退化不是简单的 token 长度问题，它还反映了模型没有学会“多图之间的关系”。</p>
+<blockquote>“multi-reference generation requires models to comprehend dense inter-reference dependencies—temporal dynamics, spatial consistency, and identity preservation across inputs—and seamlessly integrate them into a coherent output.”</blockquote>
+<p>作者把根因归纳为数据瓶颈。Echo4o、MICo、OpenSubject 等数据集或偏向定制/编辑，或参考图数量较少，难以覆盖 6 到 10 张图的长上下文场景。换句话说，多参考图像生成不是单参考任务的线性扩展：单参考只需抽取一个主体或风格，多参考则要判断每张图各自扮演什么角色，以及它们之间如何组合。</p>
+<p>这也是本文最有价值的视角：它没有先改架构，而是先补训练信号和评测协议。作者构建 MacroData，让模型在定制、插画、空间、时间四个维度上都见到长上下文样本；再构建 MacroBench，用同样的维度和参考图数量分桶来衡量模型到底在哪些场景退化。</p>
+
+<h2>预备知识</h2>
+<p><strong>多参考图像生成</strong>指模型输入不止一张参考图，并根据这些图与文本指令生成目标图。参考图可能是多个主体，也可能是连续故事中的前文插图、一个物体的多个视角，或者视频序列的历史帧。</p>
+<p><strong>in-context 图像生成</strong>借鉴语言模型的上下文学习思路，把图像和文本混排为上下文。模型需要同时理解“哪张图代表主体”“哪段文字定义目标”“不同图片之间是否存在时间或空间顺序”。这比传统 text-to-image 更难，因为错误不只来自文本理解，还来自跨图绑定、细节保留和关系推断。</p>
+<p><strong>LLM-as-Judge</strong>是本文评测的重要组成。由于生成结果很难只靠 CLIPScore 或 FID 衡量，MacroBench 使用多模态大模型作为评审，对不同任务分别打分。作者比较后选择 Gemini-3-Flash，并在附录用人类一致性实验验证它比 GPT-4.1 更可靠。</p>
+
+<h2>方法详解</h2>
+<h3>1. MacroData：把“多参考”拆成四种能力</h3>
+<p>MacroData 总计 400K 样本，四个任务各 100K，输入图最多 10 张，平均 5.44 张。用集合写法可以概括为：</p>
+<p>$$\mathcal{D}_{Macro}=\mathcal{D}_{cust}\cup\mathcal{D}_{illu}\cup\mathcal{D}_{spatial}\cup\mathcal{D}_{temp}$$</p>
+<p>其中每个子集规模近似相等：</p>
+<p>$$|\mathcal{D}_{cust}|=|\mathcal{D}_{illu}|=|\mathcal{D}_{spatial}|=|\mathcal{D}_{temp}|=100{,}000$$</p>
+<p>人话解释：作者没有把“多参考”当成一个混沌任务，而是拆成四类互补场景。Customization 训练多主体、多风格、多服装、多场景的组合能力；Illustration 训练根据图文交错上下文生成下一张叙事图；Spatial 训练多视角到目标视角的空间推理；Temporal 训练从历史关键帧预测下一帧。</p>
+<p>这种拆法是本文的第一层创新。很多数据集只覆盖 identity-preserving 或 image editing，而 MacroData 刻意把身份一致性、叙事一致性、3D 一致性、时间一致性放在同一训练语境里。Fig.1 给出总览，Fig.2 展示数据分布：四类任务各 25%，并且每类都按 1-3、4-5、6-7、8-10 张参考图分桶。</p>
+
+<h3>2. Customization：多源素材组合与双向过滤</h3>
+<p>Customization 子集从 OpenSubject、MVImgNet、DL3DV、Vibrant Clothes Rental Dataset、WikiArt 等来源采集人物、物体、场景、服装和风格。作者再用规则采样和 VLM 判断组合是否合理，最后由强闭源生成模型生成目标图，并用 VLM 做输入和输出之间的双向一致性检查。</p>
+<blockquote>“we design a robust pipeline that distills knowledge from advanced closed-source models and meticulously filters real-world corpora, rather than relying on noisy web-scraped data.”</blockquote>
+<p>这个流程对应 Fig.3。它解决的不是“能不能生成漂亮图”，而是“输出是否真的包含了所有参考信息”。例如一个 prompt 要求把第 2 张图的人、第 6 张图的外套、第 5 张图的草地和第 4 张图的油画风格合成在一起，普通数据集很少提供这种密集绑定监督。</p>
+<p>附录给出更细的比例：人物、物体、场景、服装、风格的采样比例为 8:6:3:2:1；最终 100K 样本在 1-3、4-5、6-7、8-10 四个图数桶中分别为 20K、20K、30K、30K。这体现了作者对 progressive task 的判断：参考图越多，组合难度越高，所以高图数桶需要更多数据。</p>
+
+<h3>3. Illustration：从网页图文中找“锚点图”</h3>
+<p>Illustration 子集来自 OmniCorpus-CC-210M。网页图文天然噪声很大：图片可能是广告、装饰图、顺序错乱图，也可能和正文弱相关。作者用 VLM 找出和文本及前文图片高度相关的 anchor image，把它作为目标图；前面的文本和图片作为输入上下文。</p>
+<p>对应 Fig.4，流程包括去重、图像过滤、anchor image search、上下文重写和质量过滤。这里的关键不是简单抓网页图片，而是把原始网页重新组织成“可学习的生成样本”。模型学到的是：读完一段多图多文叙事之后，下一张图应该补充什么。</p>
+<p>这个任务对电商、教程、叙事插画尤其有现实意义。它要求模型理解格式和上下文，而不仅仅是复刻参考主体。因此 MacroBench 对 Illustration 使用 TCS 与 ICS 两个维度：文本一致性和图像一致性。</p>
+
+<h3>4. Spatial：用 outside-in 与 inside-out 覆盖空间推理</h3>
+<p>Spatial 子集分为 outside-in objects 和 inside-out scenes。前者来自 G-buffer Objaverse 的多视角物体渲染，围绕一个中心物体从外部看；后者来自全景图数据，从房间或室外场景中心向四周看。</p>
+<p>Fig.5 展示了这条管线。作者定义 10 个 canonical views：top、bottom、left、right、front、back 和四个对角视角。outside-in 中 front-left-back-right 的方向按顺时针组织；inside-out 则按逆时针组织。这种显式的方位定义能让 prompt 中的“从 back 到 back-left”具有可评测的几何含义。</p>
+<p>Spatial 是整篇论文中最能暴露当前模型短板的任务。Table 1 中，开源基线在 Spatial 的分数常常低于 1，闭源模型也只有 3 到 4 左右。它说明多参考生成的困难不只是“记住更多图”，还包括从多个输入视角推断不可见区域和目标方向。</p>
+
+<h3>5. Temporal：把视频压缩成关键帧序列</h3>
+<p>Temporal 子集来自 OmniCorpus-YT。作者先用 TransNetv2 做镜头边界检测，抽取每段中心帧，再用 DINOv2 相似度把关键帧组织成连续序列，最后由 VLM 生成描述性 summary 和质量分。目标图是有效序列的最后一帧。</p>
+<p>对应 Fig.6，这相当于把视频预测问题转换为多参考关键帧条件生成：输入若干历史关键帧和一段总结，输出下一关键帧。它保留了时间变化信息，但避免把完整视频建模引入图像生成训练。</p>
+<p>这个任务的难点是长上下文下的细节稳定：人物衣服颜色、背景小物体、运动方向都可能漂移。附录 Fig.18 的 failure cases 显示，即使用 MacroData 微调后的 Bagel，仍可能漏掉比分牌、改变衣服颜色或产生局部畸变。</p>
+
+<h3>6. MacroBench：把评测也做成长上下文</h3>
+<p>MacroBench 有 4,000 个样本，每个任务 1,000 个，每个任务的四个图数桶各 250 个。它的设计与 MacroData 对齐：既按任务分维度，也按参考图数量分难度。</p>
+<p>对于每个样本，两个原始指标先聚合为单样本分数。论文附录 Eq.(1) 给出：</p>
+<p>$$S=\sqrt{M_1\times M_2}$$</p>
+<p>人话解释：两个指标用几何平均而不是算术平均，意味着只要一项严重失败，总分就会被明显拉低。比如 Spatial 中视角方向对了但物体结构崩了，或者物体保持了但方向错了，都不能拿到高分。</p>
+<p>Customization 的 ICS 还要先对每张参考图做调和平均，论文 Eq.(2) 写作：</p>
+<p>$$ICS=\frac{n}{\sum_{i=1}^{n}\frac{1}{ICS_i}}$$</p>
+<p>人话解释：调和平均会惩罚“漏掉任意一张参考图”的情况。生成四个人却只保留了三个人的身份时，不能靠其他三张高分把总分掩盖掉。</p>
+<p>四类任务的具体聚合可以写为：</p>
+<p>$$S_{cust}=\sqrt{ICS\times PFS}$$</p>
+<p>$$S_{illu}=\sqrt{TCS\times ICS},\quad S_{spatial}=\sqrt{VTS\times CCS},\quad S_{temp}=\sqrt{CCS\times ISCS}$$</p>
+<p>最终 MacroBench 总分是四个任务的平均：</p>
+<p>$$S_{MacroBench}=\frac{1}{4}\sum_{t\in\{cust,illu,spatial,temp\}}S_t$$</p>
+<p>这些公式使评测逻辑比较清楚：它不是一个单一审美分，而是把不同任务应有的能力拆出来，再用惩罚性聚合避免模型“偏科但看起来还行”。</p>
+
+<h3>7. 长上下文效率：token selection 的探索</h3>
+<p>多参考输入会线性增加 token 序列长度。作者在 Sec.5.4 探索了三种 token selection：block-wise、image-wise、text-aligned。Fig.11 展示三种策略，Table 4 给出结果。</p>
+<pre class="mermaid">flowchart TB
+    A[Multi reference inputs] --> B[Model context tokens]
+    B --> C1[Block wise selection]
+    B --> C2[Image wise selection]
+    B --> C3[Text aligned selection]
+    C1 --> D[Keep high attention blocks]
+    C2 --> E[Keep top K images per query]
+    C3 --> F[Keep text relevant visual tokens]
+    D --> G[Generation]
+    E --> G
+    F --> G</pre>
+<p>结果很有意思：image-wise selection 反而低于 baseline，因为它容易破坏跨图交互；block-wise 和 text-aligned 更好，尤其 text-aligned 在只保留 30% token 时仍能取得 8.11 的平均分。这说明长上下文多图生成的有效信息不是均匀分布的，但选择粒度不能太粗，粗到整张图片级别就会丢失跨参考细节。</p>
+
+<h2>实验分析</h2>
+<p>主实验最强的结论来自 Table 1：MacroData 微调后的开源模型在 MacroBench 上全面超过同架构的开源 baseline，也超过用 Echo4o、MICo、OpenSubject 等替代数据集微调的版本。</p>
+<table>
+<thead><tr><th>模型</th><th>Customization 1-5</th><th>Customization 6-10</th><th>Spatial 1-5</th><th>Spatial 6-10</th><th>平均分</th></tr></thead>
+<tbody>
+<tr><td>BAGEL</td><td>5.37</td><td>2.53</td><td>0.67</td><td>0.53</td><td>3.03</td></tr>
+<tr><td>BAGEL + Echo4o</td><td>6.95</td><td>3.98</td><td>0.76</td><td>0.80</td><td>3.34</td></tr>
+<tr><td>BAGEL + MICo</td><td>6.32</td><td>2.84</td><td>0.81</td><td>0.80</td><td>3.44</td></tr>
+<tr><td><strong>Bagel + Ours</strong></td><td><strong>8.92</strong></td><td><strong>7.12</strong></td><td><strong>3.32</strong></td><td><strong>3.48</strong></td><td><strong>5.71</strong></td></tr>
+<tr><td>GPT-Image-1.5</td><td>9.62</td><td>8.76</td><td>3.32</td><td>4.24</td><td>7.50</td></tr>
+</tbody>
+</table>
+<p>这张表背后的含义比单纯涨分更重要。Bagel + Ours 的平均分从 3.03 到 5.71，说明结构化长上下文数据能显著修复开源模型在多参考场景的能力缺口。尤其 Spatial 从 0.60 左右跃升到 3.40 左右，表明模型确实学到了一部分多视角关系，而不是只学会更好看地合图。</p>
+<p>但同一张表也提醒我们，闭源模型仍领先。GPT-Image-1.5 平均 7.50，Nano Banana Pro 平均 7.12，而 Bagel + Ours 为 5.71。MacroData 缩小了差距，但没有消除差距。特别是在 Illustration 上，Bagel + Ours 只有 5.62 左右，远低于闭源模型约 9 的水平，说明长文本叙事和视觉上下文整合仍很难。</p>
+<table>
+<thead><tr><th>训练数据</th><th>Customization</th><th>Illustration</th><th>Spatial</th><th>Temporal</th><th>平均分</th></tr></thead>
+<tbody>
+<tr><td>Bagel base</td><td>5.37 / 2.53</td><td>4.51 / 4.34</td><td>0.67 / 0.53</td><td>3.36 / 2.93</td><td>3.03</td></tr>
+<tr><td><strong>Bagel + All</strong></td><td><strong>8.92 / 7.12</strong></td><td><strong>5.69 / 5.56</strong></td><td><strong>3.32 / 3.48</strong></td><td><strong>6.23 / 5.40</strong></td><td><strong>5.71</strong></td></tr>
+<tr><td>Bagel + Customization only</td><td>8.61 / 6.43</td><td>5.19 / 4.92</td><td>0.81 / 0.64</td><td>4.43 / 3.17</td><td>4.27</td></tr>
+<tr><td>Bagel + Spatial only</td><td>5.08 / 2.24</td><td>4.89 / 4.78</td><td>2.72 / 2.98</td><td>4.99 / 4.13</td><td>3.97</td></tr>
+<tr><td>Bagel + Temporal only</td><td>5.25 / 1.87</td><td>4.96 / 4.84</td><td>1.05 / 1.07</td><td>6.17 / 5.19</td><td>3.80</td></tr>
+</tbody>
+</table>
+<p>Table 3 的消融实验说明了 cross-task co-training 的价值。单一子集通常能提升本任务，也会对其他任务有一定迁移，但全数据训练最好。这是本文另一个关键结论：多参考能力可能存在共享底层能力，例如跨图绑定、上下文检索、细节保持、组合生成，而不是四个完全独立的问题。</p>
+<p>OmniContext 结果也很有说服力。虽然 MacroData 面向更宽泛的 1-10 图任务，但在 OmniContext 这个 1-3 图 Customization benchmark 上，Bagel + Ours Customization 达到 8.26，超过 Echo4o 的 8.09；Qwen + Ours All 甚至达到 8.45。这说明 MacroData 并非只靠“大而杂”堆数据，它的定制子集本身质量也足以迁移到已有 benchmark。</p>
+<p>附录 Table 6 验证了评测器选择：Gemini-3-Flash 与人类标注在 Overall 设置下 Pearson 相关为 0.821，Spearman 为 0.795，Kendall 为 0.665；GPT-4.1 分别为 0.555、0.598、0.470。这一结果支撑了 MacroBench 使用 Gemini-3-Flash 作为 judge 的合理性，尤其 Spatial 任务需要较强 3D 判断。</p>
+
+<h2>源码对应关系</h2>
+<p>官方仓库不是只给论文介绍页，而是包含推理、训练配置生成、评测和数据预处理脚本。README 明确说明 Macro 覆盖四类任务与四个图数桶，并提供三个微调模型的 checkpoint 下载入口。这与论文 “fine-tuning Bagel, OmniGen2, Qwen-Image-Edit” 的实验设置对应。</p>
+<p>训练数据格式在 README 中给出，核心是每个样本包含 task、idx、prompt、input_images、output_image。代码中 Bagel 的配置处理脚本会把这些 JSON 转成 parquet，用于训练。</p>
+<pre><code class="language-python"># bagel/process_config.py:217
+for json_file in json_files:
+    with open(json_file, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+
+    input_images = data.get('input_images', [])
+    output_image = data.get('output_image', '')
+    instruction = data.get('prompt', data.get('instruction', ''))
+
+    image_list = []
+    for img_path in input_images:
+        if not os.path.isabs(img_path):
+            img_path = str(MACRO_DIR / img_path)
+        image_list.append(img_path)
+
+    if output_image:
+        image_list.append(output_image)
+
+    raw_data_list.append({
+        'image_list': image_list,
+        'instruction_list': [instruction]
+    })</code></pre>
+<p>这段源码对应论文的数据组织方式：输入参考图和目标图被组织为同一个 image_list，而 instruction_list 保存文本指令。也就是说，训练样本的结构直接承载了“多图上下文 + 输出图”的学习目标。</p>
+<p>评测部分的源码也与 MacroBench 的设计一致。Customization 的 scoring 模块要求模型返回每张参考图的 consistency_scores 和整体 following_score，对应论文中的 ICS 与 PFS。</p>
+<pre><code class="language-python"># eval/score/customization.py:32
+EVALUATION_PROMPT = """You are a meticulous Digital Art Critic...
+...
+Your response must be a JSON object:
+{
+  "consistency_scores": [&lt;score1&gt;, &lt;score2&gt;, ..., &lt;scoreN&gt;],
+  "following_score": &lt;score&gt;,
+  "overall_reasoning": "Critical analysis explaining the deductions..."
+}
+...
+Metric 1: Consistency Scores (0-10, one for each reference image)
+Metric 2: Following Score (0-10)
+"""</code></pre>
+<p>Spatial 的评测源码则把 reference images、target image 和 generated image 一起交给 judge，并要求返回 viewpoint_transformation_score 与 content_consistency_score。这正对应论文的 VTS 与 CCS。</p>
+<pre><code class="language-python"># eval/score/spatial.py:124
+instruction = sample_data.get('instruction', '')
+reference_images = sample_data.get('input_images', [])
+target_image = sample_data.get('target_image', '')
+generated_image = sample_data.get('output_image', '')
+
+all_images = reference_images + [target_image, generated_image]
+response_format = {
+    "viewpoint_transformation_score": "float",
+    "content_consistency_score": "float",
+    "overall_reasoning": "str"
+}</code></pre>
+<p>推理脚本还体现了论文的动态分辨率策略。README 写明输入图会按数量自动 resize；Bagel 单样例推理脚本中也设置了每张输入图的 max_input_pixels 列表：1-2 张保持约 1M 像素，3-5 张约 590K，6-10 张约 262K。这是长上下文多图输入下的工程折中。</p>
+
+<h2>讨论</h2>
+<p>本文最重要的贡献是把“多参考图像生成”从一个模糊能力变成一个可训练、可评测的问题。以前我们可能只说模型“多图理解不好”，但 MacroData/MacroBench 把不好拆成：身份是否保留、指令是否遵循、视角是否转换、内容是否一致、动作是否连续、序列是否稳定。</p>
+<p>方法论上，它也体现了数据中心路线的力量。作者没有宣称一个新架构能神奇解决所有问题，而是证明：当数据覆盖更丰富的长上下文关系时，同样的 Bagel、OmniGen2、Qwen-Image-Edit 都会变强。这对后续研究很有启发，尤其是当模型架构已经很重时，数据结构可能比小幅架构改动更有杠杆。</p>
+<p>不过，MacroData 也不是纯人工真实分布数据。它大量依赖闭源强模型生成目标图和 VLM 过滤，本质上是 distillation pipeline。因此它的上限会受到教师模型偏好、过滤器盲区和 synthetic data 分布的影响。它能显著提升模型，但也可能把闭源模型的错误和审美偏置一起蒸馏进去。</p>
+
+<h2>局限分析</h2>
+<p>作者自述的局限主要有三点。第一，即使使用 MacroData，模型在 6-10 张输入图时仍有性能退化，说明复杂长上下文视觉依赖仍未解决。第二，MacroBench 仍是初步 benchmark，只覆盖预定义任务，需要更通用的 wild evaluation。第三，与 SOTA 闭源模型仍有明显差距，需要进一步探索数据规模和模型架构。</p>
+<blockquote>“our approach still exhibits performance degradation when scaling up to 6-10 input images, indicating that processing highly complex, long-context visual dependencies remains a challenge.”</blockquote>
+<p>我的独立判断是，本文还有两个隐含局限。其一，LLM-as-Judge 虽然有人工一致性验证，但它依然可能偏向可语言化的错误，对细粒度视觉真实性、风格质量、局部纹理的判断不一定稳定。其二，MacroData 的四任务划分清晰，但真实应用常常混合这些维度，例如一个电商视频故事同时要求人物一致、商品一致、空间连续、时间推进和文字准确，这类复合任务仍未被充分覆盖。</p>
+<p>另一个值得注意的问题是版权与身份风险。论文在 Social Impact 中强调使用公开来源和许可，并建议部署时加入实时输出评估与隐私检测。但 Customization 天然涉及身份迁移和人物合成，未来如果数据与模型公开使用，仍需要更强的 provenance、授权和滥用检测机制。</p>
+
+<h2>结论</h2>
+<p>MACRO 的贡献可以压缩成三句话：第一，它提出 MacroData，用 400K 结构化样本补上多参考长上下文训练缺口；第二，它提出 MacroBench，用任务维度和图数维度系统评估模型退化；第三，它通过 Bagel、OmniGen2、Qwen-Image-Edit 的实验表明，结构化多任务数据可以显著提升开源模型的多参考生成能力。</p>
+<p>这篇论文对图像生成领域的意义在于，它把“多图生成”从 demo 能力推进到数据和评测基础设施层面。真正的挑战不只是让模型看见更多图片，而是让它知道每张图在当前任务中扮演什么角色，并在输出里保持所有关键关系。</p>
+<div class="golden">多参考图像生成的下一步，不是把更多图片塞进上下文，而是让模型学会在多张图片之间建立可执行的关系。</div>
+</body>
+</html>

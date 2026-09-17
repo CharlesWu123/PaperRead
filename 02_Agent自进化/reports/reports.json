@@ -1,0 +1,265 @@
+[
+  {
+    "id": "survey-self-evolving-agents",
+    "title": "A Survey of Self-Evolving Agents: What, When, How, and Where to Evolve on the Path to Artificial Super Intelligence",
+    "shortTitle": "Self-Evolving Agents Survey",
+    "year": 2025,
+    "type": "综述 / 路线图",
+    "priority": 1,
+    "readingTime": "18 min",
+    "pdfUrl": "https://arxiv.org/pdf/2507.21046",
+    "arxivId": "2507.21046",
+    "tags": ["self-evolving agents", "taxonomy", "memory", "tools", "architecture", "evaluation"],
+    "oneLine": "这篇综述给出了自进化 Agent 的总地图：演化什么、何时演化、如何演化、在哪里验证。",
+    "coreTakeaways": [
+      "自进化 Agent 不等于模型继续训练，外部 harness、memory、tool、skill、workflow 都可以成为演化对象。",
+      "论文最有价值的是 what/when/how/where 四维框架，可直接用于拆解任何 agent skill 自进化系统。",
+      "领域短板集中在评估、安全、长期漂移和跨任务负迁移，尤其是更新后的能力是否真的被 agent 使用。"
+    ],
+    "report": [
+      {"heading": "研究问题", "body": "传统 LLM 在部署后基本是静态系统：参数固定、工具固定、提示词固定，最多通过上下文临时适应任务。自进化 Agent 试图让系统从交互、执行轨迹、失败反馈、用户偏好和环境变化中持续调整自身。论文把这个问题提升为一个系统工程问题，而不是单一算法问题。"},
+      {"heading": "方法框架", "body": "综述按四个问题组织领域。What to evolve 讨论演化对象，包括模型、记忆、工具、架构、prompt 和 skill。When to evolve 区分 test-time、inter-test-time、部署后长期演化。How to evolve 覆盖标量奖励、文本反馈、单 agent 迭代、多 agent 协作和环境反馈。Where to evolve 则关注 coding、web、education、healthcare、scientific discovery 等场景。"},
+      {"heading": "和 skill 自进化的关系", "body": "对 agent skill 系统而言，这篇文章的作用是给设计评审提供 checklist。一个 skill 自进化方案必须说清楚：skill 是什么粒度，何时被创建或更新，反馈从哪里来，验证器如何判断有效，更新后如何被检索和调用，失败时如何回滚。"},
+      {"heading": "关键洞察", "body": "最重要的洞察是：Agent 的能力不只存在于模型权重中。一个现代 Agent 的真实能力分布在模型、上下文、工具、记忆、工作流、代码和外部环境适配层里。因此自进化也不必局限于微调模型，反而更常见的路径是更新外部可编辑状态。"},
+      {"heading": "局限", "body": "综述覆盖面很广，但不会给出某个系统的可复现实现。它更适合作为路线图和术语表。另一个局限是 2025-2026 年该方向发展很快，新的 skill package、harness benefit、co-evolution verifier 论文会持续刷新分类边界。"},
+      {"heading": "工程启发", "body": "做 agent skill 自进化时，可以直接采用这篇综述的四维框架来定义系统文档：演化对象、触发时机、反馈信号、验证位置。尤其要把 safety、negative transfer、stale skill、conflicting skill 纳入一等设计目标。"}
+    ]
+  },
+  {
+    "id": "coevo-skills",
+    "title": "CoEvoSkills: Self-Evolving Agent Skills via Co-Evolutionary Verification",
+    "shortTitle": "CoEvoSkills",
+    "year": 2026,
+    "type": "核心论文 / Skill package 自演化",
+    "priority": 2,
+    "readingTime": "20 min",
+    "pdfUrl": "https://arxiv.org/pdf/2604.01687",
+    "arxivId": "2604.01687",
+    "tags": ["agent skills", "skill package", "co-evolution", "verification", "SkillsBench"],
+    "oneLine": "这篇最贴近 agent skill 自进化：它把 skill 从单个函数升级为多文件 package，并让生成器和验证器一起演化。",
+    "coreTakeaways": [
+      "tool 是单函数，skill 是多 artifact 的能力包，这个区别决定了传统 tool generation 方法不够用。",
+      "CoEvoSkills 的核心是 Skill Generator 与 Surrogate Verifier 协同演化，在缺少真实测试标签时仍能给出改进反馈。",
+      "真正的 skill 自进化必须关注结构、依赖、说明、脚本、参考资料和验证闭环，而不只是生成一段代码。"
+    ],
+    "report": [
+      {"heading": "研究问题", "body": "现有自动工具生成方法多面向简单函数或 API wrapper，但 Agent skill 往往是一个结构化 package：它可能包含说明文档、脚本、参考材料、示例、约束、调用规范和多文件依赖。人工写 skill 成本高，且人工理解和模型实际使用方式之间可能存在认知错配。"},
+      {"heading": "核心方法", "body": "CoEvoSkills 将系统拆成 Skill Generator 和 Surrogate Verifier。Generator 负责根据任务、失败轨迹和反馈生成或修订 skill package；Verifier 负责评估 skill 是否有助于任务完成，并给出可操作反馈。关键点是 verifier 也会演化，而不是固定的规则打分器。"},
+      {"heading": "为什么有效", "body": "skill package 的质量很难通过单次执行结果判断，因为错误可能来自说明不清、依赖缺失、脚本不可执行、触发条件错误或 agent 不会调用。协同演化的 verifier 可以逐步学习哪些反馈对 generator 有用，从而让 skill 修改更接近真实执行收益。"},
+      {"heading": "实验与证据", "body": "论文摘要报告在 SkillsBench 上超过五个 baseline，并且在 Claude Code、Codex 以及额外六个 LLM 上具有泛化能力。这里的关键不是单一分数，而是它验证了 skill package 可以作为跨模型可迁移 artifact。"},
+      {"heading": "局限", "body": "Surrogate Verifier 可能学习到 benchmark 偏好而不是真实任务能力，存在评测过拟合风险。多文件 skill 也会引入安全、权限、依赖版本和执行环境问题，这些不是单纯算法指标能完全覆盖的。"},
+      {"heading": "工程启发", "body": "如果要构建类似系统，skill package 至少应包含 manifest、适用场景、触发条件、执行脚本、依赖声明、测试样例、失败案例和版本记录。Verifier 应该评估可执行性、收益、负迁移、安全风险和跨任务复用，而不是只看任务是否一次成功。"}
+    ]
+  },
+  {
+    "id": "autoskill",
+    "title": "AutoSkill: Experience-Driven Lifelong Learning via Skill Self-Evolution",
+    "shortTitle": "AutoSkill",
+    "year": 2026,
+    "type": "核心论文 / 经验沉淀为 skill",
+    "priority": 3,
+    "readingTime": "17 min",
+    "pdfUrl": "https://arxiv.org/pdf/2603.01145",
+    "arxivId": "2603.01145",
+    "tags": ["lifelong learning", "personalization", "skill self-evolution", "experience consolidation"],
+    "oneLine": "AutoSkill 关注把用户交互经验变成显式、可维护、可复用的 skill。",
+    "coreTakeaways": [
+      "长期 Agent 的个性化能力不应只留在聊天历史里，而应沉淀为结构化 skill。",
+      "skill 生命周期包括抽取、表示、迭代修订、检索和复用。",
+      "这篇更偏产品化 Agent：它解决跨 session 的经验积累，而不是单次 benchmark 提分。"
+    ],
+    "report": [
+      {"heading": "研究问题", "body": "现实用户会反复表达稳定偏好，例如不要过度技术化、遵循组织写作规范、避免某类幻觉或按固定流程工作。普通 Agent 往往只在当前会话内记住这些要求，跨 session 后又从零开始。AutoSkill 要解决的是经验不能长期沉淀的问题。"},
+      {"heading": "核心方法", "body": "AutoSkill 把交互经验抽象为 skill，并设计一个生命周期：从历史对话和执行轨迹中抽取候选 skill，转成标准化表示，持续修订，按未来任务检索注入，再根据新反馈更新。它不要求改模型参数，而是在外部建立 model-agnostic plugin layer。"},
+      {"heading": "关键贡献", "body": "论文最重要的贡献是把 skill 作为一等对象：可编辑、可版本化、可共享、可迁移。相比把偏好藏在向量记忆里，显式 skill 更容易审核、回滚和跨 agent 迁移。"},
+      {"heading": "实验与证据", "body": "从摘要看，论文主要强调框架、动机、生命周期和实现路径。它的评估重点应放在长期个性化任务上：是否减少重复纠错，是否提升偏好遵循，是否能跨任务复用。"},
+      {"heading": "局限", "body": "最大难点是 skill 抽取边界。不是每条用户反馈都值得长期保存，临时上下文、一次性偏好和稳定规则需要区分。另一个风险是旧 skill 过期后继续触发，造成错误固化。"},
+      {"heading": "工程启发", "body": "产品化 Agent 需要 skill governance：创建原因、来源证据、适用范围、冲突检测、过期策略、人工审核和删除机制。AutoSkill 的方向适合作为企业级 Agent 的长期记忆层，而不是简单向量库。"}
+    ]
+  },
+  {
+    "id": "harness-updating-benefit",
+    "title": "Harness Updating Is Not Harness Benefit: Disentangling Evolution Capabilities in Self-Evolving LLM Agents",
+    "shortTitle": "Harness Updating vs Benefit",
+    "year": 2026,
+    "type": "评估论文 / Harness 自进化",
+    "priority": 4,
+    "readingTime": "19 min",
+    "pdfUrl": "https://arxiv.org/pdf/2605.30621",
+    "arxivId": "2605.30621",
+    "codeUrl": "https://github.com/A-EVO-Lab/a-evolve/tree/release/harness-evolution",
+    "tags": ["harness", "evaluation", "skills", "memory", "tools", "model capability"],
+    "oneLine": "这篇提醒我们：会更新 skill/harness，不代表执行 Agent 真的能从更新中获益。",
+    "coreTakeaways": [
+      "harness-updating 和 harness-benefit 是两个不同能力，必须分开评估。",
+      "模型越强不一定越能从更新后的 harness 中获益，收益呈非单调关系。",
+      "skill 系统要评估调用率、遵循率和任务收益，而不是只看生成内容质量。"
+    ],
+    "report": [
+      {"heading": "研究问题", "body": "现代 Agent 由模型和外部 harness 共同构成。harness 包括 prompt、memory、skill、tool、编排代码等。很多自进化论文默认只要 harness 被更新，Agent 就会变强。但这篇论文指出，生成有用更新和执行时真正受益是两种不同能力。"},
+      {"heading": "核心概念", "body": "论文拆出 harness-updating 与 harness-benefit。前者是根据执行证据生成持久更新的能力，后者是任务执行模型在未来任务中激活、理解、遵循并受益于这些更新的能力。"},
+      {"heading": "主要发现", "body": "摘要给出两个重要发现。第一，不同能力层级的模型在 harness-updating 上差异并不大，弱一些的模型也能生成带来相近收益的更新。第二，harness-benefit 与基础模型能力非单调：弱模型受益少，中等模型受益最多，强模型未必收益最大。"},
+      {"heading": "失败模式", "body": "弱模型的低收益主要来自两类失败：没有激活相关 harness artifact；激活后没有忠实遵循。这对 skill 自进化非常关键，因为系统真正的瓶颈可能不是 skill 写得不好，而是 executor 不会找、不敢用或用错。"},
+      {"heading": "局限", "body": "论文关注 harness 评估，具体到不同任务域、不同 skill 类型时仍需补充实验。另一个开放问题是如何把 harness-benefit 训练进模型能力，而不仅仅是事后测量。"},
+      {"heading": "工程启发", "body": "任何 agent skill 自进化系统都应做四组 ablation：无 skill、旧 skill、新 skill、错误或冲突 skill。指标应包括 retrieval hit rate、activation rate、faithfulness、task success、cost、negative transfer 和 rollback rate。"}
+    ]
+  },
+  {
+    "id": "sage-skill-library-rl",
+    "title": "Reinforcement Learning for Self-Improving Agent with Skill Library",
+    "shortTitle": "SAGE / Skill Library RL",
+    "year": 2025,
+    "type": "训练论文 / RL + Skill library",
+    "priority": 5,
+    "readingTime": "18 min",
+    "pdfUrl": "https://arxiv.org/pdf/2512.17102",
+    "arxivId": "2512.17102",
+    "tags": ["reinforcement learning", "skill library", "GRPO", "AppWorld", "agent training"],
+    "oneLine": "SAGE 把 skill library 纳入 RL 训练，让 agent 学会生成、积累和使用技能。",
+    "coreTakeaways": [
+      "仅靠 prompt 维护 skill library 稳定性不足，RL 可以把 skill 使用纳入优化目标。",
+      "Sequential Rollout 让 agent 在相似任务链中逐步积累 skill，后续任务可复用前序技能。",
+      "Skill-integrated Reward 同时奖励任务完成和有效 skill 生成/使用。"
+    ],
+    "report": [
+      {"heading": "研究问题", "body": "LLM Agent 在新环境中很难持续适应。skill library 是可行方向，但很多系统靠 prompt 临时生成和调用 skill，缺少稳定训练信号。论文希望用强化学习让 agent 内化使用 skill library 的行为模式。"},
+      {"heading": "核心方法", "body": "论文提出 Skill Augmented GRPO for self-Evolution，简称 SAGE。核心机制是 Sequential Rollout：每个 rollout 不是单个独立任务，而是一条相似任务链。Agent 在前面任务中生成的 skill 会进入 library，后续任务可以调用这些 skill。"},
+      {"heading": "奖励设计", "body": "除了最终任务成功奖励，SAGE 引入 Skill-integrated Reward，用来鼓励有效的 skill 生成和复用。这样训练目标不只是完成当前任务，也包括留下能减少未来成本的可复用能力。"},
+      {"heading": "实验与证据", "body": "摘要报告在 AppWorld 上，SAGE 应用于 supervised-finetuned model 并结合 expert experience 后，Scenario Goal Completion 提高 8.9%，交互步骤减少 26%，token 生成减少 59%。这说明 skill library 不只是提升成功率，也可能显著降低执行成本。"},
+      {"heading": "局限", "body": "任务链构造会强烈影响学习效果。如果任务相似性设计不合理，skill 可能不可迁移。奖励设计也可能被 exploit，例如生成看似通用但实际无用的 skill。"},
+      {"heading": "工程启发", "body": "如果要训练可自进化 Agent，应该把 skill 生成质量、调用正确性、复用收益和调用成本放入训练信号。对非训练系统，也可以借鉴它的任务链评估方式，测试 skill 是否真的降低后续任务成本。"}
+    ]
+  },
+  {
+    "id": "webevolver",
+    "title": "WebEvolver: Enhancing Web Agent Self-Improvement with Coevolving World Model",
+    "shortTitle": "WebEvolver",
+    "year": 2025,
+    "type": "应用论文 / Web Agent 自进化",
+    "priority": 6,
+    "readingTime": "17 min",
+    "pdfUrl": "https://arxiv.org/pdf/2504.21024",
+    "arxivId": "2504.21024",
+    "codeUrl": "https://github.com/Tencent/SelfEvolvingAgent",
+    "tags": ["web agent", "world model", "co-evolution", "self-improvement", "simulation"],
+    "oneLine": "WebEvolver 用共演化 world model 给 web agent 提供持续训练和推理模拟能力。",
+    "coreTakeaways": [
+      "Web agent 自我改进容易停滞，因为真实环境探索成本高且反馈稀疏。",
+      "World Model 可作为虚拟 web server 生成训练数据，也可在推理时做 look-ahead。",
+      "环境模型本身也要随 agent 共同演化，否则会成为错误反馈源。"
+    ],
+    "report": [
+      {"heading": "研究问题", "body": "Web agent 在真实网页上自主探索时，经常遇到状态空间大、反馈延迟、操作成本高和在线学习停滞的问题。单靠 agent 自己采样轨迹，容易很快到达性能瓶颈。"},
+      {"heading": "核心方法", "body": "WebEvolver 引入 co-evolving World Model LLM。这个 World Model 输入当前 observation 和 action，预测 next observation。它有两个用途：训练阶段像虚拟 web server 一样生成自指令数据，推理阶段像 imagination engine 一样帮助 agent 预演下一步。"},
+      {"heading": "为什么有效", "body": "真实 web 环境太贵，world model 提供了便宜的想象空间。Agent 可以在虚拟环境中探索更多动作，再用真实环境校准。共演化的意义是 world model 也会随着 agent 行为分布变化而更新。"},
+      {"heading": "实验与证据", "body": "摘要报告在 Mind2Web-Live、WebVoyager、GAIA-web 上比已有 self-evolving agents 有约 10% 性能增益，且没有依赖更强闭源模型蒸馏。公开代码为复现提供了入口。"},
+      {"heading": "局限", "body": "world model 可能幻觉网页状态，导致 agent 学到错误策略。对高风险 web 操作，例如支付、删除、权限变更，虚拟模拟和真实验证之间必须有安全隔离。"},
+      {"heading": "工程启发", "body": "对 agent skill 自进化而言，WebEvolver 提供了一种生成验证场景的方式：用真实轨迹归纳 skill，用 world model 扩展相似场景，用真实环境抽样回归验证。"}
+    ]
+  },
+  {
+    "id": "agents-of-change",
+    "title": "Agents of Change: Self-Evolving LLM Agents for Strategic Planning",
+    "shortTitle": "Agents of Change",
+    "year": 2025,
+    "type": "应用论文 / 长程策略自进化",
+    "priority": 7,
+    "readingTime": "16 min",
+    "pdfUrl": "https://arxiv.org/pdf/2506.04651",
+    "arxivId": "2506.04651",
+    "tags": ["strategic planning", "artifact-centric learning", "simulation", "code refinement", "long-horizon"],
+    "oneLine": "这篇展示了长程策略不应每步临时推理，而应沉淀为可执行 artifact 后迭代演化。",
+    "coreTakeaways": [
+      "长程、随机、对抗环境中，per-turn prompt agent 容易丢失全局策略。",
+      "HexMachina 将环境发现和策略改进分离，把策略编译成 player implementation。",
+      "可执行 artifact 是一种特殊 skill：它能被测试、回放、对抗和持续优化。"
+    ],
+    "report": [
+      {"heading": "研究问题", "body": "在 Catan 这类长程随机策略游戏中，Agent 每一步都重新读取大状态并即时决策，很容易丢失长期目标。ReAct 或 Reflexion 风格的 per-turn agent 对局部步骤有效，但难以稳定维护全局策略。"},
+      {"heading": "核心方法", "body": "论文提出 HexMachina：先进行环境发现，诱导未知环境的 adapter layer；再进行策略改进，把策略写成可执行 player implementation，通过模拟对局和代码 refinement 迭代优化。"},
+      {"heading": "为什么有效", "body": "方法的关键是把思考和执行分离。LLM 不必每回合重新理解所有游戏状态，而是把策略固化成可测试程序。程序可以在模拟器中大量对战，从而获得比单次 prompt 更稳定的反馈。"},
+      {"heading": "实验与证据", "body": "摘要报告 HexMachina 从零学习并演化出超过 AlphaBeta 人类手写 baseline 的 player，达到 54% win rate。消融显示，隔离纯策略学习对表现有帮助。"},
+      {"heading": "局限", "body": "Catanatron 是可模拟环境，真实业务中的环境规则、奖励和状态转移更难准确建模。策略 artifact 也可能对模拟器偏差过拟合。"},
+      {"heading": "工程启发", "body": "对复杂工作流 Agent，可以把稳定策略沉淀成 workflow skill、adapter 或 policy code，再通过离线回放和仿真持续优化。不要让模型在每个任务都从自然语言策略重新推理。"}
+    ]
+  },
+  {
+    "id": "voyager",
+    "title": "Voyager: An Open-Ended Embodied Agent with Large Language Models",
+    "shortTitle": "Voyager",
+    "year": 2023,
+    "type": "基础论文 / Skill library",
+    "priority": 8,
+    "readingTime": "20 min",
+    "pdfUrl": "https://arxiv.org/pdf/2305.16291",
+    "arxivId": "2305.16291",
+    "codeUrl": "https://voyager.minedojo.org/",
+    "tags": ["lifelong learning", "skill library", "automatic curriculum", "Minecraft", "code skills"],
+    "oneLine": "Voyager 是 LLM Agent 技能库自增长的基础论文：自动课程、代码技能库、自验证修复构成最小闭环。",
+    "coreTakeaways": [
+      "开放世界 Agent 需要不断发现目标、学习技能、复用技能，而不是只解决固定任务。",
+      "Voyager 的 ever-growing skill library 把成功行为存成可执行代码，支持组合与迁移。",
+      "环境反馈、执行错误和自验证是 skill 迭代的关键闭环。"
+    ],
+    "report": [
+      {"heading": "研究问题", "body": "Minecraft 这样的开放世界没有固定任务序列，Agent 必须自己决定探索目标，学习可复用技能，并在新世界中迁移这些技能。传统 RL 或单任务 Agent 难以覆盖这种开放式 lifelong learning。"},
+      {"heading": "核心组件", "body": "Voyager 有三部分：automatic curriculum 负责提出探索目标；skill library 保存可执行代码技能；iterative prompting 根据环境反馈、执行错误和自验证来修复程序。三者合起来形成持续探索和能力积累循环。"},
+      {"heading": "为什么有效", "body": "技能以代码形式保存后，可以被检索、调用和组合，避免每次都从头生成行为。自动课程推动 Agent 不断进入新状态空间，自验证机制降低错误技能固化概率。"},
+      {"heading": "实验与证据", "body": "摘要报告 Voyager 获得 3.3 倍 unique items、2.3 倍探索距离，并最多 15.3 倍更快解锁关键 tech tree milestones。更重要的是，它能在新 Minecraft 世界中复用学到的 skill library。"},
+      {"heading": "局限", "body": "Voyager 强依赖 GPT-4 黑盒能力；Minecraft 的反馈和执行环境相对明确，真实软件任务中的依赖、安全和权限问题更复杂。skill 的版本治理、冲突处理和失效检测不是论文重点。"},
+      {"heading": "工程启发", "body": "构建 agent skill 自进化系统时，可以把 Voyager 视为最小参考架构：目标生成器、技能库、技能检索、执行反馈、自修复。后续 CoEvoSkills 和 AutoSkill 可以看作对 skill 表示和治理的进一步增强。"}
+    ]
+  },
+  {
+    "id": "reflexion",
+    "title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+    "shortTitle": "Reflexion",
+    "year": 2023,
+    "type": "基础论文 / 语言反思记忆",
+    "priority": 9,
+    "readingTime": "16 min",
+    "pdfUrl": "https://arxiv.org/pdf/2303.11366",
+    "arxivId": "2303.11366",
+    "tags": ["verbal reinforcement learning", "reflection", "episodic memory", "agent self-improvement"],
+    "oneLine": "Reflexion 证明了不更新模型参数，也能通过语言反思和记忆让 Agent 从失败中改进。",
+    "coreTakeaways": [
+      "自改进可以发生在外部记忆中，而不一定需要模型微调。",
+      "语言反思把失败反馈转成下一次 trial 可用的策略提示。",
+      "它是 skill 自进化的前置层：反思多次有效后可以升级为正式 skill。"
+    ],
+    "report": [
+      {"heading": "研究问题", "body": "LLM Agent 与环境交互时会失败，但用传统 RL 更新模型参数成本很高。Reflexion 要解决的是：能否不用微调，只靠语言反馈让 Agent 在多次尝试中变好。"},
+      {"heading": "核心方法", "body": "Agent 完成一次任务后，根据环境反馈、标量奖励或自评生成 verbal reflection，并写入 episodic memory。下一次尝试时，Agent 将这些反思作为上下文，调整计划和动作。"},
+      {"heading": "为什么有效", "body": "LLM 擅长理解自然语言规则。把失败总结成可读的策略，等于把 trial-and-error 的经验转成可检索 prompt。相比参数更新，这种方法轻量、快速、可解释。"},
+      {"heading": "实验与证据", "body": "摘要报告 Reflexion 在 sequential decision-making、coding、language reasoning 等任务上都有提升，并在 HumanEval 上达到 91% pass@1，超过当时 GPT-4 baseline 的 80%。"},
+      {"heading": "局限", "body": "反思本身可能错误，错误记忆会污染后续决策。随着任务增多，记忆检索、压缩和冲突处理会成为瓶颈。模型也可能读到正确反思但不遵循。"},
+      {"heading": "工程启发", "body": "不要把每次失败都直接写成长期 skill。更合理的流程是：失败先进入 reflection memory，经过多次验证后，再抽象成正式 skill package。Reflexion 适合作为 skill 自进化流水线的经验采集层。"}
+    ]
+  },
+  {
+    "id": "promptbreeder",
+    "title": "Promptbreeder: Self-Referential Self-Improvement Via Prompt Evolution",
+    "shortTitle": "Promptbreeder",
+    "year": 2023,
+    "type": "基础论文 / Prompt 自指演化",
+    "priority": 10,
+    "readingTime": "15 min",
+    "pdfUrl": "https://arxiv.org/pdf/2309.16797",
+    "arxivId": "2309.16797",
+    "tags": ["prompt evolution", "self-referential improvement", "mutation prompts", "evolutionary search"],
+    "oneLine": "Promptbreeder 让 LLM 不只优化任务 prompt，还优化用于修改 prompt 的 mutation prompt。",
+    "coreTakeaways": [
+      "prompt 策略也可以被演化，而不是完全依赖人工设计。",
+      "自指改进的关键是同时演化任务 prompt 和 mutation prompt。",
+      "这个思想可迁移到 skill generator prompt、verifier prompt 和 review rubric 的优化。"
+    ],
+    "report": [
+      {"heading": "研究问题", "body": "Chain-of-Thought、Plan-and-Solve 等 prompt 策略通常由人工设计，针对不同任务可能并非最优。Promptbreeder 试图让 LLM 自己搜索更好的 prompt 策略。"},
+      {"heading": "核心方法", "body": "系统维护一组 task prompts，在训练集上评估 fitness，然后用 mutation prompts 生成变体。更关键的是，mutation prompts 本身也由 LLM 生成和改进，因此系统不只优化答案提示，也优化改写提示的方法。"},
+      {"heading": "为什么有效", "body": "这是一种自指优化：如果 mutation prompt 更会提出有效修改，task prompt 的搜索质量也会提高。它把 prompt engineering 从人工经验转为可迭代搜索过程。"},
+      {"heading": "实验与证据", "body": "摘要报告在算术、常识推理和 hate speech classification 等任务中超过 CoT、Plan-and-Solve 等策略。它证明 prompt/harness 层面的自动演化具有实际收益。"},
+      {"heading": "局限", "body": "方法依赖训练集 fitness，容易过拟合评测数据。演化出的 prompt 可能难解释，也不一定能处理多文件 skill package 的依赖和执行问题。"},
+      {"heading": "工程启发", "body": "Promptbreeder 不应直接替代 skill package 生成，但很适合优化 skill 生成模板、review rubric、verifier prompt、错误诊断 prompt。它提供了一个轻量的 harness 自进化算法。"}
+    ]
+  }
+]

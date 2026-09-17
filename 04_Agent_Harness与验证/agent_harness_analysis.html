@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Agent Harness Engineering: A Survey — 深度解读</title>
+<style>
+:root{--text:#1a1a1a;--bg:#fafaf8;--accent:#2563eb;--muted:#6b7280;--border:#e5e7eb;--code-bg:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Noto Serif SC",serif;color:var(--text);background:var(--bg);line-height:1.85;padding:2.5rem 1.5rem;max-width:720px;margin:0 auto;font-size:17px}
+h1{font-size:2rem;margin:0 0 .3rem;line-height:1.3}
+h2{font-size:1.35rem;margin:2.8rem 0 .8rem;color:var(--accent);padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.1rem;margin:1.5rem 0 .5rem;color:#333}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:2.5rem;line-height:1.8}
+.meta a{color:var(--accent);text-decoration:none}
+blockquote{border-left:3px solid var(--accent);padding:.6rem 1.2rem;margin:1.5rem 0;background:#f0f4ff;border-radius:0 8px 8px 0}
+pre{background:var(--code-bg);padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.5;margin:1.5rem 0;border:1px solid var(--border)}
+code{font-family:"SF Mono","Fira Code",monospace;font-size:.9em}
+p{margin:1rem 0}
+strong{color:#111}
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.93rem}
+td,th{border:1px solid var(--border);padding:.6rem .9rem;text-align:left}
+th{background:#f9fafb;font-weight:600}
+.summary-box{background:linear-gradient(135deg,#f0f4ff,#faf5ff);padding:1.5rem;border-radius:12px;margin:1.5rem 0}
+.summary-box h3{margin:0 0 .5rem;color:var(--accent)}
+.golden{font-size:1.25rem;font-weight:600;color:var(--accent);text-align:center;padding:2rem 1rem;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);margin:2.5rem 0;line-height:1.5}
+@media(max-width:600px){body{font-size:16px;padding:1.2rem 1rem}h1{font-size:1.5rem}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'});</script>
+</head>
+<body>
+
+<h1>Agent Harness Engineering: A Survey</h1>
+<div class="meta">
+Junjie Li, Xi Xiao, Yunbei Zhang, Chen Liu, Lin Zhao, Xiaoying Liao 等<br>
+CMU / Yale / JHU / NEU / Tulane / UAB / OSU / Virginia Tech / Amazon<br>
+Under review at TMLR, 2026<br>
+Project: <a href="#">Awesome-Agent-Harness</a><br>
+代码状态：本文为综述论文，配套开源项目列表 Awesome-Agent-Harness
+</div>
+
+<div class="summary-box">
+<h3>一句话总结</h3>
+<p>LLM Agent 的任务执行可靠性更多取决于包裹模型的基础设施层（agent harness），而非底层模型本身。本文提出 ETCLOVG 七层分类法，将 170+ 开源项目系统性映射其上，揭示了从 prompt engineering 到 harness engineering 的工程演进路径。</p>
+</div>
+
+<h2>研究背景与动机</h2>
+
+<p>2022年以来，基于大语言模型的 Agent 系统从实验室原型快速走向生产部署。然而一个反复出现的模式是：Agent 在真实环境中的任务执行可靠性，与底层模型能力的相关性远低于预期，真正决定成败的往往是模型外围的基础设施层——即 agent execution harness。这一观察构成了本文的出发点。</p>
+
+<p>以 Claude Code 为例，Anthropic 报告称仅通过 harness 层面的工程改进（未更换底层模型），其在 SWE-Bench 2.0 上的通过率从约 49% 提升至约 63%，绝对提升 13.7 个百分点，相对提升约 26%。类似地，Can Bölük 在 2026 年初的实验表明，同一个下午内通过纯 harness 修改即可提升 15 个不同 LLM 的编码表现。这些证据指向一个结论：对于长时间运行的 Agent 任务，harness 的工程质量是当前的约束瓶颈（binding constraint）。</p>
+
+<p>然而，学术研究与工程实践之间存在显著鸿沟。OpenAI、Anthropic、LangChain 等公司的工程博客中积累了大量 harness 设计经验，但这些知识缺乏系统化的学术框架。现有的 Agent 综述主要聚焦模型能力、提示工程或特定应用领域，未将 harness 作为独立的系统层进行工程分析。本文正是填补这一空白。</p>
+
+<h2>三阶段工程演进</h2>
+
+<p>本文梳理了 2022-2026 年间 Agent 工程实践的三阶段演进，每一阶段的核心关注点可用如下公式刻画：</p>
+
+<p>在 Prompt Engineering 阶段（2022-2024），优化目标是单次模型调用的输入文本：</p>
+
+$$P^* = \arg\max_{P} \mathbb{E}[\text{Quality}(M(P))]$$
+
+<p>即寻找使模型输出质量期望最大化的提示文本 $P$。工程范围极窄：优化一个静态文本输入到一次模型调用。</p>
+
+<p>Context Engineering 阶段（2025）将范围扩展到多步任务中每一步的信息状态管理。Anthropic 应用 AI 团队将其定义为"在 LLM 推理时策划和维护最优 token 集合的策略集"。指导原则是：在每一步找到使期望结果概率最大化的最小高信号 token 集合：</p>
+
+$$C_t^* = \arg\min_{|C| \leq W} \left[ -\log P(\text{correct}_t \mid C) \right]$$
+
+<p>其中 $W$ 为上下文窗口容量，$C_t$ 为第 $t$ 步的上下文内容。</p>
+
+<p>Harness Engineering 阶段（2026）进一步将视野扩展到整个基础设施包裹层。此时优化对象不再仅是"模型看到什么"，而是"围绕模型需要设计什么治理、约束、反馈循环和执行控制才能使 Agent 系统可靠"。关键洞察是：长时间 Agent 性能由耦合的 model-harness 系统共同产生，而非单独由模型决定。</p>
+
+<p>三个阶段是包含关系而非替代关系：harness engineering 包含 context engineering，后者包含 prompt engineering。Prompt engineering 至今仍是 harness 实践的活跃组成部分。本文的周期划分应理解为"边际工程努力投入方向的转移"，而非方法的替换。</p>
+
+<h2>ETCLOVG 七层分类法</h2>
+
+<p>本文的核心贡献之一是提出 ETCLOVG 七层分类法，将 agent harness 的架构关注点解耦为七个独立层次。前四层描述 harness 的结构核心，后三层描述围绕核心的控制平面。相比此前的六组件框架，本文将 Observability 和 Governance 提升为独立层，理由是二者在生产系统中拥有专属工具生态和独立工程实践。</p>
+
+<pre class="mermaid">
+flowchart TB
+    subgraph Structural["Structural Core"]
+        E["E: Execution Environment<br/>Sandbox, isolation, reset"]
+        T["T: Tool Interface<br/>MCP, A2A, Function Calling"]
+        C["C: Context Management<br/>Short/Mid/Long-term memory"]
+        L["L: Lifecycle Orchestration<br/>Single/Multi-agent loops"]
+    end
+    subgraph Control["Control Plane"]
+        O["O: Observability<br/>Traces, cost, reliability"]
+        V["V: Verification<br/>Benchmarks, failure attribution"]
+        G["G: Governance<br/>Permission, identity, audit"]
+    end
+    E --> T --> C --> L
+    O -.->|monitors| Structural
+    V -.->|evaluates| Structural
+    G -.->|constrains| Structural
+</pre>
+
+<h3>E 层：执行环境与沙箱</h3>
+
+<p>执行环境层决定 Agent 代码在何处运行以及受何种沙箱约束。论文识别了七类 Agent 沙箱：通用托管沙箱（Daytona, E2B, Modal）、计算机操作基础设施（Anthropic Computer Use, OSWorld）、代码专用沙箱（Judge0, OpenAI Code Interpreter）、框架集成运行时（OpenHands, GoEX）、浏览器评估环境（WebArena, BrowserGym）、OS 级权限沙箱（Anthropic sandbox-runtime）、沙箱抽象层（SWE-ReX, SWE-agent）。</p>
+
+<p>Agent 时代的沙箱同时服务三个目的：安全性（传统目的）、可复现性（Agent 设置放大了这一需求）、以及活性（liveness，本质上是 Agent 场景的新需求）。活性指的是：沙箱通过定义一个 Agent 可自由行动的有界区域，将权限从"逐动作审批"转变为"会话级配置"，从而使自主长时执行成为可能。Anthropic 报告引入沙箱后，Claude Code 的权限提示减少了 84%，同时安全性未受影响。</p>
+
+<h3>T 层：工具接口与协议</h3>
+
+<p>工具层规定外部能力如何被描述、发现和调用。论文按集成边界将标准归为四类：</p>
+
+<table>
+<tr><th>集成边界</th><th>代表协议</th><th>核心功能</th></tr>
+<tr><td>Model ↔ Function</td><td>OpenAI Function Calling</td><td>JSON Schema 结构化调用</td></tr>
+<tr><td>Agent ↔ External Capability</td><td>MCP (Model Context Protocol)</td><td>JSON-RPC, host-client-server 架构</td></tr>
+<tr><td>Agent ↔ Agent</td><td>A2A (Agent-to-Agent)</td><td>跨进程委托与协作</td></tr>
+<tr><td>Agent ↔ Repo/Environment</td><td>AGENT.md / AGENTS.md</td><td>版本控制的策略声明</td></tr>
+</table>
+
+<p>一个关键设计原则是"fewer but better tools"——较少但更精确的工具往往优于大量窄工具的暴力暴露，因为后者增加了 prompt 熵和规划分支因子。工具应自包含、对错误鲁棒、使用意图无歧义，参数命名应利用模型的语言理解优势。</p>
+
+<h3>C 层：上下文与记忆管理</h3>
+
+<p>上下文层治理模型在每一步看到什么信息，以及知识如何跨轮次和会话持久化。核心工程问题简洁明了：在每一步给模型恰好正确的信息，不多不少。信息太少则 Agent 缺乏正确行动的状态；信息太多则性能退化——这种退化是可测量的、跨模型一致的、且未被完全理解的。</p>
+
+<p>论文按时间跨度划分为三层。短期管理关注活跃上下文窗口：渐进式披露（progressive disclosure）按需加载信息而非预先填充，KV-cache 感知设计利用缓存 token 的成本优势。Manus 团队将 KV-cache 命中率视为"生产 Agent 最重要的单一指标"：Claude Sonnet 上缓存 token 成本 $0.30/MTok 对比未缓存的 $3.00/MTok，相差十倍。</p>
+
+<p>中期管理处理会话状态和跨运行持久化：基于文件的检查点（将中间结果写入文件系统），以及跨运行注入（捕获前次运行要点注入下次上下文）。长期管理则涉及索引化、可检索的持久存储。Mem0 是目前部署最广的长期记忆层（1400 万次 PyPI 下载，41K GitHub stars），其架构结合向量数据库（语义相似度）、图数据库（关系建模）和键值存储（快速事实检索）。在 LOCOMO 基准上，Mem0 比 OpenAI 原生记忆准确率高 26%，同时 token 消耗减少 90%。</p>
+
+<p>论文还区分了两种长时退化现象。Context rot 是单次推理步骤的属性：向固定上下文添加更多 token 会降低检索和推理质量，且退化在窗口远未满时就开始——一个标称 200K token 的模型在 50K 时可能已出现显著性能损失。Context drift 则是延展轨迹的属性：经过 100+ 轮次后，Agent 行为偏离原始意图，重复已完成工作、无意识地推翻先前决策、丢失激励目标。即使采用激进压缩，存活的摘要仍携带随时间复合的微妙不准确性。</p>
+
+<h3>L 层：生命周期与编排</h3>
+
+<p>生命周期层组织控制流，从单 Agent 循环到多 Agent 和 issue-to-PR 工作流。论文将编排系统按层级分为三类：</p>
+
+<table>
+<tr><th>系统</th><th>GitHub Stars (K)</th><th>编排模式</th><th>执行模型</th></tr>
+<tr><td>OpenCode</td><td>159</td><td>Single loop</td><td>Hybrid</td></tr>
+<tr><td>Claude Code</td><td>123</td><td>Single loop</td><td>Hybrid</td></tr>
+<tr><td>Gemini CLI</td><td>104</td><td>Single loop</td><td>Hybrid</td></tr>
+<tr><td>Codex CLI</td><td>82</td><td>Single loop</td><td>Stateless replay</td></tr>
+<tr><td>Aider</td><td>—</td><td>Single loop</td><td>—</td></tr>
+</table>
+
+<p>论文引用了 Anthropic 的一个关键案例：其 GAN 启发的三 Agent 架构（planner, generator, evaluator）引入 sprint 合约和分离式自评估，解决了 Agent 过度自我表扬的倾向。当底层模型从 Opus 4.5 升级到 Opus 4.6 时，他们完全移除了 sprint 构造和上下文重置，成本从 $200 降至 $125，输出质量保持不变。这体现了一个一般性原则：</p>
+
+<blockquote>每个 harness 组件都编码了一个关于"模型自身无法可靠完成什么"的假设，而这些假设随模型进步而过时。</blockquote>
+
+<h3>O 层：可观测性与运维</h3>
+
+<p>可观测性层捕获 traces、成本、失败和可靠性信号。代表平台包括 Langfuse、Arize Phoenix、OpenLLMetry。论文指出统一 LLMOps 栈的趋势：TensorZero 和 Langfuse 正在将网关、可观测性、评估和优化整合到单一平台。Anthropic 的 Managed Agents 架构将 harness 组件虚拟化为可替换接口（<code>execute()</code>、<code>emitEvent()</code>、<code>getEvents()</code>），可容纳未来设计而无需更改周围系统。</p>
+
+<p>论文提出"harness-as-assumption"原则：理想的可观测性系统应包含一个元监控层，追踪哪些干预（上下文重置、评估器反馈循环、工具限制）仍然承载负荷，从而在模型升级的同时持续简化 harness。</p>
+
+<h3>V 层：验证与评估</h3>
+
+<p>验证层将 Agent 行为转化为工程证据。论文将其组织为五阶段任务到反馈的生命周期（如 Figure 12 所示）：</p>
+
+<p>阶段 1：任务与基准奠基——在什么环境中、用什么工具、满足什么成功标准来评估（SWE-bench, Terminal-Bench, WebArena, OSWorld）。阶段 2：执行前就绪验证——沙箱、依赖、工具、上下文状态、权限策略是否正确初始化。阶段 3：受控执行与轨迹捕获——在可复现条件下运行 Agent，记录模型输出、工具调用、状态变更、错误、重试、成本和延迟。阶段 4：多级判断与失败归因——在结果级、轨迹级、评估器级三个层面评判。阶段 5：持续回归与部署反馈——将诊断结果回馈到回归测试和 harness 改进。</p>
+
+<p>论文强调，评估不应仅报告最终成功率，还应暴露成功-成本-延迟前沿。Agent 评估的中心问题不仅是"Agent 是否成功"，而是"为何成功或失败、路径是否可接受、评估器是否可信、下一步应改进哪个 harness 组件"。这将评估从排行榜机制重构为 Agent harness 的质量控制循环。</p>
+
+<h3>G 层：治理与安全</h3>
+
+<p>治理层通过权限、身份、策略、加固和审计约束 Agent 行为。论文识别了四个 hook 点沿单次工具使用循环的分布：</p>
+
+$$H = \{H_1(\text{input guardrail}),\ H_2(\text{action guardrail}),\ H_3(\text{post-exec IFC}),\ H_4(\text{HITL})\}$$
+
+<p>其中 $H_1$ 在输入到达 LLM 前验证，$H_2$ 在工具执行前验证提议的动作，$H_3$ 调解工具输出回流到上下文的信息流，$H_4$ 对后果性动作要求人类审批（如 Figure 14 所示）。</p>
+
+<p>权限模型从静态边界（Codex 的受限文件系统和网络访问，Gemini CLI 的命令允许/拒绝列表）演进到上下文依赖的特权控制。Progent 引入 DSL，其谓词范围覆盖工具名、参数和环境状态，运行时在每次调用前评估这些谓词。Conseca 将策略生成与执行分离：生成组件可适应任务，执行器保持可审计性。</p>
+
+<p>多 Agent 场景引入身份管理挑战。South 等人提出扩展 OAuth 2.0 和 OpenID Connect 的框架，增加 User ID Token、Agent ID Token 和 Delegation Token，将用户意图绑定到 Agent 特定权限，创建从人类委托人到 Agent 动作的可验证问责链。</p>
+
+<h2>跨层分析与核心权衡</h2>
+
+<p>论文在 §10-12 中综合讨论了不属于单一层次的跨层权衡。三个核心张力贯穿整个 harness 设计空间：</p>
+
+<p><strong>成本-质量-速度三难</strong>（Cost-Quality-Speed Trilemma）。长时 Agent 可通过花费更多 token、调用更多工具、更频繁重试或使用更强模型来提升成功率，但每一选择都增加成本和延迟。形式化表达为：</p>
+
+$$\text{Utility} = f(\text{Quality}) - \lambda_c \cdot \text{Cost} - \lambda_s \cdot \text{Latency}$$
+
+<p>其中 $\lambda_c$ 和 $\lambda_s$ 为成本和速度的惩罚系数。不同应用场景对应不同的帕累托前沿点。</p>
+
+<p><strong>能力-控制权衡</strong>（Capability-Control Tradeoff）。授予 Agent 更多能力（更多工具、更宽权限、更少人工审批）增加其完成复杂任务的可能性，但同时增加失控风险。沙箱通过定义能力边界在两个极端间取得平衡：它既是笼子（cage）也是许可证（license）。</p>
+
+<p><strong>Harness 耦合问题</strong>（Harness Coupling Problem）。Harness 组件之间存在交互效应：工具描述变更影响规划行为，上下文压缩策略影响记忆可用性，权限限制影响评估公平性。局部改进可能导致全局退化。这要求分层评估套件：工具 schema 的单元测试、局部决策的单步测试、端到端完成的全量测试、长时一致性的多轮模拟。</p>
+
+<h2>开放问题</h2>
+
+<p>论文在 §12 中列举了若干未解决的关键问题：</p>
+
+<p><strong>运行时防御的经济学与可移植性</strong>。高风险工作负载推向 microVM 和托管云，交互式本地工作流推向轻量级权限边界，大规模训练/评估推向快速可重置基底。这三种力量之间的张力尚无统一解。</p>
+
+<p><strong>Meta-Harness 优化</strong>。Meta-Harness（Lee 等, 2026）表明 prompts、tools 和控制循环可作为优化目标的一部分被搜索，而非人工固定。Natural-Language Agent Harnesses（Pan 等, 2026）使 harness 模块显式化并可消融。研究问题比成本最小化更广：未来系统需识别哪些干预对质量、安全或可靠性具有因果责任，运行 A/B 测试，并在质量-延迟-成本-风险联合约束下优化。</p>
+
+<p><strong>Harness 随模型进步而简化</strong>。Harness 设计不应假设单调地趋向更多脚手架。每个包装器、重置、验证器、规划器、记忆规则和权限门都编码了一个可能过时的假设。需要因子式 model×harness 评估来揭示何时干预对所有模型有益、何时仅帮助特定模型族、何时反转模型排名。</p>
+
+<p><strong>Context drift 的机制性理解</strong>。现有基准评估在几十步内完成的任务；100+ 轮次的失败模式未被捕获。MemBench、MemoryArena 等新基准表明 drift 存在，但尚未提供预防所需的机制性理解。</p>
+
+<h2>局限分析</h2>
+
+<p><strong>语料偏差</strong>（作者自述）。语料库偏向英语来源、GitHub 可见项目、开源制品，以及维护者发布足够实现细节的系统。商业生产系统代表不足，除非其工程博客、文档或 SDK 暴露了相关机制。这意味着本文的生态图谱可能遗漏了企业内部部署的大量 harness 实践。</p>
+
+<p><strong>编码协议的严谨性</strong>（独立判断）。当前快照使用单主编码员协议加作者审计，而非正式的多编码员一致性研究，因此论文未报告 Cohen's kappa 或类似的标注者间一致性统计量。这意味着 ETCLOVG 层分配可能存在主观偏差，特别是对于跨多层的边界案例。在一个快速演进的领域中，缺乏严格的可重复分类标准削弱了分类法的实证基础。</p>
+
+<p><strong>快照式分析的时效性</strong>。Agent harness 生态系统演进极快——论文引用的 GitHub stars 数据截至 2026 年 5 月 12 日，但许多项目的架构和能力在数月内就可能发生根本性变化。分类法本身虽具结构性价值，但具体项目到层的映射半衰期有限。</p>
+
+<h2>讨论</h2>
+
+<p>本文对 Agent 系统工程的最大贡献在于将 harness 从"模型周边的临时代码"提升为独立的系统层，并赋予其结构化的分析框架。ETCLOVG 七层分类法提供了一种共同语言，使得原本分散在工程博客和开源仓库中的实践知识可以被系统性地比较和积累。</p>
+
+<p>"harness-as-assumption"原则具有深刻的方法论意义：它暗示 harness 工程不是一劳永逸的架构设计，而是需要随模型能力持续校准的动态过程。每一次模型升级都应触发对现有 harness 组件的因果分析——哪些仍在承载负荷？哪些已成为冗余开销？这与传统软件工程中的"技术债务"概念形成有趣对比：在 Agent 系统中，过度工程化的 harness 不仅增加复杂度，还可能主动阻碍模型能力的发挥。</p>
+
+<p>从评估视角看，论文将 Agent 评估从单一成功率指标重构为五阶段质量控制循环的做法具有前瞻性。特别是将失败归因作为诊断过程而非事后标签的定位，以及将评估结果回馈到 harness 改进的循环设计，体现了 Agent 系统工程从"构建"到"持续运维"的范式转变。</p>
+
+<p>170+ 项目的系统性映射也揭示了当前生态的若干模式：执行环境和生命周期编排是覆盖最密的层次（成熟度最高），而治理和可观测性的覆盖相对稀疏（机会最大）。这为研究者和工程师指明了最具边际价值的投入方向。</p>
+
+<div class="golden">Agent 性能 = f(模型能力, Harness 质量)。当前阶段，Harness 的边际收益高于模型更换——工程永远是那个被低估的变量。</div>
+
+</body>
+</html>

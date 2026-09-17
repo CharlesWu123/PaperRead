@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>冻结参数的 skill 自进化 · 论文解读</title>
+<link rel="stylesheet" href="/styles.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+</head>
+<body>
+<a class="skip-link" href="#reader">跳到正文</a>
+<div class="layout">
+  <aside class="sidebar" aria-label="论文列表">
+    <header class="brand">
+      <h1>冻结参数的 skill 自进化</h1>
+      <p class="sub">2026 年下半年论文深度解读 · 10 篇</p>
+    </header>
+    <nav>
+      <button class="nav-item overview-item" data-kind="overview" type="button">
+        <span class="nav-title">时间线综述</span>
+        <span class="nav-meta">RSI 全景 · 2003-2026</span>
+      </button>
+    </nav>
+    <div id="paper-list" class="paper-list" role="list"></div>
+    <footer class="side-foot">
+      <p>阅读服务，无鉴权，默认监听 0.0.0.0（同网段可访问）。</p>
+    </footer>
+  </aside>
+
+  <main id="reader" class="reader" tabindex="-1">
+    <div id="meta-panel" class="meta-panel" hidden>
+      <div class="meta-head">
+        <h2 id="meta-title"></h2>
+        <div class="meta-links">
+          <a id="meta-arxiv" class="btn" target="_blank" rel="noopener">arXiv 页面</a>
+          <a id="meta-pdf" class="btn" target="_blank" rel="noopener">本地 PDF</a>
+        </div>
+      </div>
+      <div class="variant-row">
+        <div id="variant-switch" class="variant-switch" role="group" aria-label="解读版本">
+          <button type="button" class="variant-btn" data-variant="plain">通俗版</button>
+          <button type="button" class="variant-btn" data-variant="deep">深度版</button>
+        </div>
+        <span id="variant-hint" class="variant-hint"></span>
+      </div>
+      <dl class="meta-grid">
+        <div><dt>日期</dt><dd id="meta-date"></dd></div>
+        <div><dt>分类</dt><dd id="meta-category"></dd></div>
+        <div><dt>冻结参数</dt><dd id="meta-frozen"></dd></div>
+        <div><dt>演化对象</dt><dd id="meta-evolves"></dd></div>
+        <div><dt>验证信号</dt><dd id="meta-verifier"></dd></div>
+      </dl>
+    </div>
+    <article id="content" class="markdown-body">
+      <p class="loading">正在加载……</p>
+    </article>
+  </main>
+</div>
+<script src="/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RewardHarness: Self-Evolving Agentic Post-Training — 深度解读</title>
+<style>
+:root{--text:#1a1a1a;--bg:#fafaf8;--accent:#2563eb;--muted:#6b7280;--border:#e5e7eb;--code-bg:#f3f4f6}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,"PingFang SC","Noto Serif SC",serif;color:var(--text);background:var(--bg);line-height:1.85;padding:2.5rem 1.5rem;max-width:720px;margin:0 auto;font-size:17px}
+h1{font-size:2rem;margin:0 0 .3rem;line-height:1.3}
+h2{font-size:1.35rem;margin:2.8rem 0 .8rem;color:var(--accent);padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.1rem;margin:1.5rem 0 .5rem;color:#333}
+.meta{color:var(--muted);font-size:.9rem;margin-bottom:2.5rem;line-height:1.8}
+.meta a{color:var(--accent);text-decoration:none}
+blockquote{border-left:3px solid var(--accent);padding:.6rem 1.2rem;margin:1.5rem 0;background:#f0f4ff;border-radius:0 8px 8px 0}
+pre{background:var(--code-bg);padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.5;margin:1.5rem 0;border:1px solid var(--border)}
+code{font-family:"SF Mono","Fira Code",monospace;font-size:.9em}
+p{margin:1rem 0}
+strong{color:#111}
+table{width:100%;border-collapse:collapse;margin:1.5rem 0;font-size:.93rem}
+td,th{border:1px solid var(--border);padding:.6rem .9rem;text-align:left}
+th{background:#f9fafb;font-weight:600}
+.summary-box{background:linear-gradient(135deg,#f0f4ff,#faf5ff);padding:1.5rem;border-radius:12px;margin:1.5rem 0}
+.summary-box h3{margin:0 0 .5rem;color:var(--accent)}
+.note{font-size:.88rem;color:var(--muted);border-left:3px solid #d1d5db;padding:.4rem 1rem;margin:1rem 0}
+.golden{font-size:1.25rem;font-weight:600;color:var(--accent);text-align:center;padding:2rem 1rem;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);margin:2.5rem 0;line-height:1.5}
+@media(max-width:600px){body{font-size:16px;padding:1.2rem 1rem}h1{font-size:1.5rem}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js"
+  onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'});</script>
+</head>
+<body>
+<h1>RewardHarness: Self-Evolving Agentic Post-Training</h1>
+<div class="meta">
+<strong>arXiv</strong>：2605.08703v1 [cs.AI]，2026-05-09<br>
+<strong>论文页</strong>：<a href="https://arxiv.org/abs/2605.08703">arxiv.org/abs/2605.08703</a> ｜ <strong>全文 HTML</strong>：<a href="https://arxiv.org/html/2605.08703v1">arxiv.org/html/2605.08703v1</a><br>
+<strong>项目页</strong>：<a href="https://rewardharness.com">rewardharness.com</a><br>
+<strong>代码</strong>：<a href="https://github.com/TIGER-AI-Lab/RewardHarness">github.com/TIGER-AI-Lab/RewardHarness</a>（已公开，Apache-2.0，v0.1.0，Python 3.10+，120 commits，15 stars，最后推送 2026-05-18）<br>
+<strong>作者</strong>：Yuxuan Zhang, Penghui Du, Bo Li, Cong Wei（共同一作），Junwen Miao, Huaisong Zhang, Songcheng Cai, Yubo Wang, Dongfu Jiang†, Yuyu Zhang, Ping Nie†, Wenhu Chen†, Changqian Yu§, Kelsey R. Allen†（§ Project Lead，† Advisors）<br>
+<strong>单位</strong>：UBC / Vector Institute / 快手 Kolors Team / CMU / Waterloo / Etude AI / 清华 / Georgia Tech
+</div>
+
+<h2>一句话总结</h2>
+<div class="summary-box">
+<h3>核心命题</h3>
+<p>本文把 reward modeling 从"权重优化"改写为"上下文进化"：不训练任何参数，只用 100 条人类偏好示范，让一个 Orchestrator 反复自我诊断并演化出一套 Skills 与 Tools 文档库，驱动冻结 VLM 在图像编辑评测上取得 47.4% 平均排序准确率，比 GPT-5 高 5.3 分。</p>
+</div>
+
+<h2>研究背景与动机</h2>
+
+<p>指令引导的图像编辑（instruction-guided image editing）在过去两年里成为生成模型的主战场之一，但它的评测一直是薄弱环节。判断一次编辑是否"好"，需要同时理解三个东西：源图 <span>$I_s$</span> 表达了什么、编辑指令 <span>$p$</span> 要求改什么、以及编辑结果是否在改到该改的地方的同时保住了不该动的部分。这种判断是细微的、多维的，且各维度之间存在优先级冲突——例如背景风格迁移成功但主体面部出现了扭曲，该判高分还是低分，取决于指令的语义边界在哪里。</p>
+
+<p>主流做法沿着一条固定流水线走：收集大规模人类偏好标注，用这些标注对一个视觉语言模型做监督微调，得到专用 reward model，再把它的输出当作强化学习的 reward 信号去对齐生成器。这条路线在文本领域被验证得很充分，迁移到图像编辑上却付出了明显代价。本文在动机部分列出四点：标注成本高；需要额外的训练阶段；输出是一个不透明的标量分，无法解释它为什么这么打；以及最关键的一点——这套范式无法作用于只提供 API 的闭源基础模型，因为你根本拿不到权重去微调。</p>
+
+<p>论文把这一现象概括为一个"数据效率 gap"。摘要原文的表述是：<em>"humans can often infer the target evaluation criteria from only a few examples, while models are usually trained on hundreds of thousands of comparisons."</em> 人类评审看几个例子就能归纳出评价标准并写成打分细则，而模型要看几十万对比较才能学到近似的东西。这个落差提示，问题可能不在于"参数里存的偏好知识不够多"，而在于"评价标准这类知识本来就更适合以显式文本形式存在，而不是被压进权重"。</p>
+
+<p>由此产生本文的出发点：如果评价标准可以写成人类能读的规则，那么让模型自己把这些规则写出来、试错、修订、淘汰，是否比用梯度把它们塞进参数更高效？Figure 1 用一张范式对比图回答了这个问题的定位——上路是传统范式（大规模偏好数据 → 训练 reward model → 作为 RL 对齐的 reward 信号），下路是 RewardHarness（少量偏好示范 → 通过迭代评估与分析自进化出 Skills-and-Tools Library → 得到一个可解释的 reward 系统）。Figure 1 caption 明确点出后者的产出是 <em>"an interpretable reward system"</em>，可解释性在这里不是副产品，而是范式转换自带的属性：库里的每一条都是一段可读的 Markdown。</p>
+
+<p>值得对照的是本文选定的强对手 EditReward。它用约 20 万条偏好对做 SFT，在 Table 1 上以 Qwen 与 MiMo 两个 backbone 分别取得 42.0 与 44.1 的平均准确率，是开源阵营的最强项。RewardHarness 用其中 0.05% 的数据（约 100 条）去挑战它，这个比例本身构成了论文最有攻击性的论据。</p>
+
+<h2>预备知识</h2>
+
+<p>要读懂本文的方法，需要先明确三个概念在本文语境下的具体含义。第一个是 <strong>ranking accuracy</strong>。本文的评测不看绝对分数误差，只看候选之间的相对顺序是否与人类一致，同分记为 tie。这意味着系统输出的标量分只是排序的中间量，其绝对刻度是否校准并不进入指标。这一设定直接决定了后文自进化循环里"对/错"的判定方式。</p>
+
+<p>第二个是 <strong>frozen VLM as evaluator</strong>。本文的执行者 Sub-Agent 是一个参数完全冻结的视觉语言模型（默认 Qwen2.5-VL-7B-Instruct），它的行为只由输入上下文决定。因此整套系统的"学习"发生在上下文空间而非参数空间，这也是论文标题里 post-training 一词的特殊用法：它确实发生在预训练之后，但不含任何权重更新。</p>
+
+<p>第三个是 <strong>GRPO 作为下游验证手段</strong>。本文并不训练生成模型的 reward head，而是把 RewardHarness 当成一个可调用的打分函数接入 GRPO 微调流程：生成的编辑图作为唯一候选，与源图和指令一起送进系统，取回的离散分数由 GRPO trainer 在 batch 内做归一化后作为 reward。论文强调归一化方式与被对比的 reward model 完全相同，以保证 Table 2 的比较是公平的。</p>
+
+<h2>方法详解</h2>
+
+<h3>问题形式化：把 reward 定义成上下文的函数</h3>
+
+<p>给定源图 <span>$I_s$</span>、编辑指令 <span>$p$</span> 与 <span>$K$</span> 个候选编辑图 <span>$\{I_1,\dots,I_K\}$</span>，系统需输出标量偏好分向量 <span>$\mathbf{s}=(s_1,\dots,s_K)$</span> 以及排序 <span>$\pi$</span>，使得</p>
+
+<p>$$I_{\pi(1)}\succ I_{\pi(2)}\succ\cdots\succ I_{\pi(K)}$$</p>
+
+<p>其中 <span>$\succ$</span> 表示"人类更偏好"，<span>$\pi(j)$</span> 是排在第 <span>$j$</span> 位的候选索引。<strong>人话</strong>：系统的任务是给一组编辑结果排出一个和人类判断一致的名次表，分数只是排名的载体。</p>
+
+<p>§2.1 给出全文唯一的编号公式（1）：</p>
+
+<p>$$\mathbf{s},\pi=\mathcal{M}\bigl(I_{s},\;\{I_{k}\}_{k=1}^{K},\;p,\;\mathcal{C}\bigr)$$</p>
+
+<p>这里 <span>$\mathcal{M}$</span> 是冻结的评估模型，<span>$\mathcal{C}$</span> 是 Orchestrator 在推理时组装出来的上下文，内容为选中的 Skill 文档加 Tool 规格。<strong>人话</strong>：同一个模型 <span>$\mathcal{M}$</span> 的参数永不更新，唯一会变的自变量是 <span>$\mathcal{C}$</span>；因此整篇论文优化的对象就是这个 <span>$\mathcal{C}$</span> 的来源——库。</p>
+
+<p>这个形式化有一个容易被忽略的推论：本文没有 Bradley-Terry 目标，也没有显式的 ranking loss。系统真正被优化的量是 §2.5 里的验证集排序准确率。换句话说，它的"损失函数"是一个不可微、只能通过接受/拒绝提案来搜索的离散指标。</p>
+
+<h3>创新点一：Library 的双类型设计（Skills 与 Tools 分离）</h3>
+
+<p>Library 是一个带版本的集合，<strong>初始状态为空</strong>，全部内容靠自进化长出来。它被刻意拆成两类条目，这是本文最结构性的设计决定。Skill 是一段结构化 Markdown 的评价准则，字段包括 name、one-line description、scoring rubric（把质量拆成若干可评估 criteria）与 examples；Tool 也是结构化 Markdown，但描述的是定向视觉分析流程，字段包括 name、purpose、expected inputs/outputs、invocation conditions 与 step-by-step execution protocol。</p>
+
+<p>两者的区别可以用一句话概括：Skill 是 declarative 的，管"判什么"；Tool 是 procedural 的，管"怎么看"。论文给出的 Skill 例子是 <code>realism-and-artifact-penalties</code>，它的核心作用是区分两种不真实——视觉 artifact（一律扣分）与概念上的不真实（当指令明确要求时应当接受）。这个区分正是纯 holistic 打分最容易搞错的地方：指令要求"把猫变成宇航员"时，画面上出现不符合物理常识的元素不该被惩罚。Tool 的例子是 <code>text-and-ocr-analyzer</code>，负责抽取、比对与校验源图与编辑图中的文字，抓住整体印象式评估常漏掉的错字与位置错误。</p>
+
+<p>Tool 的实现方式值得单独强调：它不是一个独立训练的模块，而是论文所称的 "procedural in-context specification"。通用 VLM 读过 Tool 文档后，要么临时扮演某个视觉分析专家，要么按 Tool 的 schema 发起一次结构化的二级 VLM 查询——两条路径都不需要任何参数更新。Figure 11 展示了这种 typed JSON schema 的具体形态。这一设计使得"扩展系统能力"这件事退化为"写一份新文档"，成本从训练一个模型降到生成几百 token。</p>
+
+<h3>创新点二：Orchestrator 的双角色与 progressive disclosure</h3>
+
+<p>Orchestrator 是一个基于 Claude 的 LLM，在系统里承担两个完全不同的职责。推理时它是路由器：看过指令、源图与候选图后，从库中选出合适的 Skills 与 Tools，组装成上下文 <span>$\mathcal{C}$</span> 交给 Sub-Agent。这一步可以形式化为一个从任务实例到库子集的映射：</p>
+
+<p>$$\mathcal{C}=\mathrm{Assemble}\bigl(\mathcal{S}_{\mathrm{sel}},\mathcal{T}_{\mathrm{sel}}\bigr),\qquad \mathcal{S}_{\mathrm{sel}}\subseteq\mathcal{S}^{(t)},\;\; \mathcal{T}_{\mathrm{sel}}\subseteq\mathcal{T}^{(t)}$$</p>
+
+<p>其中 <span>$\mathcal{S}^{(t)},\mathcal{T}^{(t)}$</span> 分别是第 <span>$t$</span> 轮的 Skill 集合与 Tool 集合，下标 sel 表示 Router 选中的子集。<strong>人话</strong>：路由的本质是从整个库里挑出与当前这道题相关的几条，拼成一份临时的评审手册。</p>
+
+<div class="note">形式化说明：上式为按论文 §2.3 的文字描述重构的表达，论文原文未给出该编号公式。全文唯一编号公式为 §2.1 的公式 (1)。</div>
+
+<p>为控制上下文长度，Tool 的加载采用 <strong>progressive disclosure</strong>：Orchestrator 起初只看到 name 与 description，只有当任务满足该 Tool 的 invocation conditions 时才加载完整 schema。这一机制解决的是一个实际工程约束——库里 Tool 的完整 protocol 通常远长于 Skill 的 rubric，若无条件全量注入，上下文预算会迅速被占满，而多数 Tool 对当前样本并不适用。</p>
+
+<p>进化时 Orchestrator 换成分析者角色：拿 Sub-Agent 的推理链对照 ground truth，做 root-cause analysis，提出库的更新提案。这一角色切换是本文架构的关键——同一个强 LLM 既做路由又做诊断，但两次调用的输入完全不同，前者只看任务，后者只看失败的推理过程。</p>
+
+<h3>创新点三：Sub-Agent 的三步推理链</h3>
+
+<p>Sub-Agent 是冻结、可插拔的 VLM，默认 Qwen2.5-VL-7B-Instruct，论文同时验证了直接换成 Gemini 的情形（Table 1）。它读入 <span>$\mathcal{C}$</span> 后临时变成专用评审，执行三步推理：第一步 Rubric application，对 <span>$\mathcal{C}$</span> 中每个 Skill，把 rubric 逐条应用到每张候选图，产出 per-criterion 评估；第二步 Tool-guided analysis 是可选的，对满足 invocation conditions 的 Tool 按其 protocol 做定向视觉分析（OCR 抽取、空间关系校验、物体计数等），结构化结果追加到推理链；第三步 Aggregation and ranking，把所有 per-criterion 评估与 tool 输出综合成标量分 <span>$\mathbf{s}$</span> 与排序 <span>$\pi$</span>。</p>
+
+<p>Figure 2 把这条链条放进完整回路：多模态输入（源图、编辑指令、一张候选编辑图；排序任务对每个候选重复打分）进入 Orchestrator，后者从 Skills 与 Tools 库中选出相关条目，Sub-Agent 据此建立推理链输出分数与偏好判断，输出与 ground truth 比对后由 Orchestrator 分析推理链、产生更新库的 improvement signals。这条链条的价值在于它把一次整体判断拆成了可归因的若干局部判断。传统 reward model 输出一个标量，出错时无从下手；而这里每一条 criterion 的评估都留有痕迹，Orchestrator 才有可能定位"是缺了一个维度"还是"这个维度用错了"。可解释性在此不只是给人看的，它是自进化闭环能够运转的前提条件。</p>
+
+<h3>创新点四：自进化循环的五阶段与验证门控</h3>
+
+<p>输入是 <span>$N=100$</span> 条人类偏好示范：</p>
+
+<p>$$D=\bigl\{\bigl(I_s^{(i)},\,p^{(i)},\,\{I_k^{(i)}\},\,\mathbf{s}^{*(i)},\,\pi^{*(i)}\bigr)\bigr\}_{i=1}^{N}$$</p>
+
+<p>带星号的量是人类标注的真值分与真值排序。Orchestrator 把它拆成 <span>$D_{train}$</span>（60 条）与 held-out 的 <span>$D_{val}$</span>（40 条）。<strong>人话</strong>：全部监督信号就是这 100 个例子，其中 60 个用来发现问题，40 个用来判断改动是否真的有用。</p>
+
+<p>每轮迭代走五个阶段。<strong>Evaluation</strong>：对每条 train 样本检索最相关的 Skills 与 Tools，Sub-Agent 建立推理链产出 <span>$\hat{\mathbf{s}},\hat{\pi}$</span>。<strong>Scoring</strong>：与人类标签比对，按 ranking agreement 划分为 correct 与 error 两类，标量分差只用于诊断分析、不进入指标。<strong>Chain analysis</strong>：对错误做 root-cause 诊断，映射关系是三对一的——缺失评价维度对应新建 Skill，rubric 应用错误对应修改 Skill，感知幻觉对应新建或改进 Tool；同时也挖掘正确的推理链，识别真正起作用的条目并强化保留，最终输出结构化的 improvement proposal。<strong>Library update</strong>：只允许三种动作 create / modify / deprecate，没有 merge，另设一个 aggressive pruning 模式。<strong>Validation and gating</strong>：在 <span>$D_{val}$</span> 上评估，只有优于当前最佳才接受，否则回滚。</p>
+
+<p>门控准则可以形式化为在候选库上取验证准确率的最大值：</p>
+
+<p>$$\mathcal{L}^{(t+1)}=\arg\max_{\mathcal{L}\in\{\mathcal{L}^{(t)},\;\mathcal{L}'\}}\;\mathrm{Acc}_{val}(\mathcal{L}),\qquad \mathrm{Acc}_{val}(\mathcal{L})=\frac{1}{|D_{val}|}\sum_{i\in D_{val}}\mathbb{1}\bigl[\hat{\pi}^{(i)}(\mathcal{L})=\pi^{*(i)}\bigr]$$</p>
+
+<p>其中 <span>$\mathcal{L}^{(t)}$</span> 是第 <span>$t$</span> 轮的当前库，<span>$\mathcal{L}'$</span> 是应用了本轮提案后的候选库，<span>$\mathbb{1}[\cdot]$</span> 是指示函数。<strong>人话</strong>：每轮改完先在 40 条留出集上考一次，考得更高就留下，否则整批改动撤销。</p>
+
+<div class="note">形式化说明：以上两式为按论文 §2.5 的文字流程重构的表达，论文原文未给出编号公式，也未提供 Algorithm 伪代码块（全文未出现 "Algorithm"）。</div>
+
+<p>停止条件是固定迭代预算，<strong>而非收敛判据</strong>——这一点论文写得很明确。实际跑满 77 轮，最终选出并冻结的是 best-validation library，即 iteration 69 的状态。这个设定意味着 77 这个数字没有理论含义，它只是预算。</p>
+
+<h3>创新点五：下游 GRPO 的接入方式</h3>
+
+<p>把 RewardHarness 接进 GRPO 时，生成的编辑图作为唯一候选，与源图和指令一起送入系统打分，得到的离散分数由 trainer 在 batch 内做归一化后作为 reward。这一步可写作：</p>
+
+<p>$$r_i=\frac{s_i-\mu_B}{\sigma_B+\epsilon},\qquad \mu_B=\frac{1}{|B|}\sum_{j\in B}s_j$$</p>
+
+<p>其中 <span>$B$</span> 是一个 batch（GRPO 中的一组 rollout），<span>$\mu_B,\sigma_B$</span> 是组内均值与标准差，<span>$\epsilon$</span> 为数值稳定项。<strong>人话</strong>：绝对分数刻度被消掉，只有"这一张比同组其他张好多少"进入梯度，这也解释了为什么系统只要排序对就够用。</p>
+
+<div class="note">形式化说明：本式为按论文对 GRPO batch 归一化的文字描述重构的标准形式，论文原文未给出该公式；论文仅说明归一化方式与被对比的 reward model 相同。</div>
+
+<h3>方法与源码的对应关系</h3>
+
+<p>仓库已公开且结构完整：<code>src/</code> 下有 pipeline.py、router.py、evaluator.py、evolver.py、chain_analyzer.py、sub_agent.py、gemini_client.py、endpoint_pool.py，以及签入的 library_gemini_v1 至 v5；<code>scripts/</code> 提供 run_evolution.py、run_benchmark.py、reproduce.sh、vLLM 启动脚本与 check_env.py；<code>tests/</code> 有约 107 个测试且不需要 GPU 与网络。文件名与论文模块几乎一一对应：router.py 对应 §2.3 的 Router，chain_analyzer.py 对应 §2.5 的 Chain analysis。</p>
+
+<p>第一处实质对应在配置文件。<code>configs/default.yaml</code>：</p>
+
+<pre><code>evolution:
+  train_dataset: AgPerry/EditReward-Data-100
+  train_n: 60
+  val_n: 40
+  max_iterations: 5
+  batch_concurrent: 128
+  explore_margin: 0.075
+  augment_swap: true
+  prune_every_n: 50
+  seed: 42</code></pre>
+
+<p><code>train_n: 60</code> 与 <code>val_n: 40</code> 精确对应 §2.5 的 60/40 拆分，数据集名 <code>AgPerry/EditReward-Data-100</code> 对应 <span>$N=100$</span> 的校准集。<code>prune_every_n: 50</code> 与论文"约第 50 轮开始剪枝"的描述吻合。<code>augment_swap: true</code> 对应候选顺序交换，用来对抗位置偏置——这与库中 <code>objective-visual-description-first</code> 这条 Skill 在治同一个病，一个从数据侧、一个从提示侧。</p>
+
+<p>第二处对应在 <code>src/evolver.py</code>，它把 §2.5 的三种动作落成了字面上的三个分支：</p>
+
+<pre><code>applied = {"skills_added": 0, "skills_updated": 0, "skills_deleted": 0,
+           "tools_added": 0, "tools_updated": 0, "tools_deleted": 0}
+for u in signals.get("skill_updates", []):
+    if u["action"] == "add":    self.library.add_skill(...)
+    elif u["action"] == "update": self.library.update_skill(...)
+    elif u["action"] == "delete": self.library.delete_skill(u["name"])</code></pre>
+
+<p>该模块的 docstring 写着：<em>"Applies improvement signals to Library (add/update Skills and Tools). Supports snapshot/restore for rollback on val_acc regression."</em> add / update / delete 三分支即论文的 create / modify / deprecate，snapshot/restore 即验证门控失败时的回滚，回滚判据明确写成 val_acc regression。论文里抽象描述的门控在代码里是一个具体的快照恢复操作，两者对得上，这提高了方法描述的可信度。</p>
+
+<h2>实验分析</h2>
+
+<h3>进化轨迹：准确率与库规模的非单调关系</h3>
+
+<p>自进化过程本身是本文最有信息量的实验。空 library 的 baseline 为 <strong>42.5%</strong>；库长到 13 条时进入 plateau，停在 <strong>52.5%</strong>；iteration 69 达到 <strong>62.5%</strong>，相对空库提升 47%。被接受的更新集中在很窄的几个窗口：iters 5–7、10、58–60。这意味着 77 轮里绝大多数轮次的提案都被门控拒绝，进化不是平滑爬坡而是长时间停滞后的少数跃迁。</p>
+
+<p>库规模的轨迹与准确率并不同向。初始 0 条，iter 10 增到 9 条（6 Skills + 3 Tools），iter 49 达到峰值 13 条（8 Skills + 5 Tools），约 iter 50 起开始剪枝，iter 69 收敛到 <strong>7 条（3 Skills + 4 Tools）</strong>。也就是说，最好的库比中途的最大库少了 6 条，而准确率从 52.5% 涨到了 62.5%。剪枝阶段贡献了最后 10 个百分点，这与"条目越多能力越强"的直觉相反：条目之间会互相干扰，冗余的 rubric 会稀释 Sub-Agent 对关键维度的注意力。</p>
+
+<p>另一个细节在论文原文中被点出：<em>"many proposed updates were rolled back, and Skill proposals were accepted less often than Tool proposals."</em> Skill 提案的接受率低于 Tool 提案，且最终库里 Tool（4 条）多于 Skill（3 条）。合理的解释是：Skill 修改的是全局评分标准，牵一发动全身，在 40 条验证集上更容易造成局部回退；而 Tool 只在满足 invocation conditions 时才被触发，作用域窄，副作用小，因此更容易通过门控。这也解释了为什么感知类问题（OCR、计数、空间关系）更适合用 Tool 而不是 Skill 来治。</p>
+
+<h3>Table 1：图像编辑评测的排序准确率</h3>
+
+<p>Table 1 报告 EditReward-Bench（K=2 / K=3 / K=4 三个子设置）与 GenAI-Bench 上的 ranking accuracy，Δ 列为相对 GPT-4o 的平均提升。</p>
+
+<table>
+<thead><tr><th>模型</th><th>EditReward K=2</th><th>K=3</th><th>K=4</th><th>GenAI-Bench</th><th>Avg</th><th>Δ vs GPT-4o</th></tr></thead>
+<tbody>
+<tr><td>GPT-4o</td><td>45.7</td><td>27.3</td><td>7.3</td><td>53.5</td><td>33.5</td><td>–</td></tr>
+<tr><td>GPT-5</td><td>57.5</td><td>38.5</td><td>12.8</td><td>59.6</td><td>42.1</td><td>+8.6</td></tr>
+<tr><td>Gemini-2.0-Flash</td><td>52.4</td><td>33.3</td><td>13.5</td><td>53.3</td><td>38.1</td><td>+4.6</td></tr>
+<tr><td>Gemini-2.5-Flash</td><td>58.6</td><td>39.9</td><td>12.2</td><td>57.0</td><td>41.9</td><td>+8.4</td></tr>
+<tr><td>Claude-Haiku-4.5</td><td>57.9</td><td>30.7</td><td>7.4</td><td>47.1</td><td>35.8</td><td>+2.3</td></tr>
+<tr><td>Qwen2.5-VL-7B</td><td>52.7</td><td>24.7</td><td>3.4</td><td>40.5</td><td>30.3</td><td>−3.2</td></tr>
+<tr><td>Qwen2.5-VL-32B</td><td>50.5</td><td>25.3</td><td>4.1</td><td>39.3</td><td>29.8</td><td>−3.7</td></tr>
+<tr><td>MiMo-VL-7B</td><td>49.5</td><td>30.4</td><td>9.5</td><td>57.9</td><td>36.8</td><td>+3.3</td></tr>
+<tr><td>EditReward (Qwen)</td><td>57.0</td><td>36.0</td><td>10.8</td><td>64.0</td><td>42.0</td><td>+8.5</td></tr>
+<tr><td>EditReward (MiMo)</td><td>56.5</td><td>42.7</td><td>11.5</td><td>65.7</td><td>44.1</td><td>+10.6</td></tr>
+<tr><td><strong>RewardHarness (Gemini-2.0-Flash)</strong></td><td>—</td><td>—</td><td>—</td><td>—</td><td><strong>47.4</strong></td><td>—</td></tr>
+</tbody>
+</table>
+
+<p class="note">RewardHarness 各分列数字在本次资料抓取中未获取，故留空；正文与摘要给出的确定数字为 Avg 47.4%，比 GPT-5 高 5.3 分。</p>
+
+<p>这张表里最值得读的是 K=4 一列。所有模型在这一列都塌方：GPT-4o 只有 7.3，Qwen2.5-VL-7B 只有 3.4，最强的 Gemini-2.0-Flash 也只有 13.5。四候选全排对的概率随组合数急剧下降，这一列直接暴露出当前 VLM 在细粒度多候选比较上的能力上限。同时可以看到一个反常现象：Qwen2.5-VL-32B（Avg 29.8）低于 7B 版本（30.3），参数规模在这个任务上不带来收益，说明瓶颈不在容量而在评价标准的缺失——这正好是本文论点的间接证据。</p>
+
+<p>第二个观察是 RewardHarness 的对照组选择。论文报告的最优配置用 Gemini-2.0-Flash，而该模型单独使用时 Avg 只有 38.1；套上自进化出的库后达到 47.4，净增 9.3 分，且反超 GPT-5（42.1）5.3 分。这个增量全部来自上下文，没有一个参数被更新。另一个配置是 Claude Orchestrator 加冻结的 Qwen2.5-VL-7B Sub-Agent，它超过了用 20 万偏好对做 SFT 的 EditReward (Qwen) 变体（42.0），而使用的偏好数据只有 0.05%。需要注意 EditReward (MiMo) 的 44.1 仍是开源 SFT 阵营的高点，本文的比较对象是 Qwen 变体。</p>
+
+<h3>Table 2：作为 reward 信号驱动 GRPO</h3>
+
+<p>Table 2 的设置是用 RewardHarness 作为 reward model 对 FLUX.2-klein-base-4B 做 RL 微调，并在 ImgEdit-Bench 上评测。caption 的结论是：相比 EditReward，RewardHarness 带来更明显的编辑性能提升。</p>
+
+<table>
+<thead><tr><th>模型</th><th>Add</th><th>Adjust</th><th>Extract</th><th>Replace</th><th>Remove</th><th>Bg.</th><th>Style</th><th>Compose</th><th>Action</th><th>Overall</th></tr></thead>
+<tbody>
+<tr><td>AnyEdit</td><td>3.18</td><td>2.95</td><td>1.88</td><td>2.47</td><td>2.23</td><td>2.23</td><td>2.85</td><td>1.56</td><td>2.65</td><td>2.45</td></tr>
+<tr><td>UltraEdit</td><td>3.44</td><td>2.81</td><td>2.13</td><td>2.96</td><td>1.45</td><td>2.86</td><td>3.76</td><td>1.91</td><td>2.98</td><td>2.70</td></tr>
+<tr><td>Step1X-Edit</td><td>3.88</td><td>3.14</td><td>1.76</td><td>3.40</td><td>2.41</td><td>3.16</td><td>4.63</td><td>2.64</td><td>2.52</td><td>3.06</td></tr>
+<tr><td>BAGEL</td><td>3.56</td><td>3.31</td><td>1.70</td><td>3.30</td><td>2.62</td><td>3.24</td><td>4.49</td><td>2.38</td><td>4.17</td><td>3.20</td></tr>
+<tr><td>OmniGen2</td><td>3.57</td><td>3.06</td><td>1.77</td><td>3.74</td><td>3.20</td><td>3.57</td><td>4.81</td><td>2.52</td><td>4.68</td><td>3.44</td></tr>
+<tr><td>Ovis-U1</td><td>4.13</td><td>3.62</td><td>2.98</td><td>4.45</td><td>4.06</td><td>4.22</td><td>4.69</td><td>3.45</td><td>4.61</td><td>4.00</td></tr>
+<tr><td>GPT-Image-1</td><td>4.61</td><td>4.33</td><td>2.90</td><td>4.35</td><td>3.66</td><td>4.57</td><td>4.93</td><td>3.96</td><td>4.89</td><td>4.20</td></tr>
+<tr><td>Flux.1 Kontext [dev]</td><td>3.76</td><td>3.45</td><td>2.15</td><td>3.98</td><td>2.94</td><td>3.78</td><td>4.38</td><td>2.96</td><td>4.26</td><td>3.52</td></tr>
+<tr><td>FLUX.2-klein-base-4B</td><td>3.27</td><td>4.00</td><td>2.04</td><td>3.07</td><td>2.90</td><td>3.47</td><td>4.26</td><td>3.19</td><td>4.44</td><td>3.32</td></tr>
+<tr><td>+RL (EditReward)</td><td>4.21</td><td>4.01</td><td>2.02</td><td>3.21</td><td>2.58</td><td>3.69</td><td>4.32</td><td>2.85</td><td>4.34</td><td>3.45</td></tr>
+<tr><td>+RL (RewardHarness)</td><td>4.03</td><td>4.27</td><td>2.24</td><td>3.12</td><td>2.19</td><td>4.22</td><td>4.44</td><td>3.19</td><td>4.22</td><td><strong>3.52</strong></td></tr>
+</tbody>
+</table>
+<p>Overall 从 base 的 3.32 抬到 3.52，而 EditReward 只到 3.45。论文自己的解读比这个总分更有价值：两种 reward 的增益分布不同——EditReward 在 Add 与 Replace 上提升更多，RewardHarness 在 Adjust、Extract、Background 上提升更强，并且保住了 base 在 Compose 上的表现（3.19 未跌，而 EditReward 掉到 2.85）。这个分布差异可以回溯到 Table 3 的库构成：最终库里有一条 <code>style-and-background-transformation-evaluation</code> 专管背景与风格变换，Bg. 一列从 3.47 涨到 4.22（EditReward 只到 3.69）就有了明确的线索。这是标量 reward model 做不到的归因。</p>
+
+<p>Remove 一列需要诚实指出：RewardHarness 使 base 从 2.90 降到 2.19，比 EditReward 的 2.58 更差。总分领先不代表全维度领先，reward 的偏好结构会被完整地传导进生成器。最后一个参照点是 Flux.1 Kontext [dev] 的 3.52——RL 后的 4B backbone 与它持平，考虑到参数规模差异，这个持平比 0.07 的领先更有说服力。</p>
+
+<h3>Table 3：最终库的构成</h3>
+
+<p>Figure 3 展示了 iteration 69 库中一个 Skill 与一个 Tool 的实例（caption 强调 Skills 是 declarative rubrics、Tools 是 procedural specifications），而 Table 3 给出完整的 7 条清单：</p>
+
+<table>
+<thead><tr><th>名称</th><th>类型</th><th>作用</th></tr></thead>
+<tbody>
+<tr><td>objective-visual-description-first</td><td>Skill</td><td>强制先客观描述每张图再评价，抑制幻觉与位置偏置</td></tr>
+<tr><td>realism-and-artifact-penalties</td><td>Skill</td><td>惩罚视觉 artifact，但指令要求时允许概念上的不真实</td></tr>
+<tr><td>style-and-background-transformation-evaluation</td><td>Skill</td><td>管背景与风格变换的评估，强制前景保持与照片真实感</td></tr>
+<tr><td>text-and-ocr-analyzer</td><td>Tool</td><td>通过二级 VLM 调用抽取并校验图中文字的拼写、位置、可读性</td></tr>
+<tr><td>spatial-and-object-analyzer</td><td>Tool</td><td>顺序计数物体，用结构化 JSON 输出分析空间关系与朝向</td></tr>
+<tr><td>visual-qa-tool</td><td>Tool</td><td>回答关于图像内容的定向视觉问题，防幻觉与左右互换</td></tr>
+<tr><td>cultural-and-style-knowledge-oracle</td><td>Tool</td><td>识别艺术风格、文化指代、受某艺术家启发的元素</td></tr>
+</tbody>
+</table>
+
+<p>这张表可以反向读出系统在 77 轮里判定的"最致命的失败模式"是什么。四条 Tool 中有三条（OCR、空间与计数、视觉问答）都在治感知幻觉，说明冻结 VLM 的主要失误不是标准理解错误，而是根本没看清图。第一条 Skill 强制"先描述再评价"，治的是另一类系统性偏差——位置偏置，这与 <code>configs/default.yaml</code> 里 <code>augment_swap: true</code> 是同一问题的两种解法。7 条条目全部人类可读，这是与 SFT reward model 最直观的差别。</p>
+
+<p class="note">本文未提供消融实验表、数据效率对比表与成本/延迟分析表，因此上述关于各条目贡献的归因均为基于 Table 2 分列结果与 Table 3 库构成的推断，而非受控实验结论。</p>
+
+<h2>讨论</h2>
+
+<p>方法的适用边界由它的机制决定。整套系统只有在两个条件同时成立时才有效：一是失败必须可归因，Sub-Agent 的推理链要足够结构化，Orchestrator 才能定位是维度缺失还是应用错误；二是评价标准必须能被自然语言写清。图像编辑刚好满足这两点。若换成一个人类自己也说不清标准的任务（例如审美偏好的细微差异），chain analysis 会失去着力点，此时"上下文进化"退化为盲搜。</p>
+
+<p>论文在结论里把这件事表述为一个新的扩展轴：<em>"More broadly, these results suggest a complementary scaling axis for reward modeling: explicit evaluation context."</em> 这个提法没有否定参数扩展，而是提出显式评价上下文是与之互补的第二根轴。从 Table 1 中 Qwen 32B 反低于 7B 的现象看，在评价任务上第二根轴的边际收益可能确实更高。</p>
+
+<p>但资料中存在两处需要读者注意的不一致，都与实现细节相关。<strong>第一处是 rubric 刻度</strong>：论文 §2.1 明确写实现为 1–5 的离散 rubric，而开源仓库 README 描述产出的是 "1–4 preference judgment"，目录注释也写着 <code>score-guidelines/ # 1–4 scoring rubric templates</code>。1–5 与 1–4 的差别不只是刻度长短：奇数刻度有中间档，偶数刻度强制评审在偏好上表态。这会影响 tie 的产生频率，进而影响 ranking accuracy 的统计，也会影响 GRPO 归一化后 reward 的方差。论文正文与开源代码在这一点上无法同时为真，复现者需要先确认自己用的是哪一套。</p>
+
+<p><strong>第二处是迭代预算</strong>：论文跑了 77 轮并取 iteration 69 的库，而 <code>configs/default.yaml</code> 里 <code>max_iterations: 5</code>。按默认配置直接运行 <code>scripts/run_evolution.py</code>，进化会在第 5 轮停止，落在论文所述"iters 5–7 被接受"窗口的最开头，几乎不可能重现 62.5% 的验证准确率。更微妙的是 <code>prune_every_n: 50</code> 在 5 轮预算下永远不会触发，而剪枝阶段恰恰贡献了从 52.5% 到 62.5% 的关键提升。这个默认值大概率是为快速冒烟测试而设，但它与论文实验配置的落差需要在文档中显式说明，否则开源仓库的默认行为会系统性低估方法效果。</p>
+
+<p>未解决的问题还有一个方法论层面的：由于停止条件是固定预算而非收敛判据，77 与 69 这两个数字都不具备可迁移性。换一个任务或换一个 Sub-Agent，需要多少轮、在哪一轮达到峰值，本文没有提供任何预测依据，只能靠重新烧一遍预算试出来。</p>
+
+<h2>局限分析</h2>
+
+<p><strong>作者自述之一：Orchestrator 对闭源模型的依赖。</strong>原文写：<em>"The Orchestrator currently relies on a proprietary LLM (Claude) for routing, chain analysis, and library evolution… This coupling limits full reproducibility and introduces a dependency on API availability and cost."</em> 这一点与本文的卖点形成张力：论文的核心论据之一是传统范式无法作用于闭源模型，而它自己的进化引擎恰恰依赖闭源模型。两者并不矛盾——被评估的 Sub-Agent 可以是开源冻结模型，闭源依赖只在进化阶段——但这意味着"零训练成本"的说法需要限定：省掉的是 GPU 训练，付出的是 77 轮 Orchestrator API 调用。论文未提供成本分析表，这笔账的绝对数额无法核算。</p>
+
+<p><strong>作者自述之二：门控不保证全局最优。</strong>原文写：<em>"The conservative rollback gate reduces regressions, but it does not guarantee discovery of globally optimal Skills or Tools; useful proposals may be rejected when they help rare cases but slightly hurt frequent ones."</em> 这是贪心搜索的固有代价，并且与 Skill 提案接受率低于 Tool 的观察互为印证：改动作用域越大，越容易在频繁样本上造成轻微回退而被整批拒绝。论文同时承认第三点局限：系统目前限于单模态单任务，且 40 条验证集过小，带来过度专化风险。项目页进一步补充：<em>"Skill plateaus… The library converges to a compact 7-entry final state after pruning, which may hide longer-tail failure modes the calibration set never surfaces."</em></p>
+
+<p><strong>独立判断之一：40 条验证集与 62.5% 的可信度。</strong>验证准确率的每一步都以 1/40 = 2.5 个百分点为最小刻度，而报告的三个数字 42.5%、52.5%、62.5% 全部落在 2.5% 的整数倍上，分别对应 17、21、25 条正确。用 25 条正确判定一个库优于另一个库，采纳与回滚决策的信噪比很低；在 77 轮里反复用同一个 <span>$D_{val}$</span> 做选择，等价于对这 40 条做了多重比较，best-validation 的选点必然带有乐观偏差。Table 1 上 47.4% 的测试结果低于验证集的 62.5%，与这一分析方向一致（两者基准集不同，不能直接相减，但差距的方向值得记住）。</p>
+
+<p><strong>独立判断之二：下游收益的规模与稳健性未被充分刻画。</strong>Table 2 的 Overall 优势为 3.52 对 3.45，仅 0.07；而 Remove 一列出现 0.71 的回退。在没有多种子重复、没有置信区间、也没有消融实验的情况下，很难区分这 0.07 是方法优势还是单次运行的波动。此外全部下游实验绑定在 FLUX.2-klein-base-4B 这一个 backbone 上，reward 的偏好结构会不会在更大的生成器上呈现不同的传导模式，本文没有回答。</p>
+
+<h2>结论</h2>
+
+<p>本文的贡献可以凝练成三句。第一，它给出了一个把 reward modeling 从权重优化改写为上下文进化的完整可运行系统：100 条人类偏好示范加一个参数冻结的 VLM，在图像编辑评测上取得 47.4% 的平均排序准确率，比 GPT-5 高 5.3 分，用掉的偏好数据是 EditReward 的 0.05%。第二，它把 Skills（declarative，判什么）与 Tools（procedural，怎么看）分离，配合 progressive disclosure 与 create/modify/deprecate 三动作加验证回滚的门控，使自进化在只有 40 条留出样本的条件下不至于失控。第三，它验证了这套系统可以直接当作 GRPO 的 reward 接入下游，把 4B backbone 从 3.32 抬到 3.52，超过用 20 万偏好对训练的监督 reward baseline。</p>
+
+<p>更有延展性的是论文结论里那句判断：显式的评价上下文构成了 reward modeling 的一条互补扩展轴。Table 3 只有 7 条人类可读的条目，却承担了传统范式中 20 万条标注的角色，而进化轨迹中"从 13 条剪到 7 条反而涨 10 个点"的现象，说明这条轴上的关键变量不是条目数量而是条目质量与彼此的正交性。论文列出的未来方向包括换用开源 LLM 做 Orchestrator、扩展到 text-to-image 质量评估与视频编辑及 3D 场景操作、以及给验证门控加入 diversity-aware sampling、不确定性估计或轻量人工审计（用于争议与安全敏感领域）。其中第一项直接对应最主要的局限，第三项则对应 40 条验证集带来的选点偏差——这两项能否被解决，决定了这条新扩展轴能走多远。</p>
+
+</body>
+</html>

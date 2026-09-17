@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>视频编辑论文综合报告</title>
+<style>
+:root{--text:#17202a;--bg:#fafaf8;--accent:#2563eb;--muted:#64748b;--border:#e2e8f0;--code-bg:#f1f5f9;--soft:#eef6ff}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:-apple-system,BlinkMacSystemFont,"PingFang SC","Noto Sans CJK SC","Microsoft YaHei",serif;color:var(--text);background:var(--bg);line-height:1.85;padding:2.5rem 1.5rem;max-width:920px;margin:0 auto;font-size:17px}
+h1{font-size:2.15rem;margin:0 0 .5rem;line-height:1.3;color:#0f172a}
+h2{font-size:1.45rem;margin:2.8rem 0 .8rem;color:var(--accent);padding-bottom:.4rem;border-bottom:1px solid var(--border)}
+h3{font-size:1.15rem;margin:1.6rem 0 .5rem;color:#1f2937}
+p{margin:1rem 0}.meta{color:var(--muted);font-size:.92rem;margin-bottom:2rem;line-height:1.8}.meta a{color:var(--accent);text-decoration:none}
+.summary-box{background:linear-gradient(135deg,#edf6ff,#f7f3ff);padding:1.4rem 1.5rem;border-radius:12px;margin:1.5rem 0;border:1px solid #dbeafe}
+.summary-box h3{margin:0 0 .5rem;color:var(--accent)}
+blockquote{border-left:3px solid var(--accent);padding:.6rem 1.1rem;margin:1.4rem 0;background:#f0f6ff;border-radius:0 8px 8px 0;color:#273449}
+pre{background:var(--code-bg);padding:1rem 1.2rem;border-radius:8px;overflow-x:auto;font-size:.85rem;line-height:1.5;margin:1.5rem 0;border:1px solid var(--border)}
+code{font-family:"SF Mono","Fira Code",monospace;font-size:.9em}
+table{width:100%;border-collapse:collapse;margin:1.4rem 0;font-size:.93rem;background:white}td,th{border:1px solid var(--border);padding:.62rem .75rem;text-align:left;vertical-align:top}th{background:#f8fafc;font-weight:700}.small{font-size:.92rem;color:var(--muted)}
+ul{padding-left:1.2rem;margin:1rem 0}li{margin:.45rem 0}.golden{font-size:1.22rem;font-weight:700;color:var(--accent);text-align:center;padding:1.6rem 1rem;border-top:2px solid var(--accent);border-bottom:2px solid var(--accent);margin:2.5rem 0;line-height:1.55}
+@media(max-width:700px){body{font-size:16px;padding:1.2rem 1rem}h1{font-size:1.55rem}table{font-size:.86rem;display:block;overflow-x:auto;white-space:nowrap}}
+</style>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body,{delimiters:[{left:'$$',right:'$$',display:true},{left:'$',right:'$',display:false}]})"></script>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:true,theme:'default',securityLevel:'loose'});</script>
+</head>
+<body>
+<h1>视频编辑论文综合报告</h1>
+<div class="meta">
+分析目录：01_视频编辑/补充阅读<br>
+覆盖论文：Wan: Open and Advanced Large-Scale Video Generative Models；OpenVE-3M: A Large-Scale High-Quality Dataset for Instruction-Guided Video Editing；Bernini: Latent Semantic Planning for Video Diffusion<br>
+报告日期：2026-07-10
+</div>
+
+<div class="summary-box">
+<h3>核心结论</h3>
+<p>这 3 篇论文刚好构成一条清晰路线：<strong>Wan</strong> 提供强大的开放视频基础模型和统一编辑框架底座；<strong>OpenVE-3M</strong> 解决指令式视频编辑最缺的数据与评测问题；<strong>Bernini</strong> 则把 MLLM 的语义推理显式放到扩散视频生成之前，让“理解编辑意图”和“渲染视频像素”分工更清楚。</p>
+<p>如果只看视频编辑方向，最重要的趋势不是单纯把 DiT 做大，而是把编辑任务拆成三层：高质量编辑数据、语义级计划、像素/时序级保真。OpenVE-3M 补数据，Bernini 补语义规划，Wan/VACE 补大模型底座和多模态条件统一。</p>
+</div>
+
+<h2>一、论文元信息与代码状态</h2>
+<table>
+<thead><tr><th>论文</th><th>定位</th><th>视频编辑相关贡献</th><th>代码/资源状态</th></tr></thead>
+<tbody>
+<tr><td>Wan: Open and Advanced Large-Scale Video Generative Models<br><span class="small">arXiv:2503.20314v2, Alibaba Group</span></td><td>开放视频基础模型技术报告</td><td>在 Wan 基础模型上通过 VACE / Video Condition Unit 支持 reference-to-video、video-to-video editing、masked video-to-video editing、inpainting、outpainting、extension、depth/pose/layout/object/face 等统一可控生成与编辑任务。</td><td>公开仓库：<a href="https://github.com/Wan-Video/Wan2.1">Wan-Video/Wan2.1</a>。仓库提供 T2V、I2V、FLF2V 等推理入口和模型下载链接；论文中的 VACE 编辑框架与 Wan 底座强相关。</td></tr>
+<tr><td>OpenVE-3M: A Large-Scale High-Quality Dataset for Instruction-Guided Video Editing<br><span class="small">arXiv:2512.07826v2, Zhejiang University & ByteDance</span></td><td>数据集、Benchmark 与编辑模型</td><td>提出 3M 指令式视频编辑数据、8 类编辑 taxonomy、OpenVE-Bench 431 条评测集，以及 5B OpenVE-Edit 模型。重点解决 IVE 数据规模小、类别少、指令短、坏例多的问题。</td><td>公开仓库：<a href="https://github.com/OpenVE-Team/OpenVE-3M">OpenVE-Team/OpenVE-3M</a>。仓库包含 OpenVE-Bench 与 assets；论文项目页为 https://lewandofskee.github.io/projects/OpenVE。</td></tr>
+<tr><td>Bernini: Latent Semantic Planning for Video Diffusion<br><span class="small">arXiv:2605.22344v1, ByteDance</span></td><td>统一生成与编辑框架</td><td>用 MLLM planner 在 ViT embedding space 里预测目标语义表示，再由 DiT renderer 在 VAE latent space 渲染；对编辑任务额外注入 source VAE features 保持细节一致性。支持 T2V、V2V、RV2V、R2V 等任务。</td><td>公开仓库：<a href="https://github.com/bytedance/Bernini">bytedance/Bernini</a>。README 显示 2026-06 已开源 full Bernini 推理代码与权重，提供 ByteDance/Bernini-Diffusers、Bernini-R 等模型族。</td></tr>
+</tbody>
+</table>
+
+<h2>二、三篇论文放在一起看：视频编辑范式的迁移</h2>
+<p>传统视频编辑模型常把问题看成“输入视频 + 文本指令 -> 输出视频”的端到端映射。这个形式简洁，但难点被压进一个黑盒里：模型既要理解“把蓝色 SUV 换成红色 SUV”这种局部语义，又要知道哪些像素不能动，还要维持跨帧身份、运动、材质、光照和背景稳定。一旦数据质量不够，或者指令与视频内容之间存在长程关系，模型很容易出现三类错误：编辑错对象、编辑对了但破坏未编辑区域、视频质量/时序稳定性下降。</p>
+<p>这 3 篇论文代表了三个不同层面的回答。Wan 的回答是：先做一个强视频基础模型，然后用统一条件单元把编辑、参考、mask、控制信号接进去。OpenVE-3M 的回答是：没有高质量、多类别、长指令的视频编辑数据，模型架构再漂亮也会训练不稳、泛化不足。Bernini 的回答更进一步：不要让扩散模型独自承担“理解意图”这件事，而是让 MLLM 先做语义规划，再让 DiT 专注渲染。</p>
+
+<pre class="mermaid">flowchart LR
+    A[Wan foundation model<br/>video DiT and VAE] --> B[Unified condition interface<br/>VACE and VCU]
+    C[OpenVE-3M<br/>3M edit pairs] --> D[OpenVE-Edit<br/>MLLM plus MoE connector]
+    B --> E[Editing model needs<br/>strong generation prior]
+    D --> E
+    F[Bernini<br/>semantic planner] --> G[DiT renderer<br/>VAE latent synthesis]
+    E --> H[Next trend<br/>data plus planning plus rendering]
+    G --> H
+</pre>
+
+<h2>三、Wan：用统一条件单元扩展视频基础模型</h2>
+<p>Wan 的主报告不是一篇单纯的视频编辑论文，而是一篇开放视频基础模型报告。它的核心模型采用 Diffusion Transformer 与 Flow Matching 路线，并强调大规模数据、spatio-temporal VAE、训练/推理加速和自动评测。对视频编辑最相关的是第 5.2 节 <strong>Unified Video Editing</strong>，其思想继承自 VACE：把不同形式的编辑条件统一成同一个输入范式。</p>
+<p>论文将 Video Condition Unit 写成：</p>
+<p>$$V = [T; F; M]$$</p>
+<p>其中 $T$ 是文本提示，$F=\{u_1,u_2,...,u_n\}$ 是上下文视频帧序列，$M=\{m_1,m_2,...,m_n\}$ 是 mask 序列。$F$ 与 $M$ 在空间尺寸 $h\times w$ 与时间长度 $n$ 上对齐。这个公式背后的人话解释是：视频编辑不应该只靠一句文字，而要把“要改什么”“保留什么”“参考什么”“哪些区域可动”都变成模型能统一读取的条件。</p>
+<p>更关键的是概念解耦策略。论文将上下文帧按 mask 切成待修改区域和待保留区域：</p>
+<p>$$F_c = F \times M, \quad F_k = F \times (1-M)$$</p>
+<p>$F_c$ 表示 reactive frames，即需要响应编辑的区域；$F_k$ 表示 inactive frames，即应该保留的区域。这个设计直接针对视频编辑最核心的矛盾：既要改变局部，又不能污染全局。比起只把源视频 latent 拼进去，显式区分可编辑区域和保留区域能让任务边界更清楚，也更利于多任务收敛。</p>
+<p>Wan/VACE 的另一个重点是训练方式。论文给出两种路线：一种是带 VCU 对整个 Wan 模型做 fully fine-tuning；另一种是 Context Adapter Tuning，用类似 Res-Tuning 的可插拔 Context Adapter 将上下文 token 重新注入原 DiT block，从而不改基础模型权重。这两个路线的取舍很实际：全量微调上限更高，但成本大；adapter 方式更利于复用基础模型，但总体模型规模和条件路径会更复杂。</p>
+<p>实验呈现上，Wan 在视频编辑章节主要给定性结果，包括 Fig. 21 的统一可控生成与编辑框架、Fig. 22/23 的多任务编辑可视化、Fig. 24 的 advanced video/image editing。它展示了 inpainting、extension、outpainting、depth、pose、gray、scribble、layout、object、face 等任务可以放在同一个框架下。这说明 Wan 的视频编辑贡献更像“基础设施型能力”：它不一定在这一节给出大量编辑 benchmark 数字，但提供了把不同编辑任务统一到大视频模型上的工程路径。</p>
+<p>局限方面，Wan 作者明确指出三点：第一，大运动下细粒度细节保持仍然困难；第二，14B 模型推理成本高，未经额外优化在单张高端 GPU 上约需 30 分钟；第三，作为通用基础模型，在教育、医疗等垂直场景仍缺少领域专长。对视频编辑而言，第一点尤其关键，因为编辑任务常常要求“局部变化 + 大运动 + 身份保持”同时成立，这是当前扩散视频模型最容易失控的组合。</p>
+
+<h2>四、OpenVE-3M：视频编辑最缺的不是模型，而是好数据</h2>
+<p>OpenVE-3M 的出发点非常直接：图像编辑已经受益于高质量 instruction-based image editing 数据集，但 instruction-guided video editing 数据仍然稀缺。论文指出已有 IVE 数据集的四个问题：规模小、编辑类别有限、指令过短、编辑质量差。比如 InsViE-1M 和 Señorita-2M 虽然有 1M/2M 规模，但平均指令长度只有约 4.4 和 3.6 个词，难以表达精确编辑意图。</p>
+<p>OpenVE-3M 构建了 3M 视频编辑样本，分为两大类：Spatially-Aligned 与 Non-Spatially-Aligned。前者要求编辑后视频与原视频在运动和时空结构上强对齐，包括 Global Style、Background Change、Local Change、Local Remove、Local Add、Subtitles Edit；后者允许运动发生创造性变化，但要保持主体一致，包括 Camera Multi-Shot Edit 与 Creative Edit。</p>
+<table>
+<thead><tr><th>类别</th><th>编辑含义</th><th>关键难点</th></tr></thead>
+<tbody>
+<tr><td>Global Style</td><td>整体风格、时间、天气变化</td><td>保持原始运动和细节不漂移</td></tr>
+<tr><td>Background Change</td><td>替换背景场景</td><td>前景 mask 稳定、背景与主体融合</td></tr>
+<tr><td>Local Change</td><td>对象变换、颜色/材质/年龄变化</td><td>定位正确对象，不误改周围区域</td></tr>
+<tr><td>Local Remove/Add</td><td>删除或添加局部对象</td><td>遮挡补全、跨帧一致、插入物运动合理</td></tr>
+<tr><td>Subtitles Edit</td><td>添加、删除、修改字幕</td><td>文字渲染与位置稳定</td></tr>
+<tr><td>Camera Multi-Shot / Creative Edit</td><td>镜头变化或动作创意变化</td><td>非严格对齐下的主体一致性与指令遵循</td></tr>
+</tbody>
+</table>
+<p>数据生成流程分三阶段。第一阶段是预处理：从 Open-Sora-Plan、OpenViD-HD、UltraVideo 中建立 1M 基础视频库，抽取 65 到 129 帧、720P 分辨率片段；用 Qwen2.5-VL-72B 生成长描述和可检测对象名；用 Video DepthAnything、OpenCV Canny、Grounded SAM2、DAM 生成深度、边缘、检测、分割、局部对象描述。第二阶段是 taxonomy-guided 生成：不同编辑类别用不同工具链，例如 FLUX-Kontext-dev 做首帧图像编辑，Wan2.1-Fun-Control 或 Wan2.2-I2V 生成视频；Creative Edit 和多镜头编辑使用 Seedance 的 I2V/Native Multi-Shot 能力。第三阶段是过滤：用 Instruction Compliance、Consistency & Detail Fidelity、Visual Quality & Stability 三个 1-5 分维度筛选，并强调 Instruction Compliance 是另外两项的上界。</p>
+<p>OpenVE-Edit 模型由 MLLM、MoE-Connector 和 DiT 三部分组成。输入视频和编辑指令先送入 MLLM，得到更高层的语义和时空关系表示；MoE-Connector 按任务类型选择专家处理这些隐藏特征；最后与 umT5 文本特征拼接，作为 DiT 的 cross-attention 条件。同时，原视频经 VAE 得到 latent，与噪声沿 channel 维拼接，帮助模型保留源视频细节。</p>
+<p>MoE-Connector 的核心公式为：</p>
+<p>$$Y=W_o\left(\mathrm{MoE\text{-}Dec}\left(Q_l,\mathrm{MoE\text{-}Enc}(F_i(X_{in}))\right)\right)$$</p>
+<p>其中 $X_{in}$ 是 MLLM hidden states，$Q_l$ 是可学习 query，$F_i$ 做维度映射，MoE encoder/decoder 负责从不同编辑任务中抽取关键表示。专家 FFN 写成：</p>
+<p>$$y=\sum_{i\in S} w_i\cdot\left(W_{i,2}\cdot \mathrm{GELU}(W_{i,1}x+b_{i,1})+b_{i,2}\right)$$</p>
+<p>其中 $S=\mathrm{topk}(\mathrm{softmax}(W_gx),k)$。人话解释是：不同编辑任务不必共用同一套中间变换，模型可以按输入内容激活少量专家，让“字幕编辑”“局部替换”“背景变化”拥有更专门的处理路径。</p>
+<p>论文还借鉴 ControlNet，将 connector 最后一层 $W_o$ 零初始化，使它在训练初期近似不可见，避免随机初始化特征干扰原有 umT5 条件。这是一个很实用的训练稳定性设计：新模块不是一上来就强行改变生成路径，而是先保持基座模型行为，再逐步学习编辑增量。</p>
+<table>
+<thead><tr><th>数据集</th><th>规模</th><th>类别数</th><th>平均指令长度</th><th>帧数/分辨率</th></tr></thead>
+<tbody>
+<tr><td>InsViE-1M</td><td>1M</td><td>4</td><td>4.4</td><td>25, 1024x576</td></tr>
+<tr><td>Señorita-2M</td><td>2M</td><td>6</td><td>3.6</td><td>33-64, 336x592 到 1120x1984</td></tr>
+<tr><td>Ditto-1M</td><td>1M</td><td>3</td><td>17.1</td><td>101, 1280x720</td></tr>
+<tr><td><strong>OpenVE-3M</strong></td><td><strong>3M</strong></td><td><strong>8</strong></td><td><strong>40.6</strong></td><td><strong>65-129, 1280x720</strong></td></tr>
+</tbody>
+</table>
+<p>OpenVE-Bench 包含 431 个 video-edit pair，覆盖 8 类任务，并用 MLLM 打分。根据论文表 2/3，OpenVE-Edit 在开源模型中取得较高总体表现：Seed1.6-VL 评测 Overall 为 2.41，Gemini 2.5 Pro 评测 Overall 为 2.49，超过 VACE、OmniVideo、InsViE、Lucy-Edit、ICVE、DITTO 等开源模型。不过闭源 Runway Aleph 仍明显更强，Gemini 评测 Overall 为 3.65，在 Local Change、Local Remove、Camera Edit 等项优势尤其明显。</p>
+<p>这组结果说明两件事。第一，OpenVE-3M 确实提升了开源模型在多类别指令编辑上的覆盖度，尤其是字幕编辑、背景变化、局部变化等任务。第二，当前开源视频编辑离强闭源系统仍有距离，特别是在复杂局部操作和非空间对齐编辑上，分数仍偏低。例如 Camera Edit 中 OpenVE-Edit 在 Seed1.6-VL 表为 1.24，Gemini 表为 2.02，说明多镜头/相机编辑仍然是难点。</p>
+
+<h2>五、Bernini：让 MLLM 做语义规划，让 DiT 做渲染</h2>
+<p>Bernini 的核心洞察是：MLLM 与 diffusion model 不该只是简单串联，而应该有清楚分工。MLLM 擅长理解长指令、多参考图、多视频上下文和复杂关系；DiT 擅长在 VAE latent space 中生成高保真图像/视频。于是 Bernini 让 MLLM-based planner 先预测目标视频的语义表示，再由 DiT-based renderer 根据这个语义计划渲染最终像素。</p>
+<p>论文选择的语义接口不是文本 token，也不是 CLIP embedding，而是 MLLM 自身的 ViT embedding space。原因是 MLLM 已经在这个空间里表示视觉内容，让它预测目标 ViT embedding 能更自然地继承预训练理解能力。训练时，planner 采用 masked generative modeling 思路，用轻量 ViT embedding decoder 从 MLLM hidden states 恢复被 mask 的目标 ViT tokens；推理时，从 fully masked target tokens 逐步填充完整目标表示。</p>
+<p>Renderer 是 DiT，通过 flow matching 在 VAE latent token 上去噪。对于编辑任务，renderer 的条件包括 planner 产生的 semantic embedding、文本特征，以及 source VAE features。可以把它理解成两条信息流：semantic embedding 告诉模型“应该变成什么”，source VAE features 告诉模型“哪些细节和结构要保留”。</p>
+<p>Bernini 的 Figure 3 把框架分为五部分：统一多模态序列、MLLM semantic planner、DiT renderer、segment-wise hybrid attention mask、Segment-Aware 3D RoPE。SA-3D RoPE 是为多视觉输入设计的。普通 3D RoPE 只编码时间、高度、宽度，当多个 source image/source video/target placeholder 被拼成一个序列时，不同 segment 可能共享相同的时空坐标，造成身份和来源混淆。SA-3D RoPE 给不同 segment 加相位调制，让同样的 $(t,h,w)$ 在不同输入段中可区分。</p>
+<p>Bernini 还引入 latent-space Chain-of-Thought，让 planner 在输出最终 embedding 前先进行推理。这个设计对视频编辑很重要，因为很多编辑指令不是直接视觉变换，而是带因果或时间推理。例如“after a week”“overcooked”这类提示需要模型先推断目标状态，再生成视觉结果。传统 renderer-only 模型往往只能做表层风格或对象替换，遇到隐含语义变化会更容易失败。</p>
+<table>
+<thead><tr><th>Bernini 组件</th><th>职责</th><th>对视频编辑的意义</th></tr></thead>
+<tbody>
+<tr><td>MLLM Planner</td><td>读取文本、图像、视频、target placeholder，预测目标 ViT semantic embeddings</td><td>把复杂编辑意图转成紧凑语义计划</td></tr>
+<tr><td>DiT Renderer</td><td>在 VAE latent space 中用 flow matching 生成视频</td><td>负责高保真像素、时序运动与视觉质量</td></tr>
+<tr><td>Source VAE Features</td><td>编辑任务中注入源视频低层细节</td><td>保持身份、背景、局部纹理和运动一致性</td></tr>
+<tr><td>SA-3D RoPE</td><td>区分多视觉输入 segment 的时空位置</td><td>降低参考图/源视频/目标 token 混淆</td></tr>
+<tr><td>Latent CoT</td><td>在语义空间进行推理后再规划</td><td>增强因果、时间、复杂指令编辑能力</td></tr>
+</tbody>
+</table>
+<p>实验上，论文首页给出 open-ended video editing human preference leaderboard：HappyHorse-1.0 BT score 1080，Bernini 1044，Wan2.7 1034，Grok-imagine-video 964，Kling_v3_omni 878。Bernini 在平均对手下 win rate 为 56.3%，略高于 Wan2.7 的 54.9%。这说明在开放式编辑偏好中，Bernini 已达到强商业/闭源系统附近的竞争力。</p>
+<p>论文还在 OpenVE-Bench、OpenS2V-Eval、Bernini-Bench 上报告 SOTA 表现，并包含 video editing、reasoning-augmented video editing、video generation、ablation、generalization 等实验。结合公开 README，Bernini 的模型族分为 full Bernini 与 Bernini-R：full Bernini 是 MLLM semantic planner + DiT renderer；Bernini-R 是 renderer-only，基于 Wan diffusion renderer 微调。README 明确说 full Bernini 在复杂指令分解与语义规划上更强，而 Bernini-R 更简单、渲染一致性强，但少了完整 planner。</p>
+<p>Bernini 的局限也比较清楚。第一，它的系统复杂度和推理成本高：full pipeline 依赖 Qwen2.5-VL planner、Wan2.2 renderer、VAE、T5 text encoder、并行推理配置，README 参考环境甚至是 H100/CUDA 12.4/PyTorch 2.5.1。第二，semantic planning 能提升复杂编辑，但最终视觉质量仍受 renderer 与训练数据限制。第三，它依赖强 MLLM 的预训练理解能力，若指令、参考图、视频上下文超出 planner 能力范围，后续 DiT 也很难补救。</p>
+
+<h2>六、横向对比：三条路线各自解决什么问题</h2>
+<table>
+<thead><tr><th>维度</th><th>Wan / VACE</th><th>OpenVE-3M / OpenVE-Edit</th><th>Bernini</th></tr></thead>
+<tbody>
+<tr><td>核心问题</td><td>如何把视频基础模型扩展到多种生成与编辑条件</td><td>如何构建大规模、高质量、多类别指令视频编辑数据与 benchmark</td><td>如何把复杂语义理解显式转化为可渲染的视频计划</td></tr>
+<tr><td>方法重心</td><td>Video Condition Unit、mask 概念解耦、Context Adapter / full fine-tuning</td><td>Taxonomy-guided 数据生成、MLLM 过滤、MoE-Connector、zero-init 稳定训练</td><td>MLLM planner、ViT embedding semantic bridge、DiT renderer、SA-3D RoPE、latent CoT</td></tr>
+<tr><td>优势</td><td>底座强、开放、任务统一、利于社区复用</td><td>补齐数据和评测短板，类别定义清晰，训练策略务实</td><td>语义理解能力强，适合复杂指令、多参考、推理型编辑</td></tr>
+<tr><td>短板</td><td>编辑 benchmark 数字较少，14B 推理成本高，大运动细节保真仍难</td><td>依赖大量生成式数据和 MLLM 过滤，部分复杂类别分数仍低，闭源模型仍领先</td><td>系统复杂、算力门槛高，planner 错误会传递到 renderer</td></tr>
+<tr><td>最适合借鉴的点</td><td>统一条件接口与可编辑/保留区域解耦</td><td>编辑 taxonomy、数据过滤标准、MoE 任务专家</td><td>语义规划与渲染分离，多输入 segment 位置编码</td></tr>
+</tbody>
+</table>
+
+<h2>七、对视频编辑研究和落地的判断</h2>
+<p>第一，视频编辑正在从“单模型端到端编辑”转向“理解、计划、渲染、保真”的分层系统。Wan 的 VCU、OpenVE-Edit 的 MLLM + MoE-Connector、Bernini 的 MLLM planner 都在做同一件事：不要把文本指令直接扔给 DiT，而是先把指令与视频内容对齐成更结构化的条件。</p>
+<p>第二，数据质量会继续决定开源模型上限。OpenVE-3M 的贡献不只是 3M 规模，而是它把编辑任务拆成了可操作的 taxonomy，并用 MLLM 评分把 instruction compliance 放在最高优先级。这一点很关键，因为视频编辑里“画质好但没按指令改”其实是失败样本，不应该被视觉质量掩盖。</p>
+<p>第三，复杂编辑会越来越依赖 MLLM。简单风格迁移、字幕删除、局部换色可以靠 renderer-only 或控制模型解决，但涉及时间推理、因果变化、多参考组合、对象身份迁移时，纯扩散模型很难可靠理解目标状态。Bernini 的 ViT embedding semantic bridge 是一个很有代表性的方向：让 MLLM 输出视觉语义计划，而不是只输出文本描述。</p>
+<p>第四，评价体系还没有完全稳定。OpenVE-Bench 用 MLLM 评分并与人类判断对齐，Bernini 使用人类偏好 leaderboard 和自建 Bernini-Bench，但不同 benchmark 的任务分布、分辨率、模型版本和评委模型都会影响结论。实际选型时，不宜只看 Overall 分数，应按业务任务拆开看：局部替换、背景变化、字幕编辑、镜头变化、参考图编辑、复杂推理编辑，对模型能力要求不同。</p>
+<p>第五，工程落地要警惕成本。Wan 14B 未优化推理约 30 分钟，Bernini full pipeline 参考 H100 多卡环境，OpenVE-Edit 虽是 5B 但仍依赖 1280x704 视频编辑和 MLLM 特征。短期落地更现实的路线可能是：用小模型或 renderer-only 处理简单批量编辑，用 full planner 模型处理高价值复杂编辑，再用自动评测/人工审核筛掉失败样本。</p>
+
+<h2>八、局限与风险</h2>
+<p>三篇论文共同暴露出几个领域级局限。第一，大运动下的细节保持仍然是硬问题。Wan 明确承认大运动场景中 fine-grained details preservation 仍困难；OpenVE 的 Local Remove、Camera Edit 分数不高也侧面说明，强时序变化和局部结构重建仍不稳定。第二，自动评测依赖 MLLM，虽然更接近人类偏好，但会引入评委模型偏差。OpenVE 为了过滤数据比较了 Qwen3-VL、InternVL、Seed1.6-VL、Gemini2.5-Pro，不同模型准确率并不一致。第三，多数系统仍依赖合成数据、商业 API 或大规模内部数据，论文可复现性与真实训练成本之间有差距。</p>
+<p>另一个更隐蔽的问题是“编辑边界”的定义。对于 Spatially-Aligned 编辑，保留原运动和细节是硬要求；对于 Creative Edit 或 Camera Multi-Shot Edit，目标本来就允许新运动出现。一个统一模型如果没有清楚区分任务边界，就可能在该保守时过度生成，在该创造时又过度保留。OpenVE 用 taxonomy 和 MoE 专家缓解这个问题，Wan 用 mask 概念解耦缓解，Bernini 用 planner 语义推理缓解，但都还不是最终答案。</p>
+
+<h2>九、建议阅读顺序</h2>
+<p>如果目标是快速理解视频编辑技术演进，建议先读 OpenVE-3M，因为它把任务类别、数据构造和评测维度讲得最直接；再读 Wan 的第 5.2 节和第 6 节，理解基础模型如何承载统一编辑；最后读 Bernini，重点看 Introduction、Figure 3、Methods 和 Experiments，理解为什么下一阶段会从“条件注入”走向“语义规划”。</p>
+<p>如果目标是工程选型，优先看代码状态：Wan2.1 是成熟开放底座，生态更广；OpenVE-3M 适合拿 benchmark 和数据定义做训练/评测参考；Bernini 更适合研究复杂编辑和多模态语义规划，但部署成本更高。</p>
+
+<div class="golden">视频编辑的下一步，不是让一个模型盲目学会所有变化，而是让系统先理解该变什么、该保留什么，再把变化稳定地渲染出来。</div>
+</body>
+</html>

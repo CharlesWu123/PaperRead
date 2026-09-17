@@ -1,0 +1,13 @@
+# PDF 原文不入库：体积过大（去重后仍约 780MB），统一以 arXiv 链接引用
+*.pdf
+
+# macOS
+.DS_Store
+
+# Python
+__pycache__/
+*.py[cod]
+
+# Node
+node_modules/
+npm-debug.log*

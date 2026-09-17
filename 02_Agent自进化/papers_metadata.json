@@ -1,0 +1,902 @@
+[
+  {
+    "title": "A Survey of Self-Evolving Agents: What, When, How, and Where to Evolve on the Path to Artificial Super Intelligence",
+    "authors": [
+      "Huan-ang Gao",
+      "Jiayi Geng",
+      "Wenyue Hua",
+      "Mengkang Hu",
+      "Xinzhe Juan",
+      "Hongzhang Liu",
+      "Shilong Liu",
+      "Jiahao Qiu",
+      "Xuan Qi",
+      "Yiran Wu",
+      "Hongru Wang",
+      "Han Xiao",
+      "Yuhang Zhou",
+      "Shaokun Zhang",
+      "Jiayi Zhang",
+      "Jinyu Xiang",
+      "Yixiong Fang",
+      "Qiwen Zhao",
+      "Dongrui Liu",
+      "Qihan Ren",
+      "Cheng Qian",
+      "Zhenhailong Wang",
+      "Minda Hu",
+      "Huazheng Wang",
+      "Qingyun Wu",
+      "Heng Ji",
+      "Mengdi Wang"
+    ],
+    "year": 2025,
+    "venue": "arXiv / TMLR listing in arXiv comments",
+    "arxiv_id": "2507.21046",
+    "doi": null,
+    "citation_count_semantic_scholar": 83,
+    "pdf_url": "https://arxiv.org/pdf/2507.21046",
+    "topic_tags": [
+      "survey",
+      "self-evolving agents",
+      "taxonomy",
+      "memory",
+      "tools",
+      "architecture",
+      "model evolution"
+    ],
+    "why_read": "方向总览。建立 what/when/how/where to evolve 的分类框架，适合作为阅读入口。"
+  },
+  {
+    "title": "SoK: Agentic Skills -- Beyond Tool Use in LLM Agents",
+    "authors": [
+      "Yanna Jiang",
+      "Delong Li",
+      "Haiyu Deng",
+      "Baihe Ma",
+      "Xu Wang",
+      "Qin Wang",
+      "Guangsheng Yu"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2602.20867",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2602.20867",
+    "published": "2026-02-24",
+    "categories": [
+      "cs.CR",
+      "cs.AI",
+      "cs.CE",
+      "cs.ET"
+    ],
+    "abstract": "Agentic systems increasingly rely on reusable procedural capabilities, \\textit{a.k.a., agentic skills}, to execute long-horizon workflows reliably. These capabilities are callable modules that package procedural knowledge with explicit applicability conditions, execution policies, termination criteria, and reusable interfaces. Unlike one-off plans or atomic tool calls, skills operate (and often do well) across tasks. This paper maps the skill layer across the full lifecycle (discovery, practice, distillation, storage, composition, evaluation, and update) and introduces two complementary taxonomies. The first is a system-level set of \\textbf{seven design patterns} capturing how skills are packaged and executed in practice, from metadata-driven progressive disclosure and executable code skills to self-evolving libraries and marketplace distribution. The second is an orthogonal \\textbf{representation $\\times$ scope} taxonomy describing what skills \\emph{are} (natural language, code, policy, hybrid) and what environments they operate over (web, OS, software engineering, robotics). We analyze the security and governance implications of skill-based agents, covering supply-chain risks, prompt injection via skill payloads, and trust-tiered execution, grounded by a case study of the ClawHavoc campaign in which nearly 1{,}200 malicious skills infiltrated a major agent marketplace, exfiltrating API keys, cryptocurrency wallets, and browser credentials at scale. We further survey deterministic evaluation approaches, anchored by recent benchmark evidence that curated skills can substantially improve agent success rates while self-generated skills may degrade them. We conclude with open challenges toward robust, verifiable, and certifiable skills for real-world autonomous agents.",
+    "topic_tags": [
+      "agentic skills",
+      "taxonomy",
+      "security",
+      "governance",
+      "skill lifecycle"
+    ],
+    "why_read": "定义 agentic skill 的生命周期、设计模式、安全治理，是判断自进化 skill 系统边界的关键论文。"
+  },
+  {
+    "title": "Agent Skills for Large Language Models: Architecture, Acquisition, Security, and the Path Forward",
+    "authors": [
+      "Renjun Xu",
+      "Yang Yan"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2602.12430",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2602.12430",
+    "published": "2026-02-12",
+    "categories": [
+      "cs.MA",
+      "cs.AI"
+    ],
+    "abstract": "The transition from monolithic language models to modular, skill-equipped agents marks a defining shift in how large language models (LLMs) are deployed in practice. Rather than encoding all procedural knowledge within model weights, agent skills -- composable packages of instructions, code, and resources that agents load on demand -- enable dynamic capability extension without retraining. It is formalized in a paradigm of progressive disclosure, portable skill definitions, and integration with the Model Context Protocol (MCP). This survey provides a comprehensive treatment of the agent skills landscape, as it has rapidly evolved during the last few months. We organize the field along four axes: (i) architectural foundations, examining the SKILL$.$md specification, progressive context loading, and the complementary roles of skills and MCP; (ii) skill acquisition, covering reinforcement learning with skill libraries, autonomous skill discovery (SEAgent), and compositional skill synthesis; (iii) deployment at scale, including the computer-use agent (CUA) stack, GUI grounding advances, and benchmark progress on OSWorld and SWE-bench; and (iv) security, where recent empirical analyses reveal that 26.1% of community-contributed skills contain vulnerabilities, motivating our proposed Skill Trust and Lifecycle Governance Framework -- a four-tier, gate-based permission model that maps skill provenance to graduated deployment capabilities. We identify seven open challenges -- from cross-platform skill portability to capability-based permission models -- and propose a research agenda for realizing trustworthy, self-improving skill ecosystems. Unlike prior surveys that broadly cover LLM agents or tool use, this work focuses specifically on the emerging skill abstraction layer and its implications for the next generation of agentic systems. Project repo: https://github.com/scienceaix/agentskills",
+    "topic_tags": [
+      "agent skills",
+      "architecture",
+      "acquisition",
+      "security",
+      "MCP",
+      "SKILL.md"
+    ],
+    "why_read": "从架构、获取、部署和安全角度综述 Agent Skills，适合补齐技能生态和标准化背景。",
+    "code_url": "https://github.com/scienceaix/agentskills"
+  },
+  {
+    "title": "SkillsBench: Benchmarking How Well Agent Skills Work Across Diverse Tasks",
+    "authors": [
+      "Xiangyi Li",
+      "Yimin Liu",
+      "Wenbo Chen",
+      "Bingran You",
+      "Zonglin Di",
+      "Yifeng He",
+      "Shenghan Zheng",
+      "Kyoung Whan Choe",
+      "Jiankai Sun",
+      "Shuyi Wang",
+      "Chujun Tao",
+      "Binxu Li",
+      "Xuandong Zhao",
+      "Hejia Geng",
+      "Xiaojun Wu",
+      "Junwei Zhou",
+      "Xiaokun Chen",
+      "Hanwen Xing",
+      "Yubo Li",
+      "Qunhong Zeng",
+      "Di Wang",
+      "Yuanli Wang",
+      "Roey Ben Chaim",
+      "Penghao Jiang",
+      "Haotian Shen",
+      "Luyang Kong",
+      "Xinyi Liu",
+      "Runhui Wang",
+      "Xuanqing Liu",
+      "Jiachen Li",
+      "Xin Lan",
+      "Yueqian Lin",
+      "Wengao Ye",
+      "Junwei He",
+      "Songlin Li",
+      "Yue Zhang",
+      "Yipeng Gao",
+      "Yijiang Li",
+      "Ze Ma",
+      "Liqiang Jing",
+      "Tianyu Wang",
+      "Kaixin Li",
+      "Yiqi Xue",
+      "Haoran Lyu",
+      "Yizhuo He",
+      "Yuchen Tian",
+      "Shutong Wu",
+      "Bowei Wang",
+      "Yixuan Gao",
+      "Bo Chen",
+      "Litong Liu",
+      "Sikai Cheng",
+      "Jiajun Bao",
+      "Shuaicheng Tong",
+      "Shuwen Xu",
+      "Terry Yue Zhuo",
+      "Tinghan Ye",
+      "Qi Qi",
+      "Miao Li",
+      "Longtai Liao",
+      "Zelin Tan",
+      "Chang Shi",
+      "Xilin Tang",
+      "Srinath Tankasala",
+      "Boqin Yuan",
+      "Yaoyao Qian",
+      "Jianhong Tu",
+      "Chenguang Wang",
+      "Yizhou Sun",
+      "Wei Wang",
+      "Aaron Taylor",
+      "Ziyue Yang",
+      "Changkun Guan",
+      "Zhikang Dong",
+      "Xinyu Zhang",
+      "Steven Dillmann",
+      "Han-chung Lee",
+      "Dawn Song"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2602.12670",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2602.12670",
+    "published": "2026-02-13",
+    "categories": [
+      "cs.AI"
+    ],
+    "abstract": "Agent Skills are structured packages of procedural knowledge that augment large language model (LLM) agents at inference time. Despite rapid adoption, there is no standard way to measure whether they actually help. We present SkillsBench, a benchmark whose current inventory contains 87 tasks across 8 domains paired with curated Skills and deterministic verifiers. Our latest aggregate evaluation runs the 87-task benchmark under matched no-Skills and curated-Skills conditions for 18 model-harness configurations. Curated Skills raise the average pass rate from 33.9% to 50.5% (+16.6 percentage points; 25.5% normalized gain), with configuration-level gains ranging from +4.1 to +25.7 pp. Focused Skills with at most three modules outperform larger or exhaustive bundles, and smaller models with Skills can match larger models without them. SkillsBench establishes paired evaluation as the foundation for rigorous measurement of Skill efficacy on agentic, expertise-heavy work.",
+    "topic_tags": [
+      "SkillsBench",
+      "benchmark",
+      "evaluation",
+      "curated skills",
+      "deterministic verifier"
+    ],
+    "why_read": "评估 skills 到底有没有用的基准论文，给自进化技能的收益验证提供参照。",
+    "code_url": "https://github.com/benchflow-ai/skillsbench"
+  },
+  {
+    "title": "Trace2Skill: Distill Trajectory-Local Lessons into Transferable Agent Skills",
+    "authors": [
+      "Jingwei Ni",
+      "Yihao Liu",
+      "Xinpeng Liu",
+      "Yutao Sun",
+      "Mengyu Zhou",
+      "Pengyu Cheng",
+      "Dexin Wang",
+      "Erchao Zhao",
+      "Xiaoxi Jiang",
+      "Guanjun Jiang"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2603.25158",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2603.25158",
+    "published": "2026-03-26",
+    "categories": [
+      "cs.AI"
+    ],
+    "abstract": "Large Language Model (LLM) agents increasingly rely on domain-specific skills, yet manually authoring such skills does not scale, and skills generated purely from parametric knowledge often miss critical operational pitfalls. We introduce Trace2Skill, a framework that consolidates broad execution trajectories in parallel into a unified skill directory through inductive reasoning over agent experience. Trace2Skill supports both deepening existing human-written skills and creating useful skills from weak LLM-generated drafts. Experiments demonstrate the effectiveness of Trace2Skill across diverse domains, including office workflows, math reasoning, and vision QA. Importantly, the evolved skills are not merely memorized artifacts of the trajectories used to create them: they often transfer across model scales, across model families, and to out-of-distribution settings. For example, skills evolved from Qwen3.5-35B trajectories improve a Qwen3.5-122B agent by up to $57.65$ percentage points on WikiTableQuestions. Further analyses show that Trace2Skill outperforms sequential skill editing and ReasoningBank-style retrieval memories, compresses recurring failures and workarounds into standard operating procedures (SoPs), and yields portable skills that can be reused without parameter updates or test-time retrieval.",
+    "topic_tags": [
+      "Trace2Skill",
+      "trajectory distillation",
+      "transferable skills",
+      "SoP",
+      "parallel consolidation"
+    ],
+    "why_read": "把执行轨迹中的局部经验压缩成可迁移 skill，是从 trace 到 skill 的核心路线。"
+  },
+  {
+    "title": "SkillX: Automatically Constructing Skill Knowledge Bases for Agents",
+    "authors": [
+      "Chenxi Wang",
+      "Zhuoyun Yu",
+      "Xin Xie",
+      "Wuguannan Yao",
+      "Runnan Fang",
+      "Shuofei Qiao",
+      "Kexin Cao",
+      "Guozhou Zheng",
+      "Xiang Qi",
+      "Peng Zhang",
+      "Shumin Deng"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2604.04804",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2604.04804",
+    "published": "2026-04-06",
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.IR",
+      "cs.LG",
+      "cs.MA"
+    ],
+    "abstract": "Learning from experience is critical for building capable large language model (LLM) agents, yet prevailing self-evolving paradigms remain inefficient: agents learn in isolation, repeatedly rediscover similar behaviors from limited experience, resulting in redundant exploration and poor generalization. To address this problem, we propose SkillX, a fully automated framework for constructing a \\textbf{plug-and-play skill knowledge base} that can be reused across agents and environments. SkillX operates through a fully automated pipeline built on three synergistic innovations: \\textit{(i) Multi-Level Skills Design}, which distills raw trajectories into three-tiered hierarchy of strategic plans, functional skills, and atomic skills; \\textit{(ii) Iterative Skills Refinement}, which automatically revises skills based on execution feedback to continuously improve library quality; and \\textit{(iii) Exploratory Skills Expansion}, which proactively generates and validates novel skills to expand coverage beyond seed training data. Using a strong backbone agent (GLM-4.6), we automatically build a reusable skill library and evaluate its transferability on challenging long-horizon, user-interactive benchmarks, including AppWorld, BFCL-v3, and $τ^2$-Bench. Experiments show that SkillKB consistently improves task success and execution efficiency when plugged into weaker base agents, highlighting the importance of structured, hierarchical experience representations for generalizable agent learning. Our code will be publicly available soon at https://github.com/zjunlp/SkillX.",
+    "topic_tags": [
+      "SkillX",
+      "skill knowledge base",
+      "hierarchical skills",
+      "exploratory expansion"
+    ],
+    "why_read": "自动构建可插拔 SkillKB，覆盖多层技能、迭代优化和主动扩展。",
+    "code_url": "https://github.com/zjunlp/SkillX"
+  },
+  {
+    "title": "XSkill: Continual Learning from Experience and Skills in Multimodal Agents",
+    "authors": [
+      "Guanyu Jiang",
+      "Zhaochen Su",
+      "Xiaoye Qu",
+      "Yi R. Fung"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2603.12056",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2603.12056",
+    "published": "2026-03-12",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "abstract": "Multimodal agents can now tackle complex reasoning tasks with diverse tools, yet they still suffer from inefficient tool use and inflexible orchestration in open-ended settings. A central challenge is enabling such agents to continually improve without parameter updates by learning from past trajectories. We identify two complementary forms of reusable knowledge essential for this goal: experiences, providing concise action-level guidance for tool selection and decision making, and skills, providing structured task-level guidance for planning and tool use. To this end, we propose XSkill, a dual-stream framework for continual learning from experience and skills in multimodal agents. XSkill grounds both knowledge extraction and retrieval in visual observations. During accumulation, XSkill distills and consolidates experiences and skills from multi-path rollouts via visually grounded summarization and cross-rollout critique. During inference, it retrieves and adapts this knowledge to the current visual context and feeds usage history back into accumulation to form a continual learning loop. Evaluated on five benchmarks across diverse domains with four backbone models, XSkill consistently and substantially outperforms both tool-only and learning-based baselines. Further analysis reveals that the two knowledge streams play complementary roles in influencing the reasoning behaviors of agents and show superior zero-shot generalization.",
+    "topic_tags": [
+      "XSkill",
+      "multimodal agents",
+      "experience",
+      "skills",
+      "continual learning"
+    ],
+    "why_read": "多模态 agent 的 experience + skill 双流持续学习，补齐视觉/工具场景。",
+    "code_url": "https://github.com/XSkill-Agent/XSkill"
+  },
+  {
+    "title": "SkillClaw: Let Skills Evolve Collectively with Agentic Evolver",
+    "authors": [
+      "Ziyu Ma",
+      "Shidong Yang",
+      "Yuxiang Ji",
+      "Xucong Wang",
+      "Yong Wang",
+      "Yiming Hu",
+      "Tongwen Huang",
+      "Xiangxiang Chu"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2604.08377",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2604.08377",
+    "published": "2026-04-09",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "abstract": "Large language model (LLM) agents such as OpenClaw rely on reusable skills to perform complex tasks, yet these skills remain largely static after deployment. As a result, similar workflows, tool usage patterns, and failure modes are repeatedly rediscovered across users, preventing the system from improving with experience. While interactions from different users provide complementary signals about when a skill works or fails, existing systems lack a mechanism to convert such heterogeneous experiences into reliable skill updates. To address these issues, we present SkillClaw, a framework for collective skill evolution in multi-user agent ecosystems, which treats cross-user and over-time interactions as the primary signal for improving skills. SkillClaw continuously aggregates trajectories generated during use and processes them with an autonomous evolver, which identifies recurring behavioral patterns and translates them into updates to the skill set by refining existing skills or extending them with new capabilities. The resulting skills are maintained in a shared repository and synchronized across users, allowing improvements discovered in one context to propagate system-wide while requiring no additional effort from users. By integrating multi-user experience into ongoing skill updates, SkillClaw enables cross-user knowledge transfer and cumulative capability improvement, and experiments on WildClawBench show that limited interaction and feedback, it significantly improves the performance of Qwen3-Max in real-world agent scenarios.",
+    "topic_tags": [
+      "SkillClaw",
+      "collective evolution",
+      "multi-user agents",
+      "agentic evolver",
+      "shared repository"
+    ],
+    "why_read": "多用户、多会话环境下的集体技能演化，正对应图片中的 SkillClaw 路线。"
+  },
+  {
+    "title": "CoEvoSkills: Self-Evolving Agent Skills via Co-Evolutionary Verification",
+    "authors": [
+      "Hanrong Zhang",
+      "Shicheng Fan",
+      "Henry Peng Zou",
+      "Yankai Chen",
+      "Zhenting Wang",
+      "Jiayu Zhou",
+      "Chengze Li",
+      "Wei-Chieh Huang",
+      "Yifei Yao",
+      "Kening Zheng",
+      "Xue Liu",
+      "Xiaoxiao Li",
+      "Philip S. Yu"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2604.01687",
+    "doi": "10.48550/arXiv.2604.01687",
+    "citation_count_semantic_scholar": 55,
+    "pdf_url": "https://arxiv.org/pdf/2604.01687",
+    "topic_tags": [
+      "agent skills",
+      "skill package",
+      "co-evolution",
+      "verification",
+      "SkillsBench"
+    ],
+    "why_read": "最贴近 agent skill 自进化。讨论从单函数 tool 进化到多文件 skill package 的自动生成与验证。"
+  },
+  {
+    "title": "SkillOpt: Executive Strategy for Self-Evolving Agent Skills",
+    "authors": [
+      "Yifan Yang",
+      "Ziyang Gong",
+      "Weiquan Huang",
+      "Qihao Yang",
+      "Ziwei Zhou",
+      "Zisu Huang",
+      "Yan Li",
+      "Xuemei Gao",
+      "Qi Dai",
+      "Bei Liu",
+      "Kai Qiu",
+      "Yuqing Yang",
+      "Dongdong Chen",
+      "Xue Yang",
+      "Chong Luo"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2605.23904",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2605.23904",
+    "published": "2026-05-22",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "abstract": "Agent skills today are hand-crafted, generated one-shot, or evolved through loosely controlled self-revision, none of which behaves like a deep-learning optimizer for the skill, and none of which reliably improves over its starting point under feedback. We argue the skill should instead be trained as the external state of a frozen agent, with the same discipline that makes weight-space optimization reproducible. SkillOpt is, to our knowledge, the first systematic controllable text-space optimizer for agent skills: a separate optimizer model turns scored rollouts into bounded add/delete/replace edits on a single skill document, and an edit is accepted only when it strictly improves a held-out validation score. A textual learning-rate budget, rejected-edit buffer, and epoch-wise slow/meta update make skill training stable while adding zero inference-time model calls at deployment. Across six benchmarks, seven target models, and three execution harnesses (direct chat, Codex, Claude Code), SkillOpt is best or tied on all 52 evaluated (model, benchmark, harness) cells and beats every per-cell competitor among human, one-shot LLM, Trace2Skill, TextGrad, GEPA, and EvoSkill skills. On GPT-5.5 it lifts the average no-skill accuracy by +23.5 points in direct chat, by +24.8 inside the Codex agentic loop, and by +19.1 inside Claude Code. Transfer experiments further show that optimized skill artifacts retain value when moved across model scales, between Codex and Claude Code execution environments, and to a nearby math benchmark without further optimization. Code: https://aka.ms/skillopt",
+    "topic_tags": [
+      "SkillOpt",
+      "text-space optimizer",
+      "held-out gate",
+      "self-evolving skills",
+      "Claude Code",
+      "Codex"
+    ],
+    "why_read": "2026 年 5-6 月近期核心论文，把 skill 文档当作 frozen agent 的外部可训练状态。",
+    "code_url": "https://github.com/microsoft/SkillOpt"
+  },
+  {
+    "title": "SkillOS: Learning Skill Curation for Self-Evolving Agents",
+    "authors": [
+      "Siru Ouyang",
+      "Jun Yan",
+      "Yanfei Chen",
+      "Rujun Han",
+      "Zifeng Wang",
+      "Bhavana Dalvi Mishra",
+      "Rui Meng",
+      "Chun-Liang Li",
+      "Yizhu Jiao",
+      "Kaiwen Zha",
+      "Maohao Shen",
+      "Vishy Tirumalashetty",
+      "George Lee",
+      "Jiawei Han",
+      "Tomas Pfister",
+      "Chen-Yu Lee"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2605.06614",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2605.06614",
+    "published": "2026-05-07",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "abstract": "LLM-based agents are increasingly deployed to handle streaming tasks, yet they often remain one-off problem solvers that fail to learn from past interactions. Reusable skills distilled from experience provide a natural substrate for self-evolution, where high-quality skill curation serves as the key bottleneck. Existing approaches either rely on manual skill curation, prescribe heuristic skill operations, or train for short-horizon skill operations. However, they still struggle to learn complex long-term curation policies from indirect and delayed feedback. To tackle this challenge, we propose SkillOS, an experience-driven RL training recipe for learning skill curation in self-evolving agents. SkillOS pairs a frozen agent executor that retrieves and applies skills with a trainable skill curator that updates an external SkillRepo from accumulated experience. To provide learning signals for curation, we design composite rewards and train on grouped task streams based on skill-relevant task dependencies, where earlier trajectories update the SkillRepo, and later related tasks evaluate these updates. Across multi-turn agentic tasks and single-turn reasoning tasks, SkillOS consistently outperforms memory-free and strong memory-based baselines in both effectiveness and efficiency, with the learned skill curator generalizing across different executor backbones and task domains. Further analyses show that the learned curator produces more targeted skill use, while the skills in SkillRepo evolve into more richly structured Markdown files that encode higher-level meta-skills over time.",
+    "topic_tags": [
+      "SkillOS",
+      "skill curation",
+      "SkillRepo",
+      "RL",
+      "frozen executor",
+      "trainable curator"
+    ],
+    "why_read": "学习如何管理 skill 仓库，区分 executor 和 curator，是 skill 维护/删除/更新路线。"
+  },
+  {
+    "title": "Skill1: Unified Evolution of Skill-Augmented Agents via Reinforcement Learning",
+    "authors": [
+      "Yaorui Shi",
+      "Yuxin Chen",
+      "Zhengxi Lu",
+      "Yuchun Miao",
+      "Shugui Liu",
+      "Qi GU",
+      "Xunliang Cai",
+      "Xiang Wang",
+      "An Zhang"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2605.06130",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2605.06130",
+    "published": "2026-05-07",
+    "categories": [
+      "cs.AI"
+    ],
+    "abstract": "A persistent skill library allows language model agents to reuse successful strategies across tasks. Maintaining such a library requires three coupled capabilities. The agent selects a relevant skill, utilizes it during execution, and distills new skills from experience. Existing methods optimize these capabilities in isolation or with separate reward sources, resulting in partial and conflicting evolution. We propose Skill1, a framework that trains a single policy to co-evolve skill selection, utilization, and distillation toward a shared task-outcome objective. The policy generates a query to search the skill library, re-ranks candidates to select one, solves the task conditioned on it, and distills a new skill from the trajectory. All learning derives from a single task-outcome signal. Its low-frequency trend credits selection and its high-frequency variation credits distillation. Experiments on ALFWorld and WebShop show that Skill1 outperforms prior skill-based and reinforcement learning baselines. Training dynamics confirm the co-evolution of the three capabilities, and ablations show that removing any credit signal degrades the evolution.",
+    "topic_tags": [
+      "Skill1",
+      "unified evolution",
+      "selection",
+      "utilization",
+      "distillation",
+      "RL"
+    ],
+    "why_read": "统一训练 skill 选择、使用、蒸馏三件事，对应图中的 SKILLO + SkillI/RL 路线。"
+  },
+  {
+    "title": "SkillRL: Evolving Agents via Recursive Skill-Augmented Reinforcement Learning",
+    "authors": [
+      "Peng Xia",
+      "Jianwen Chen",
+      "Hanyang Wang",
+      "Jiaqi Liu",
+      "Kaide Zeng",
+      "Yu Wang",
+      "Siwei Han",
+      "Yiyang Zhou",
+      "Xujiang Zhao",
+      "Haifeng Chen",
+      "Zeyu Zheng",
+      "Cihang Xie",
+      "Huaxiu Yao"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2602.08234",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2602.08234",
+    "published": "2026-02-09",
+    "categories": [
+      "cs.LG"
+    ],
+    "abstract": "Large Language Model (LLM) agents have shown stunning results in complex tasks, yet they often operate in isolation, failing to learn from past experiences. Existing memory-based methods primarily store raw trajectories, which are often redundant and noise-heavy. This prevents agents from extracting high-level, reusable behavioral patterns that are essential for generalization. In this paper, we propose SkillRL, a framework that bridges the gap between raw experience and policy improvement through automatic skill discovery and recursive evolution. Our approach introduces an experience-based distillation mechanism to build a hierarchical skill library SkillBank, an adaptive retrieval strategy for general and task-specific heuristics, and a recursive evolution mechanism that allows the skill library to co-evolve with the agent's policy during reinforcement learning. These innovations significantly reduce the token footprint while enhancing reasoning utility. Experimental results on ALFWorld, WebShop and seven search-augmented tasks demonstrate that SkillRL achieves state-of-the-art performance, outperforming strong baselines over 15.3% and maintaining robustness as task complexity increases. Code is available at this https://github.com/aiming-lab/SkillRL.",
+    "topic_tags": [
+      "SkillRL",
+      "recursive evolution",
+      "SkillBank",
+      "GRPO",
+      "reinforcement learning"
+    ],
+    "why_read": "递归技能增强 RL，强调 skill library 与策略共同演化。",
+    "code_url": "https://github.com/aiming-lab/SkillRL"
+  },
+  {
+    "title": "Reinforcement Learning for Self-Improving Agent with Skill Library",
+    "authors": [
+      "Jiongxiao Wang",
+      "Qiaojing Yan",
+      "Yawei Wang",
+      "Yijun Tian",
+      "Soumya Smruti Mishra",
+      "Zhichao Xu",
+      "Megha Gandhi",
+      "Panpan Xu",
+      "Lin Lee Cheong"
+    ],
+    "year": 2025,
+    "venue": "ACL listed by Semantic Scholar",
+    "arxiv_id": "2512.17102",
+    "doi": "10.48550/arXiv.2512.17102",
+    "citation_count_semantic_scholar": 52,
+    "pdf_url": "https://arxiv.org/pdf/2512.17102",
+    "topic_tags": [
+      "reinforcement learning",
+      "skill library",
+      "GRPO",
+      "AppWorld",
+      "agent training"
+    ],
+    "why_read": "连接 skill library 和 RL，自进化不只靠 prompting，而是把 skill 生成和使用纳入奖励学习。"
+  },
+  {
+    "title": "Skill-Pro: Learning Reusable Skills from Experience via Non-Parametric PPO for LLM Agents",
+    "authors": [
+      "Qirui Mi",
+      "Zhijian Ma",
+      "Mengyue Yang",
+      "Haoxuan Li",
+      "Yisen Wang",
+      "Haifeng Zhang",
+      "Jun Wang"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2602.01869",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2602.01869",
+    "published": "2026-02-02",
+    "categories": [
+      "cs.AI"
+    ],
+    "abstract": "LLM-driven agents excel at sequential decision-making but often rely on on-the-fly reasoning, re-deriving solutions even in recurring scenarios. This insufficient experience reuse leads to computational redundancy and instability. To bridge this gap, we propose Skill-Pro, a framework enabling agents to autonomously learn reusable procedural skills from interaction experiences without parameter updates. By formalizing a Skill-MDP, Skill-Pro transforms passive episodic narratives into executable Skills defined by activation, execution, and termination conditions to ensure executability. To achieve reliable reusability without capability degradation, we introduce Non-Parametric PPO, which leverages semantic gradients for high-quality candidate generation and a PPO Gate for robust Skill verification. Through score-based maintenance, Skill-Pro sustains compact, high-quality procedural memory. Experimental results across in-domain, cross-task, and cross-agent scenarios demonstrate that Skill-Pro achieves superior reuse rates and significant gains with extreme memory compression. Visualized evolutionary trajectories and Skill distributions further reveal how Skill-Pro transparently accumulates, refines, and reuses procedural knowledge to facilitate long-term autonomy.",
+    "topic_tags": [
+      "Skill-Pro",
+      "ProcMEM",
+      "procedural memory",
+      "Non-Parametric PPO",
+      "Skill-MDP"
+    ],
+    "why_read": "用非参数 PPO 学习可执行 procedural skills，强调激活/执行/终止条件。"
+  },
+  {
+    "title": "AutoRefine: From Trajectories to Reusable Expertise for Continual LLM Agent Refinement",
+    "authors": [
+      "Libin Qiu",
+      "Zhirong Gao",
+      "Junfu Chen",
+      "Yuhang Ye",
+      "Weizhi Huang",
+      "Xiaobo Xue",
+      "Wenkai Qiu",
+      "Shuo Tang"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2601.22758",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2601.22758",
+    "published": "2026-01-30",
+    "categories": [
+      "cs.AI"
+    ],
+    "abstract": "Large language model agents often fail to accumulate knowledge from experience, treating each task as an independent challenge. Recent methods extract experience as flattened textual knowledge, which cannot capture procedural logic of complex subtasks. They also lack maintenance mechanisms, causing repository degradation as experience accumulates. We introduce AutoRefine, a framework that extracts and maintains dual-form Experience Patterns from agent execution histories. For procedural subtasks, we extract specialized subagents with independent reasoning and memory. For static knowledge, we extract skill patterns as guidelines or code snippets. A continuous maintenance mechanism scores, prunes, and merges patterns to prevent repository degradation. Evaluated on ALFWorld, ScienceWorld, and TravelPlanner, AutoRefine achieves 98.4%, 70.4%, and 27.1% respectively, with 20-73% step reductions. On TravelPlanner, automatic extraction exceeds manually designed systems (27.1% vs 12.1%), demonstrating its ability to capture procedural coordination.",
+    "topic_tags": [
+      "AutoRefine",
+      "trajectory refinement",
+      "experience patterns",
+      "maintenance",
+      "subagents"
+    ],
+    "why_read": "从轨迹中抽取 reusable expertise，并维护/合并/裁剪经验库。"
+  },
+  {
+    "title": "AutoSkill: Experience-Driven Lifelong Learning via Skill Self-Evolution",
+    "authors": [
+      "Yutao Yang",
+      "Junsong Li",
+      "Qianjun Pan",
+      "Bihao Zhan",
+      "Yuxuan Cai",
+      "Lin Du",
+      "Jie Zhou",
+      "Kai Chen",
+      "Qin Chen",
+      "Xin Li",
+      "Bo Zhang",
+      "Liang He"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2603.01145",
+    "doi": "10.48550/arXiv.2603.01145",
+    "citation_count_semantic_scholar": 59,
+    "pdf_url": "https://arxiv.org/pdf/2603.01145",
+    "topic_tags": [
+      "lifelong learning",
+      "skill self-evolution",
+      "personalization",
+      "experience consolidation",
+      "plugin layer"
+    ],
+    "why_read": "把交互经验抽象成显式、可编辑、可版本化 skill 的代表性论文。"
+  },
+  {
+    "title": "Harness Updating Is Not Harness Benefit: Disentangling Evolution Capabilities in Self-Evolving LLM Agents",
+    "authors": [
+      "Minhua Lin",
+      "Juncheng Wu",
+      "Zijun Wang",
+      "Zhan Shi",
+      "Yisi Sang",
+      "Bing He",
+      "Zewen Liu",
+      "Tianxin Wei",
+      "Zongyu Wu",
+      "Zhiwei Zhang",
+      "Dakuo Wang",
+      "Xiang Zhang",
+      "Benoit Dumoulin",
+      "Cihang Xie",
+      "Yuyin Zhou",
+      "Suhang Wang",
+      "Hanqing Lu"
+    ],
+    "year": 2026,
+    "venue": "arXiv",
+    "arxiv_id": "2605.30621",
+    "doi": "10.48550/arXiv.2605.30621",
+    "citation_count_semantic_scholar": 2,
+    "pdf_url": "https://arxiv.org/pdf/2605.30621",
+    "code_url": "https://github.com/A-EVO-Lab/a-evolve/tree/release/harness-evolution",
+    "topic_tags": [
+      "harness",
+      "skills",
+      "memory",
+      "tools",
+      "evaluation",
+      "model capability"
+    ],
+    "why_read": "非常适合判断 agent skill 自进化系统的真实收益：会更新 skill 不等于会用好 skill。"
+  },
+  {
+    "title": "WebEvolver: Enhancing Web Agent Self-Improvement with Coevolving World Model",
+    "authors": [
+      "Tianqing Fang",
+      "Hongming Zhang",
+      "Zhisong Zhang",
+      "Kaixin Ma",
+      "Wenhao Yu",
+      "Haitao Mi",
+      "Dong Yu"
+    ],
+    "year": 2025,
+    "venue": "EMNLP listed by Semantic Scholar",
+    "arxiv_id": "2504.21024",
+    "doi": "10.48550/arXiv.2504.21024",
+    "citation_count_semantic_scholar": 40,
+    "pdf_url": "https://arxiv.org/pdf/2504.21024",
+    "code_url": "https://github.com/Tencent/SelfEvolvingAgent",
+    "topic_tags": [
+      "web agent",
+      "self-improvement",
+      "world model",
+      "co-evolution",
+      "training data synthesis"
+    ],
+    "why_read": "展示 agent 与 world model 协同演化，适合参考环境反馈不足时如何继续生成训练信号。"
+  },
+  {
+    "title": "Agents of Change: Self-Evolving LLM Agents for Strategic Planning",
+    "authors": [
+      "Nikolas Belle",
+      "Dakota Barnes",
+      "Alfonso Amayuelas",
+      "Ivan Bercovich",
+      "Xin Eric Wang",
+      "William Wang"
+    ],
+    "year": 2025,
+    "venue": "arXiv",
+    "arxiv_id": "2506.04651",
+    "doi": "10.48550/arXiv.2506.04651",
+    "citation_count_semantic_scholar": 16,
+    "pdf_url": "https://arxiv.org/pdf/2506.04651",
+    "topic_tags": [
+      "strategic planning",
+      "artifact-centric learning",
+      "code refinement",
+      "simulation",
+      "long-horizon agents"
+    ],
+    "why_read": "强调把策略固化成可执行 artifact，再通过模拟对抗迭代演化，适合长程任务 agent。"
+  },
+  {
+    "title": "GEPA: Reflective Prompt Evolution Can Outperform Reinforcement Learning",
+    "authors": [
+      "Lakshya A Agrawal",
+      "Shangyin Tan",
+      "Dilara Soylu",
+      "Noah Ziems",
+      "Rishi Khare",
+      "Krista Opsahl-Ong",
+      "Arnav Singhvi",
+      "Herumb Shandilya",
+      "Michael J Ryan",
+      "Meng Jiang",
+      "Christopher Potts",
+      "Koushik Sen",
+      "Alexandros G. Dimakis",
+      "Ion Stoica",
+      "Dan Klein",
+      "Matei Zaharia",
+      "Omar Khattab"
+    ],
+    "year": 2025,
+    "venue": "arXiv",
+    "arxiv_id": "2507.19457",
+    "doi": null,
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2507.19457",
+    "published": "2025-07-25",
+    "categories": [
+      "cs.CL",
+      "cs.AI",
+      "cs.LG",
+      "cs.SE"
+    ],
+    "abstract": "Large language models (LLMs) are increasingly adapted to downstream tasks via reinforcement learning (RL) methods like Group Relative Policy Optimization (GRPO), which often require thousands of rollouts to learn new tasks. We argue that the interpretable nature of language often provides a much richer learning medium for LLMs, compared to policy gradients derived from sparse, scalar rewards. To test this, we introduce GEPA (Genetic-Pareto), a prompt optimizer that thoroughly incorporates natural language reflection to learn high-level rules from trial and error. Given any AI system containing one or more LLM prompts, GEPA samples trajectories (e.g., reasoning, tool calls, and tool outputs) and reflects on them in natural language to diagnose problems, propose and test prompt updates, and combine complementary lessons from the Pareto frontier of its own attempts. As a result of GEPA's design, it can often turn even just a few rollouts into a large quality gain. Across six tasks, GEPA outperforms GRPO by 6% on average and by up to 20%, while using up to 35x fewer rollouts. GEPA also outperforms the leading prompt optimizer, MIPROv2, by over 10% (e.g., +12% accuracy on AIME-2025), and demonstrates promising results as an inference-time search strategy for code optimization. We release our code at https://github.com/gepa-ai/gepa .",
+    "topic_tags": [
+      "GEPA",
+      "reflective prompt evolution",
+      "Genetic-Pareto",
+      "Hermes",
+      "prompt optimizer"
+    ],
+    "why_read": "Hermes 自进化背后的 GEPA 类路线，解释从执行轨迹反思并优化 prompts/skills 的机制。",
+    "code_url": "https://github.com/gepa-ai/gepa"
+  },
+  {
+    "title": "Voyager: An Open-Ended Embodied Agent with Large Language Models",
+    "authors": [
+      "Guanzhi Wang",
+      "Yuqi Xie",
+      "Yunfan Jiang",
+      "Ajay Mandlekar",
+      "Chaowei Xiao",
+      "Yuke Zhu",
+      "Linxi Fan",
+      "Anima Anandkumar"
+    ],
+    "year": 2023,
+    "venue": "TMLR",
+    "arxiv_id": "2305.16291",
+    "doi": "10.48550/arXiv.2305.16291",
+    "citation_count_semantic_scholar": 1974,
+    "pdf_url": "https://arxiv.org/pdf/2305.16291",
+    "code_url": "https://voyager.minedojo.org/",
+    "topic_tags": [
+      "lifelong learning",
+      "skill library",
+      "automatic curriculum",
+      "Minecraft",
+      "code skills"
+    ],
+    "why_read": "技能库自增长 agent 的基础论文。后续 skill self-evolution 工作基本都会对比或继承 Voyager 思路。"
+  },
+  {
+    "title": "Reflexion: Language Agents with Verbal Reinforcement Learning",
+    "authors": [
+      "Noah Shinn",
+      "Federico Cassano",
+      "Edward Berman",
+      "Ashwin Gopinath",
+      "Karthik Narasimhan",
+      "Shunyu Yao"
+    ],
+    "year": 2023,
+    "venue": "NeurIPS",
+    "arxiv_id": "2303.11366",
+    "doi": "10.52202/075280-0377",
+    "citation_count_semantic_scholar": 4322,
+    "pdf_url": "https://arxiv.org/pdf/2303.11366",
+    "topic_tags": [
+      "verbal reinforcement learning",
+      "reflection",
+      "episodic memory",
+      "agent self-improvement"
+    ],
+    "why_read": "自改进 agent 的基础方法之一，用语言反思更新记忆，而不是更新模型参数。"
+  },
+  {
+    "title": "Promptbreeder: Self-Referential Self-Improvement Via Prompt Evolution",
+    "authors": [
+      "Chrisantha Fernando",
+      "Dylan Banarse",
+      "Henryk Michalewski",
+      "Simon Osindero",
+      "Tim Rocktaschel"
+    ],
+    "year": 2023,
+    "venue": "ICML",
+    "arxiv_id": "2309.16797",
+    "doi": "10.48550/arXiv.2309.16797",
+    "citation_count_semantic_scholar": 516,
+    "pdf_url": "https://arxiv.org/pdf/2309.16797",
+    "topic_tags": [
+      "prompt evolution",
+      "self-referential improvement",
+      "mutation prompts",
+      "evolutionary search"
+    ],
+    "why_read": "虽然不是 agent skill 包，但提供 prompt/harness 自进化的经典机制，可迁移到 skill 生成策略演化。"
+  },
+  {
+    "title": "WikiSkill: Compiling Agent Experience into Persistent Knowledge for Skill Evolution",
+    "authors": [
+      "Liyan Tang",
+      "Cyrus Rashtchian",
+      "Chun-Sung Ferng",
+      "Andrew Tomkins",
+      "Da-Cheng Juan",
+      "Tu Vu"
+    ],
+    "year": 2026,
+    "venue": "arXiv preprint",
+    "arxiv_id": "2608.27454",
+    "published": "2026-08-27",
+    "doi": "10.48550/arXiv.2608.27454",
+    "citation_count_semantic_scholar": null,
+    "pdf_url": "https://arxiv.org/pdf/2608.27454",
+    "categories": [
+      "cs.AI",
+      "cs.CL"
+    ],
+    "topic_tags": [
+      "skill evolution",
+      "persistent knowledge base",
+      "validation gating",
+      "cross-model skill transfer",
+      "experience consolidation"
+    ],
+    "why_read": "把 skill 与持久 wiki 分成可回滚/不可回滚两类资产：skill 受验证门控可回滚，wiki 单向累积。消融显示持久 wiki 值 +15.0 点均值，是 EvoSkill/SkillOpt 这类只有 skill 状态的方法缺失的一层。"
+  }
+]
