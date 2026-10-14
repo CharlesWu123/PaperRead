@@ -831,7 +831,7 @@
   {
    "key": "rsi",
    "title": "递归自进化 (RSI)",
-   "desc": "13 篇递归自进化论文，含通俗版 / 深度版双版本",
+   "desc": "14 篇递归自进化论文，含通俗版 / 深度版双版本",
    "groups": [
     {
      "name": "总览",
@@ -841,7 +841,7 @@
        "kind": "md",
        "path": "03_递归自进化/时间线综述.md",
        "title": "递归自进化（Recursive Self-Improvement, RSI）论文时间线综述",
-       "subtitle": "整理时间：2026-08-18（2026-09-15 增补：self-developing-agents 三部曲，见阶段 4 末尾）",
+       "subtitle": "整理时间：2026-08-18（2026-09-15 增补：self-developing-agents 三部曲；2026-10-14 增补：Dream-RSI，均见阶段 4 末尾）",
        "collection": "rsi"
       }
      ]
@@ -1241,9 +1241,41 @@
        "collection": "rsi"
       }
      ]
+    },
+    {
+     "name": "冻结参数 · 演化探索策略（meta 层 RSI）",
+     "docs": [
+      {
+       "id": "03_递归自进化~reports~dream-rsi",
+       "kind": "md",
+       "path": "03_递归自进化/reports/dream-rsi.md",
+       "title": "Dream-RSI",
+       "subtitle": "把发现历史当可回放沙盘，让探索策略在 meta 层闭环自改进；回放分单调不降，但该保证只在沙盘里成立。",
+       "fullTitle": "Dream-RSI: Recursive Self-Improvement through Evolving Worlds",
+       "tag": "Tier B",
+       "arxivId": "2609.14858",
+       "date": "2026-09-14",
+       "plainPath": "03_递归自进化/reports/plain/dream-rsi.md",
+       "facts": [
+        [
+         "冻结参数",
+         "是（底座 agent、evaluator、执行接口全冻结，只改策略代码）"
+        ],
+        [
+         "演化对象",
+         "探索策略的可执行代码（分支 / 并行 / 停止）"
+        ],
+        [
+         "验证信号",
+         "任务侧为外部客观 evaluator（正确性 + 运行时间 / 题目目标函数）；meta 侧为自造的历史回放模拟器打分"
+        ]
+       ],
+       "collection": "rsi"
+      }
+     ]
     }
    ],
-   "count": 14
+   "count": 15
   },
   {
    "key": "harness",

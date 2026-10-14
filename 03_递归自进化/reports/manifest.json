@@ -219,5 +219,22 @@
   "priority": 13,
   "oneLine": "可见反馈只够局部搜索：64 次版本切换只有 34 次方向与 held-out 一致，9 个交付版只有 2 个 held-out 最优。",
   "plainFile": "plain/harnessdev.md"
+ },
+ {
+  "id": "dream-rsi",
+  "reportFile": "dream-rsi.md",
+  "arxivId": "2609.14858",
+  "pdfFile": "2609.14858v2.pdf",
+  "shortTitle": "Dream-RSI",
+  "fullTitle": "Dream-RSI: Recursive Self-Improvement through Evolving Worlds",
+  "date": "2026-09-14",
+  "tier": "B",
+  "category": "冻结参数 · 演化探索策略（meta 层 RSI）",
+  "frozen": "是（底座 agent、evaluator、执行接口全冻结，只改策略代码）",
+  "evolves": "探索策略的可执行代码（分支 / 并行 / 停止）",
+  "verifier": "任务侧为外部客观 evaluator（正确性 + 运行时间 / 题目目标函数）；meta 侧为自造的历史回放模拟器打分",
+  "priority": 14,
+  "oneLine": "把发现历史当可回放沙盘，让探索策略在 meta 层闭环自改进；回放分单调不降，但该保证只在沙盘里成立。",
+  "plainFile": "plain/dream-rsi.md"
  }
 ]
