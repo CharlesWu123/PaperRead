@@ -36,6 +36,10 @@ node tools/build-site.js
 该脚本复用 `reader/server.js` 的 `buildIndex()` 与 `reader/public/styles.css`，
 因此在线站点与本地服务的索引和样式始终一致（索引仅去掉 PDF 字段，因为 PDF 不在仓库里）。
 
+> 推送后 `.github/workflows/rebuild-site.yml` 会自动执行同一个脚本并校验生成的 JSON；
+> 若发现 `site/` 与源文件不同步，会自动提交回 `main`（commit message 带 `[skip ci]`）。
+> 因此忘记本地生成也不会漏，索引始终跟着源文件走。
+
 ## 本地阅读器
 
 全库只有**一个**统一阅读器（`reader/`），覆盖全部 5 个专题，提供全文检索、侧边导航，以及

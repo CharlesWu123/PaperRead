@@ -1,0 +1,58 @@
+name: Rebuild site index
+
+# 线上站点读的是 site/index.json 与 site/search.json（生成物），而不是
+# reports/manifest.json。所以只改解读内容、忘了跑 tools/build-site.js 时，
+# 站点侧栏和全文检索会漏掉新文档。
+#
+# 这个工作流在每次 push 到 main 后重新生成索引：若与已提交的内容有差异，
+# 就自动提交回 main，从而「忘记本地生成」也不会漏。commit message 带
+# [skip ci]，且跳过 bot 自身的提交，避免循环触发。
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: rebuild-site-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  rebuild-site:
+    # 跳过由本工作流自己产生的提交，避免无限循环
+    if: github.actor != 'github-actions[bot]'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      # 脚本只依赖 Node 内置模块，无需 npm install
+      - name: Regenerate site index
+        run: node tools/build-site.js
+
+      - name: Validate generated JSON
+        run: |
+          node -e "for (const f of ['site/index.json','site/search.json']) { JSON.parse(require('fs').readFileSync(f,'utf8')); console.log('OK  ' + f); }"
+
+      - name: Commit regenerated index if changed
+        run: |
+          if git diff --quiet -- site/; then
+            echo "site/ 已是最新，无需提交。"
+            exit 0
+          fi
+          echo "检测到 site/ 索引与源文件不同步，正在提交回 main…"
+          git diff --stat -- site/
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add site/
+          git commit -m "chore(site): 自动重建索引 [skip ci]"
+          if ! git push; then
+            echo "::error::推送失败。请在 Settings → Actions → General → Workflow permissions 选择 'Read and write permissions'，或本地运行 node tools/build-site.js 后提交。"
+            exit 1
+          fi
